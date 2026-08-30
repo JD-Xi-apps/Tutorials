@@ -10,8 +10,9 @@
  * collection.
  *
  *   renderer-demo    top-view regression suite: one step per visual mode
- *   rear-panel-demo  rear-image rendering proof: POWER switch and DC IN jack,
- *                    location only - no power-on/off or connection procedure
+ *   rear-panel-demo  rear-image verification tour of every documented rear-panel
+ *                    target, location only - no power, connection, grounding or
+ *                    setup procedure
  *
  * No step below describes a real JD-Xi operation. Nothing here claims what the
  * instrument does, what its display shows, or what any control sounds like.
@@ -117,34 +118,90 @@ window.JDXI_TUTORIAL_FIXTURES = {
     title: "Rear-panel renderer test fixture",
     shortTitle: "Rear panel test",
     summary:
-      "Engineering fixture that proves the renderer can select and crop the rear-panel hardware image. Not a tutorial.",
+      "Engineering fixture: a visual verification tour of every documented rear-panel target on the rear hardware image. Not a tutorial.",
     steps: [
       {
         id: "r1",
-        title: "Rear image: full-plus-inset",
-        instruction: "Renderer test: locate the POWER switch on the rear panel.",
+        title: "Rear image: full",
+        instruction: "Renderer test: identify the full rear connector panel.",
         detail:
-          "This step exercises rear-image resolution. The target carries imageId \"rear\", so the renderer shows the full rear strip as context and generates the magnified inset from the same rear image. Location test only.",
-        hardwareTargets: ["powerSwitch"],
-        visualMode: "full-plus-inset",
+          "This step exercises the rearPanel section target: the whole rear strip is shown at its natural aspect with the connector recess outlined.",
+        hardwareTargets: ["rearPanel"],
+        visualMode: "full",
         checkpoint:
-          "Renderer test: the highlight sits on the small slide switch beside DC IN, in both the full strip and the inset.",
+          "Renderer test: one outline covers the recessed connector strip and nothing above it.",
         recoveryHelp:
           "Renderer test: confirm the highlighted area matches the label, then continue.",
-        nextHint: "Next: the DC IN jack on the same rear image.",
+        nextHint: "Next: the power-connection cluster.",
       },
       {
         id: "r2",
-        title: "Rear image: full-plus-inset",
-        instruction: "Renderer test: locate the DC IN jack on the rear panel.",
+        title: "Rear image: power cluster",
+        instruction: "Renderer test: locate the rear power-connection area.",
         detail:
-          "This step exercises a second rear-image target sharing the same zoom crop. Location test only; nothing here describes connecting or powering the instrument.",
-        hardwareTargets: ["dcInJack"],
+          "Three same-image targets: the cord hook, the DC IN jack and the POWER switch. The inset uses the cord hook's cluster zoom. Location test only.",
+        hardwareTargets: ["cordHook", "dcInJack", "powerSwitch"],
         visualMode: "full-plus-inset",
         checkpoint:
-          "Renderer test: the highlight sits on the round barrel jack left of the POWER switch, in both the full strip and the inset.",
+          "Renderer test: three highlights sit on the leftmost three items of the strip, and the inset frames all three.",
         recoveryHelp:
-          "Renderer test: confirm the highlighted area matches the label, then continue.",
+          "Renderer test: confirm the highlighted areas match their labels, then continue.",
+        nextHint: "Next: the USB COMPUTER and MIDI area.",
+      },
+      {
+        id: "r3",
+        title: "Rear image: computer and MIDI",
+        instruction: "Renderer test: locate the USB COMPUTER and MIDI connection area.",
+        detail:
+          "The USB COMPUTER port plus the MIDI group target. The inset frames the square USB socket and both DIN sockets together. Location test only.",
+        hardwareTargets: ["usbComputerPort", "midiPorts"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: the USB box is on the square socket and the MIDI box encloses both round sockets and their legend.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted areas match their labels, then continue.",
+        nextHint: "Next: the external-input controls.",
+      },
+      {
+        id: "r4",
+        title: "Rear image: external input",
+        instruction: "Renderer test: locate the external-input controls.",
+        detail:
+          "The LINE/GUITAR switch and the INPUT (MONO) jack, right of centre on the strip. Location test only.",
+        hardwareTargets: ["lineGuitarSwitch", "inputMonoJack"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: one box on the small slide switch, one on the round jack beside it.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted areas match their labels, then continue.",
+        nextHint: "Next: the audio-output area.",
+      },
+      {
+        id: "r5",
+        title: "Rear image: audio outputs",
+        instruction: "Renderer test: locate the rear audio-output area.",
+        detail:
+          "The OUTPUT group (L/MONO and R/CLICK OUT) and the PHONES jack. Location test only.",
+        hardwareTargets: ["outputJacks", "phonesJack"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: the OUTPUT box encloses the two left jacks and their legend; the PHONES box is on the third jack only.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted areas match their labels, then continue.",
+        nextHint: "Next: the remaining utility hardware.",
+      },
+      {
+        id: "r6",
+        title: "Rear image: utility hardware",
+        instruction: "Renderer test: locate the remaining rear-panel utility hardware.",
+        detail:
+          "The ground terminal and the security slot at the right end of the strip. Location test only; no grounding guidance is given here.",
+        hardwareTargets: ["groundTerminal", "securitySlot"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: one box on the bright screw terminal, one on the narrow slot to its right.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted areas match their labels, then continue.",
       },
     ],
   },

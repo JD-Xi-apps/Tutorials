@@ -702,8 +702,16 @@ Scope of the resolution: the asset is **location/visual evidence only**. It has 
 established to be a photograph of the owner's own physical unit, and it proves nothing
 about power-on order, adapter/voltage requirements, connection sequence or operating
 procedure — those remain official-document claims to be verified when B01/B02 are
-authored. Other rear connectors (USB, MIDI, outputs, phones, pedal) are visible but
-unregistered until a canonical tutorial needs them.
+authored.
+
+*Phase 4C.1:* the visual-location side now covers **every** rear-panel item documented
+on OM p.3 — DC IN (18), [POWER] (19), USB COMPUTER (20), MIDI IN/OUT (21), LINE/GUITAR
+(22), INPUT (MONO) (23), OUTPUT L/MONO and R/CLICK OUT (24), PHONES (25), ground
+terminal (26), security slot (27) and the figure's cord hook — each a stable registry
+ID measured on the rear image (`HARDWARE-TARGETS.md` §5). Technical behaviour and
+procedure for each item (USB MIDI/audio, impedance selection, grounding cautions and
+prohibited connections, output wiring) stay source-controlled and tutorial-specific;
+none of it is asserted by the registry or the development fixture.
 
 **Q7 — "Keyboard" is ambiguous on this instrument.** ✅ **RESOLVED — PM decision.**
 Learner-facing terminology for the playable keyboard: **the keys** (target label
@@ -765,7 +773,8 @@ never states the boxed-legend convention (Q3).
 > in §12 above. Q3, Q4, Q6, Q8, Q10, Q11 and Q13 remain open.
 >
 > **Phase 4C postscript:** Q6 is resolved on the visual side — a rear-panel image is
-> registered and `powerSwitch`/`dcInJack` are measured on it. Q3, Q4, Q8, Q10, Q11 and
+> registered and `powerSwitch`/`dcInJack` are measured on it; Phase 4C.1 extended that
+> to every OM p.3 rear-panel item. Q3, Q4, Q8, Q10, Q11 and
 > Q13 remain open.
 - Whether Vocoder/Auto Pitch gets canonical tutorials.
 - The Novice capstone question (architecture §4).

@@ -155,6 +155,50 @@ Shared zoom for `dcInJack` and `powerSwitch`: source 300,185 → 600,345 → nor
 `{ x: 0.1190, y: 0.4987, width: 0.1190, height: 0.4313 }` (crop aspect ≈ 1.87:1), framing
 both connectors and the legends printed above them.
 
+### Complete rear-panel map (Phase 4C.1)
+
+The remaining rear-panel items documented on Owner's Manual p.3 (items 18–27 plus the
+figure's *Cord hook*) were measured with the same gridded-crop method at 4× and
+overlay-verified from the committed registry. Every documented rear-panel item now has
+a stable target ID; the documented rear panel is **fully mapped visually**. The three
+Phase 4C values above were not touched.
+
+| ID | Kind | Group | Panel legend | Source-pixel box (x0,y0 → x1,y1) | Normalized region (x, y, w, h) |
+|---|---|---|---|---|---|
+| `cordHook` | control | `rearPanel` | — (figure label only) | 198,246 → 306,314 | 0.0786, 0.6631, 0.0429, 0.1833 |
+| `usbComputerPort` | control | `rearPanel` | USB COMPUTER | 595,252 → 655,310 | 0.2361, 0.6792, 0.0238, 0.1563 |
+| `midiPorts` | group | `rearPanel` | MIDI | 690,222 → 862,330 | 0.2738, 0.5984, 0.0683, 0.2911 |
+| `midiOutPort` | control | `midiPorts` | OUT (left socket) | 696,226 → 774,308 | 0.2762, 0.6092, 0.0310, 0.2210 |
+| `midiInPort` | control | `midiPorts` | IN (right socket) | 778,226 → 856,308 | 0.3087, 0.6092, 0.0310, 0.2210 |
+| `lineGuitarSwitch` | control | `rearPanel` | LINE / GUITAR | 1718,268 → 1754,298 | 0.6817, 0.7224, 0.0143, 0.0809 |
+| `inputMonoJack` | control | `rearPanel` | INPUT (MONO) | 1786,248 → 1842,304 | 0.7087, 0.6685, 0.0222, 0.1509 |
+| `outputJacks` | group | `rearPanel` | OUTPUT | 1866,228 → 2013,310 | 0.7405, 0.6146, 0.0583, 0.2210 |
+| `outputLMonoJack` | control | `outputJacks` | L/MONO | 1874,247 → 1930,304 | 0.7437, 0.6658, 0.0222, 0.1536 |
+| `outputRClickOutJack` | control | `outputJacks` | R/CLICK OUT | 1949,247 → 2005,304 | 0.7734, 0.6658, 0.0222, 0.1536 |
+| `phonesJack` | control | `rearPanel` | PHONES | 2037,247 → 2093,304 | 0.8083, 0.6658, 0.0222, 0.1536 |
+| `groundTerminal` | control | `rearPanel` | ⏚ (ground symbol) | 2143,262 → 2183,304 | 0.8504, 0.7062, 0.0159, 0.1132 |
+| `securitySlot` | control | `rearPanel` | — (symbol not legible) | 2258,260 → 2285,302 | 0.8960, 0.7008, 0.0107, 0.1132 |
+
+MIDI OUT is the left-hand socket and IN the right-hand one, read from the `OUT` / `IN`
+legends printed beneath them on the rear image.
+
+**Zoom clusters.** Rear targets share contextual crops rather than one crop per port,
+so a beginner keeps their bearings; each crop includes the printed legends around the
+connectors (all 160 px tall, y 185 → 345):
+
+| Cluster | Members | Source box | Normalized zoom (x, y, w, h) |
+|---|---|---|---|
+| Power | `cordHook` | 180,185 → 600,345 | 0.0714, 0.4987, 0.1667, 0.4313 |
+| Power (Phase 4C, unchanged) | `dcInJack`, `powerSwitch` | 300,185 → 600,345 | 0.1190, 0.4987, 0.1190, 0.4313 |
+| Computer / MIDI | `usbComputerPort`, `midiPorts`, `midiInPort`, `midiOutPort` | 570,185 → 890,345 | 0.2262, 0.4987, 0.1270, 0.4313 |
+| Input | `lineGuitarSwitch`, `inputMonoJack` | 1660,185 → 1880,345 | 0.6587, 0.4987, 0.0873, 0.4313 |
+| Output | `outputJacks`, `outputLMonoJack`, `outputRClickOutJack`, `phonesJack` | 1850,185 → 2110,345 | 0.7341, 0.4987, 0.1032, 0.4313 |
+| Utility | `groundTerminal`, `securitySlot` | 2110,185 → 2330,345 | 0.8373, 0.4987, 0.0873, 0.4313 |
+
+The cord hook's crop is the whole power cluster (it lies left of the Phase 4C crop);
+`dcInJack`/`powerSwitch` keep their 4C crop unchanged, so a power-cluster step that
+lists `cordHook` first frames all three.
+
 `rearPanel` is the recessed connector strip only. The JPEG also shows the case top, the
 knob silhouettes and white background at the lower corners; those are not panel
 hardware, so the region was measured rather than set to the full image.
@@ -168,7 +212,7 @@ Measurement/debug scripts and screenshots lived in the session scratchpad and ar
 
 ## 6. Registry inventory
 
-86 targets. Hierarchy (children indented under their `group`):
+99 targets. Hierarchy (children indented under their `group`):
 
 ```
 Display / navigation          Sound shaping
@@ -214,8 +258,21 @@ Arpeggiator                       favoriteButton
     keyHoldButton
                               Keys        Mic / voice      Rear panel (imageId "rear")
                                 keys        micJack          rearPanel
-                                            autoNoteButton     dcInJack
+                                            autoNoteButton     cordHook
+                                                               dcInJack
                                                                powerSwitch
+                                                               usbComputerPort
+                                                               midiPorts
+                                                                 midiOutPort
+                                                                 midiInPort
+                                                               lineGuitarSwitch
+                                                               inputMonoJack
+                                                               outputJacks
+                                                                 outputLMonoJack
+                                                                 outputRClickOutJack
+                                                               phonesJack
+                                                               groundTerminal
+                                                               securitySlot
 ```
 
 Structural notes:
@@ -323,8 +380,9 @@ Structural notes:
 | `dcInJack` | control (rear) | `rearPanel` | DC IN | rear 372,254 → 420,312 | 0.1476, 0.6846, 0.0190, 0.1563 |
 | `powerSwitch` | control (rear) | `rearPanel` | POWER | rear 476,264 → 532,302 | 0.1889, 0.7116, 0.0222, 0.1024 |
 
-The three rows marked *(rear)* are normalized against the 2520 × 371 rear image; every
-other row is normalized against the 3153 × 1339 top view. Labels, zoom crops and
+The rows marked *(rear)* are normalized against the 2520 × 371 rear image; every
+other row is normalized against the 3153 × 1339 top view. The thirteen Phase 4C.1
+rear rows are tabulated in §5 (*Complete rear-panel map*) rather than repeated here. Labels, zoom crops and
 per-target notes live in the registry file itself.
 
 ## 7. Rear-panel targets (formerly off-image)
@@ -341,8 +399,9 @@ under the new `rearPanel` section target. Their IDs are unchanged, so any future
 referencing them needs no edit. The `off-image` kind stays in the schema for any
 future target that no registered image can show; no current target uses it.
 
-What the rear image does **not** establish: power-on order, voltage/adapter
-requirements, connection sequence, or any operating procedure. Those remain
+Phase 4C.1 completed the rear map with the remaining OM p.3 items (§5). What the rear
+image does **not** establish: power-on order, voltage/adapter requirements, connection
+sequence, grounding practice, or any operating procedure. Those remain
 official-document claims for the B01/B02 authoring phase (ROLAND-SOURCE-MAP Q6).
 
 Rendering note: a Step whose measurable targets span both images is refused by the
@@ -357,13 +416,15 @@ Validated against the committed `js/hardware-targets.js` in a real browser conte
 
 | Check | Result |
 |---|---|
-| Total targets | 86 (83 top + 3 rear) |
-| All measurable targets have regions | ✓ (86 regions; 0 off-image nulls) |
+| Total targets | 99 (83 top + 16 rear) |
+| All measurable targets have regions | ✓ (99 regions; 0 off-image nulls) |
 | Every region within 0..1, positive width/height, inside its image | ✓ |
 | `defaultImageId` resolves; image IDs unique; every image has src/width/height | ✓ |
 | Every target `imageId` (explicit or default) resolves | ✓ |
 | Every child references the same image as its `group` | ✓ |
 | Top-view `region`/`zoom` data numerically identical before/after Phase 4C | ✓ 83/83 |
+| All 86 pre-4C.1 targets (top + `rearPanel`/`dcInJack`/`powerSwitch`) numerically identical after 4C.1 | ✓ 86/86 |
+| Every rear child inside its group; `midiPorts` ⊃ both MIDI sockets; `outputJacks` ⊃ both outputs | ✓ |
 | `powerSwitch`, `dcInJack` resolve to `rear`, no stale `off-image` kind | ✓ |
 | Step buttons | ✓ 16/16 individually measured |
 | Part Select buttons individually present | ✓ 4/4 |
@@ -381,5 +442,6 @@ Validated against the committed `js/hardware-targets.js` in a real browser conte
 - Learner-facing wording beyond the recorded `label` values; in particular the
   Pitch/Mod wording question (Q8) stays open and both targets carry neutral labels.
 - The boxed-legend hypothesis (Q3) and display character dimensions (Q4).
-- Rear connectors beyond POWER and DC IN (USB, MIDI, outputs, phones, pedal…): not
-  registered until a canonical tutorial needs them.
+- What any rear connector *does* or how it is used: the registry records location and
+  OM p.3 naming only; USB/MIDI setup, input impedance, grounding cautions and output
+  wiring remain source-verified lesson claims.

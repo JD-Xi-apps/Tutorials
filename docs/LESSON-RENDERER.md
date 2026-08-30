@@ -29,7 +29,7 @@ from `file://`.
 | Fixture id | Route | Purpose |
 |---|---|---|
 | `renderer-demo` | `#dev/lesson-renderer/step/1` … `/step/4` | Top-view suite: one step per visual mode. The regression baseline for the top image. |
-| `rear-panel-demo` | `#dev/rear-panel/step/1` … `/step/2` | Rear-image proof: `powerSwitch`, then `dcInJack`, both `full-plus-inset`. |
+| `rear-panel-demo` | `#dev/rear-panel/step/1` … `/step/6` | Complete rear-panel visual verification tour: orientation (`rearPanel`, `full`), then the power, computer/MIDI, input, output and utility clusters (`full-plus-inset`, several same-image targets per step). |
 
 Both ids are deliberately outside the canonical `B##`/`N##`/`I##` scheme, so they
 cannot be mistaken for a tutorial or picked up by the guided path or a collection. The
@@ -37,7 +37,7 @@ lesson view carries a permanent **DEVELOPMENT FIXTURE — NOT A TUTORIAL** badge
 
 No step describes a real JD-Xi operation; the display preview text is synthetic and
 labelled as such, and the rear steps are location tests only — they never tell the
-learner to power the instrument on or off, or to connect anything.
+learner to power the instrument on or off, connect, ground, or set up anything.
 
 ## Data flow
 
@@ -103,8 +103,8 @@ its image. Real lessons use one Step per image, which is the better instruction 
 | Mode | Composition |
 |---|---|
 | `full` | Whole instrument, target highlighted, label attached. |
-| `full-plus-inset` | Whole instrument plus a runtime-generated magnified inset; the target is highlighted in both. |
-| `control-closeup` | Crop dominates; a small context view of the whole instrument shows where the crop came from, outlined. |
+| `full-plus-inset` | Whole instrument plus a runtime-generated magnified inset; every Step target is highlighted on the full view, and every Step target whose region lies inside the crop is highlighted in the inset. |
+| `control-closeup` | Crop dominates (highlighting every Step target inside it, as above); a small context view of the whole instrument shows where the crop came from, outlined. |
 | `display-focus` | Display preview plus an "on the instrument" crop, over the whole instrument with display and navigation controls highlighted. |
 
 ## Crop generation
@@ -124,7 +124,12 @@ image left    = -(zoom.x / zoom.width)  * 100 %
 image top     = -(zoom.y / zoom.height) * 100 %
 ```
 
-A target highlighted inside a crop is converted to crop-relative coordinates:
+The crop is the first measurable target's `zoom`. It highlights **all** measurable Step
+targets whose regions are fully contained in that crop (normalized containment, 1e-6
+tolerance) — not only the target that supplied the zoom — so a cluster step such as
+cord hook + DC IN + POWER shows all three magnified. Targets outside the crop appear on
+the full view only. Crops carry no labels; the full view is the labelled orientation
+view. A target highlighted inside a crop is converted to crop-relative coordinates:
 
 ```
 cropX = (target.x - zoom.x) / zoom.width
@@ -145,10 +150,17 @@ visible. The label is derived from the target's `label` and sits outside the box
 never covers the control it names.
 
 Side is chosen automatically: above by default, below when the target sits too near the
-top edge. After layout, `resolveLabelCollisions()` re-measures and flips any label that
-landed across a *different* highlighted target — with two targets close together
-(display and cursor buttons, say) the default side can otherwise put one label straight
-over the other's control. A flip is kept only if it reduces collisions.
+top edge. After layout, `resolveLabelCollisions()` re-measures every label in DOM order
+and flips any that landed across a *different* highlighted target **or across an
+already-placed label** — with targets close together (display and cursor buttons on
+the top view; cord hook, DC IN and POWER on the narrow rear strip) the default side can
+otherwise put one label straight over the other's control or text. Each placed label
+becomes an occupied rectangle for the labels after it. A flip is kept only if it reduces
+collisions; a label never moves laterally and never changes its target's box. If neither
+side is clear, the better side is kept and a `console.warn` names the label so the
+fixture QA pass sees it. Known residual cases on the rear strip: three adjacent labels
+(step 2) leave *Cord hook* and *POWER switch* touching edge-to-edge, and *USB COMPUTER
+port* (step 3) grazes the corner of the MIDI group box — both fully readable.
 
 Labels are placed outside a dominant close-up crop as a caption, because a label
 positioned inside the crop is clipped by the frame's `overflow: hidden`.
@@ -183,7 +195,7 @@ Hash routing, so direct links and Back/Forward work from `file://` with no serve
 |---|---|
 | *(empty)*, `#home` | Home |
 | `#dev/lesson-renderer/step/1..4` | Top-view fixture step |
-| `#dev/rear-panel/step/1..2` | Rear-panel fixture step |
+| `#dev/rear-panel/step/1..6` | Rear-panel fixture step |
 | out-of-range step (either fixture) | replaced with step 1 of that fixture |
 | anything else | replaced with `#home` |
 

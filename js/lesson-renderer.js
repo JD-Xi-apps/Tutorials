@@ -144,34 +144,67 @@ window.JDXI_LESSON_RENDERER = (function () {
     }
   }
 
+  var EPS = 1e-6;
+  function containsRect(outer, inner) {
+    return (
+      inner.x >= outer.x - EPS &&
+      inner.y >= outer.y - EPS &&
+      inner.x + inner.width <= outer.x + outer.width + EPS &&
+      inner.y + inner.height <= outer.y + outer.height + EPS
+    );
+  }
+
   function overlaps(a, b) {
     return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
   }
 
   /*
-   * A label must never sit on top of a DIFFERENT highlighted target - with two
-   * targets close together (display + cursorButtons, say) the default side can
-   * land one label straight across the other's control. Measured after layout,
-   * because the label's height depends on the rendered text.
+   * A label must never sit on top of a DIFFERENT highlighted target, nor on
+   * another target's label - with targets close together (display +
+   * cursorButtons on the top view; cord hook + DC IN + POWER on the narrow
+   * rear strip) the default side can land one label straight across the
+   * other's control or text. Measured after layout, because the label's
+   * height depends on the rendered text.
+   *
+   * Deterministic, generic and image-independent: labels are processed in DOM
+   * order; each successfully placed label becomes an occupied rectangle for
+   * every later one. A label only ever chooses between the two sides of its
+   * own target (above/below) - never a lateral offset, never a change to the
+   * canonical box. If neither side is collision-free the better side is kept
+   * (fewer collisions; the original side on a tie) and the case is reported
+   * on the console for the fixture QA pass rather than hidden.
    */
   function resolveLabelCollisions(canvas) {
     var labels = [].slice.call(canvas.querySelectorAll(".hl-label"));
     var boxes = [].slice.call(canvas.querySelectorAll(".hl")).map(function (b) {
       return b.getBoundingClientRect();
     });
+    var placed = []; // rects of labels already positioned, in DOM order
     labels.forEach(function (lab, i) {
       if (!lab._box) return;
       var hits = function () {
         var r = lab.getBoundingClientRect();
-        return boxes.filter(function (b, j) {
+        var n = boxes.filter(function (b, j) {
           return j !== i && overlaps(r, b);
         }).length;
+        n += placed.filter(function (p) {
+          return overlaps(r, p);
+        }).length;
+        return n;
       };
       var before = hits();
-      if (!before) return;
-      var wasBelow = lab.classList.contains("below");
-      placeLabel(lab, lab._box, !wasBelow);
-      if (hits() >= before) placeLabel(lab, lab._box, wasBelow); // no better; keep original
+      if (before) {
+        var wasBelow = lab.classList.contains("below");
+        placeLabel(lab, lab._box, !wasBelow);
+        var after = hits();
+        if (after >= before) placeLabel(lab, lab._box, wasBelow); // no better; keep original
+        if (Math.min(before, after) > 0 && window.console) {
+          console.warn(
+            "JDXI renderer: label \"" + lab.textContent + "\" still collides on both sides."
+          );
+        }
+      }
+      placed.push(lab.getBoundingClientRect());
     });
   }
 
@@ -384,6 +417,18 @@ window.JDXI_LESSON_RENDERER = (function () {
     var zoomSource = measurable.filter(function (r) {
       return r.target.zoom;
     })[0];
+    /*
+     * Every measurable Step target whose region lies fully inside the chosen
+     * crop is highlighted in the crop - not only the target that supplied the
+     * zoom. Containment in normalized image coordinates governs; targets need
+     * not share a zoom object. Targets outside the crop stay on the full view
+     * only. Tolerance covers 4-decimal registry rounding at the crop edge.
+     */
+    var cropTargets = zoomSource
+      ? measurable.filter(function (r) {
+          return containsRect(zoomSource.target.zoom, r.target.region);
+        })
+      : [];
 
     switch (step.visualMode) {
       case "full-plus-inset": {
@@ -393,7 +438,7 @@ window.JDXI_LESSON_RENDERER = (function () {
           var insetWrap = el("div", "inset-wrap");
           insetWrap.appendChild(el("div", "vis-cap", "Magnified"));
           insetWrap.appendChild(
-            buildCrop(image, zoomSource.target.zoom, [zoomSource], { extraClass: "inset" })
+            buildCrop(image, zoomSource.target.zoom, cropTargets, { extraClass: "inset" })
           );
           stackA.appendChild(insetWrap);
         }
@@ -410,7 +455,7 @@ window.JDXI_LESSON_RENDERER = (function () {
           // crop gets clipped by the frame's overflow.
           framed.appendChild(el("div", "vis-cap", zoomSource.target.label));
           framed.appendChild(
-            buildCrop(image, zoomSource.target.zoom, [zoomSource], { extraClass: "dominant" })
+            buildCrop(image, zoomSource.target.zoom, cropTargets, { extraClass: "dominant" })
           );
           main.appendChild(framed);
           wrapB.appendChild(main);
