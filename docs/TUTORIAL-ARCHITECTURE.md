@@ -325,7 +325,7 @@ The fourteen IDs this section originally sketched were proven too coarse by the
 source reconciliation (ROLAND-SOURCE-MAP §5, Q5) and are **superseded**. The
 canonical registry now lives in:
 
-- **`js/hardware-targets.js`** — the registry itself: 86 targets plus the canonical
+- **`js/hardware-targets.js`** — the registry itself: 99 targets plus the canonical
   image registry (`images`: `top` = 3153 × 1339 top view, `rear` = 2520 × 371 rear
   panel; `defaultImageId: "top"`), loaded by `index.html` as a plain classic script
   and consumed by the reusable lesson renderer; tutorials and steps go on
