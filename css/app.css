@@ -221,6 +221,19 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .disp-line { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:20px; letter-spacing:1.5px; color:#ff5a4d; text-shadow:0 0 9px rgba(255,90,77,.55); line-height:1.45; }
 .disp-note { margin-top:6px; font-size:9.5px; font-weight:700; color:#a05a00; background:#fff4e5; border:1px solid #f0c98a; border-radius:5px; padding:2px 7px; text-align:center; }
 
+/* Per-image layout. The renderer tags the visual host with .vis-img-<id> and
+   each canvas with .img-<id>; layout adapts by image, never by target. The top
+   view keeps the rules above untouched. The rear image is a ~6.8:1 strip, so it
+   spans the column as context and the inset grows to keep the small connectors
+   and their printed legends readable. */
+.vis-img-rear .jdxi-canvas { width:100%; }
+.vis-img-rear .vis-stack { gap:26px; }
+.vis-img-rear .crop-frame.inset { height:340px; }
+
+/* Mixed-image step: explicit development/error state, never a silent guess. */
+.mixedimg { align-self:center; max-width:520px; display:flex; flex-direction:column; gap:6px; background:#fff1ef; border:1px solid #f2b8b4; border-radius:11px; padding:12px 14px; font-size:12px; line-height:1.4; color:#7a2420; }
+.mixedimg b { font-size:13px; }
+
 /* Off-image target: never fabricate a region - say so instead. */
 .offimg { position:absolute; left:22px; bottom:18px; max-width:300px; display:flex; flex-direction:column; gap:2px; background:#fff4e5; border:1px solid #f0c98a; border-radius:9px; padding:7px 10px; font-size:11px; color:#7a4400; }
 .offimg b { font-size:11.5px; }

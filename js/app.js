@@ -42,15 +42,19 @@
 
   /* ---------------------------------------------------------------- routing */
 
-  // Phase 4B routes only: the home screen and the development fixture. The
-  // production route catalog (levels, topics, canonical tutorials, favorites,
-  // progress, settings) is deliberately not implemented yet.
-  const DEV_FIXTURE_ID = 'renderer-demo';
-  const DEV_ROUTE = /^#dev\/lesson-renderer\/step\/(\d+)$/;
+  // Development routes only: the home screen and the two development
+  // fixtures (top-view renderer suite, rear-panel suite). The production route
+  // catalog (levels, topics, canonical tutorials, favorites, progress,
+  // settings) is deliberately not implemented yet.
+  const DEV_FIXTURES = {
+    'lesson-renderer': 'renderer-demo',
+    'rear-panel': 'rear-panel-demo',
+  };
+  const DEV_ROUTE = /^#dev\/(lesson-renderer|rear-panel)\/step\/(\d+)$/;
 
-  function fixture() {
+  function fixture(routeKey) {
     const all = window.JDXI_TUTORIAL_FIXTURES || {};
-    return all[DEV_FIXTURE_ID] || null;
+    return all[DEV_FIXTURES[routeKey]] || null;
   }
 
   /*
@@ -63,20 +67,21 @@
 
     const m = DEV_ROUTE.exec(hash);
     if (m) {
-      const tut = fixture();
+      const key = m[1];
+      const tut = fixture(key);
       if (!tut) return { view: 'home', redirect: '#home' };
-      const asked = parseInt(m[1], 10);
+      const asked = parseInt(m[2], 10);
       const total = tut.steps.length;
       if (!(asked >= 1 && asked <= total)) {
-        return { view: 'lesson', stepIndex: 0, redirect: '#dev/lesson-renderer/step/1' };
+        return { view: 'lesson', fixture: key, stepIndex: 0, redirect: stepHash(key, 1) };
       }
-      return { view: 'lesson', stepIndex: asked - 1 };
+      return { view: 'lesson', fixture: key, stepIndex: asked - 1 };
     }
     return { view: 'home', redirect: '#home' };
   }
 
-  function stepHash(n) {
-    return '#dev/lesson-renderer/step/' + n;
+  function stepHash(key, n) {
+    return '#dev/' + key + '/step/' + n;
   }
 
   function applyRoute() {
@@ -89,17 +94,20 @@
     }
 
     if (route.view === 'lesson') {
-      const tut = fixture();
+      const tut = fixture(route.fixture);
       showView('lesson');
       window.JDXI_LESSON_RENDERER.render({ tutorial: tut, stepIndex: route.stepIndex });
       current = route.stepIndex;
+      currentFixture = route.fixture;
     } else {
       showView('home');
       current = null;
+      currentFixture = null;
     }
   }
 
   let current = null;
+  let currentFixture = null;
 
   function go(hash) {
     if (window.location.hash === hash) applyRoute();
@@ -117,14 +125,14 @@
 
   backBtn.addEventListener('click', () => {
     if (current === null) return;
-    go(current === 0 ? '#home' : stepHash(current));
+    go(current === 0 ? '#home' : stepHash(currentFixture, current));
   });
 
   nextBtn.addEventListener('click', () => {
     if (current === null) return;
-    const tut = fixture();
+    const tut = fixture(currentFixture);
     const last = current === tut.steps.length - 1;
-    go(last ? '#home' : stepHash(current + 2));
+    go(last ? '#home' : stepHash(currentFixture, current + 2));
   });
 
   const R = window.JDXI_LESSON_RENDERER;

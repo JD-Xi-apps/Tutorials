@@ -7,6 +7,12 @@
  *
  * Coordinate contract (non-negotiable):
  *   - all hardware geometry comes from window.JDXI_HARDWARE_TARGETS;
+ *   - all hardware image metadata (path, natural size, alt) comes from
+ *     window.JDXI_HARDWARE_TARGETS.images; the renderer never hardcodes an
+ *     image path or a pixel dimension;
+ *   - a target's region/zoom are normalized against the image it references
+ *     (target.imageId, else the registry defaultImageId), so every crop and
+ *     highlight is computed per image;
  *   - normalized 0..1 values are converted to CSS percentages here and nowhere
  *     else;
  *   - no step, fixture, or stylesheet may carry coordinates;
@@ -19,14 +25,33 @@
 window.JDXI_LESSON_RENDERER = (function () {
   "use strict";
 
-  var IMG_SRC = "assets/images/JD-Xi.jpg";
-  var IMG_ALT =
-    "Roland JD-Xi synthesizer viewed from above, showing the control panel and keyboard";
-  var IMG_W = 3153;
-  var IMG_H = 1339;
-
   function registry() {
-    return window.JDXI_HARDWARE_TARGETS || { targets: {} };
+    return window.JDXI_HARDWARE_TARGETS || { targets: {}, images: {} };
+  }
+
+  /* ----------------------------------------------------------------- images */
+
+  /*
+   * Resolve an image id to its registry metadata { id, src, width, height,
+   * label, alt }, or null when the id is not registered. The id a target uses
+   * is target.imageId when present, else the registry defaultImageId.
+   */
+  function imageIdFor(target) {
+    return (target && target.imageId) || registry().defaultImageId || null;
+  }
+
+  function imageMeta(imageId) {
+    var images = registry().images || {};
+    var m = imageId ? images[imageId] : null;
+    if (!m || !m.src || !(m.width > 0) || !(m.height > 0)) return null;
+    return {
+      id: imageId,
+      src: m.src,
+      width: m.width,
+      height: m.height,
+      label: m.label || imageId,
+      alt: m.alt || "",
+    };
   }
 
   function pct(v) {
@@ -44,17 +69,22 @@ window.JDXI_LESSON_RENDERER = (function () {
 
   /*
    * Resolve a target id into a render-ready descriptor. Never invents geometry.
-   * Returns { id, target, state } where state is:
-   *   "ok"        - measurable region, safe to highlight
-   *   "off-image" - real target with no region in the top-view master; the
-   *                 caller must present an alternate visual (deferred)
-   *   "unknown"   - id not in the registry
+   * Returns { id, target, imageId, image, state } where state is:
+   *   "ok"            - measurable region on a registered image, safe to
+   *                     highlight
+   *   "off-image"     - real target with no region in any registered image;
+   *                     the caller must present an alternate visual
+   *   "unknown-image" - the target names an imageId the registry lacks
+   *   "unknown"       - id not in the registry
    */
   function resolveTarget(id) {
     var t = registry().targets[id];
-    if (!t) return { id: id, target: null, state: "unknown" };
-    if (!t.region) return { id: id, target: t, state: "off-image" };
-    return { id: id, target: t, state: "ok" };
+    if (!t) return { id: id, target: null, imageId: null, image: null, state: "unknown" };
+    if (!t.region) return { id: id, target: t, imageId: null, image: null, state: "off-image" };
+    var imageId = imageIdFor(t);
+    var image = imageMeta(imageId);
+    if (!image) return { id: id, target: t, imageId: imageId, image: null, state: "unknown-image" };
+    return { id: id, target: t, imageId: imageId, image: image, state: "ok" };
   }
 
   function resolveAll(ids) {
@@ -146,37 +176,67 @@ window.JDXI_LESSON_RENDERER = (function () {
   }
 
   /*
-   * Renders the "this target has no place on the top view" state instead of
-   * inventing a region. Nothing in the current fixture reaches this, but a
-   * future step referencing e.g. powerSwitch must degrade, not crash.
+   * Renders the "this target has no measurable place" state instead of
+   * inventing a region. No current fixture reaches this, but a step referencing
+   * a target with region: null, or a bad imageId, must degrade, not crash.
    */
   function offImageNotice(res) {
     var n = el("div", "offimg");
     var label = res.target ? res.target.label : res.id;
     n.appendChild(el("b", null, label));
+    var msg;
+    if (res.state === "unknown") msg = "Unknown hardware target — nothing rendered.";
+    else if (res.state === "unknown-image")
+      msg = "References unregistered image \"" + res.imageId + "\" — nothing rendered.";
+    else msg = "No measurable region in any registered hardware image. Needs an alternate visual.";
+    n.appendChild(el("span", null, msg));
+    return n;
+  }
+
+  /*
+   * Development/error state for a Step whose measurable targets resolve to
+   * more than one hardware image. The renderer neither picks one silently nor
+   * crashes: it says so. Real lessons use one Step per image (see
+   * docs/LESSON-RENDERER.md, same-image constraint).
+   */
+  function mixedImageNotice(measurable) {
+    var n = el("div", "mixedimg");
+    n.appendChild(el("b", null, "Mixed-image step — unsupported by the current renderer"));
+    var parts = measurable.map(function (r) {
+      return r.id + " → " + r.imageId;
+    });
     n.appendChild(
       el(
         "span",
         null,
-        res.state === "unknown"
-          ? "Unknown hardware target — nothing rendered."
-          : "Not visible on the top view. Needs an alternate visual (deferred)."
+        "All measurable hardware targets in one Step must resolve to the same image. Got: " +
+          parts.join(", ") +
+          ". Split the instruction into one Step per image."
       )
     );
     return n;
   }
 
-  /* ------------------------------------------------------- full instrument */
+  /* --------------------------------------------------------- hardware image */
 
-  function buildFullInstrument(resolved, opts) {
+  /*
+   * The full hardware image (top view, rear panel, ...) with highlights drawn
+   * in that image's own normalized coordinate system. `image` is resolved
+   * registry metadata; the canvas takes the image's true natural aspect so
+   * nothing is ever stretched to another view's shape.
+   */
+  function buildHardwareImage(image, resolved, opts) {
     opts = opts || {};
-    var canvas = el("div", "jdxi-canvas" + (opts.small ? " small" : ""));
-    canvas.style.aspectRatio = IMG_W + " / " + IMG_H;
+    var canvas = el(
+      "div",
+      "jdxi-canvas img-" + image.id + (opts.small ? " small" : "")
+    );
+    canvas.style.aspectRatio = image.width + " / " + image.height;
 
     var img = new Image();
     img.className = "jdxi-img";
-    img.src = IMG_SRC;
-    img.alt = opts.decorative ? "" : IMG_ALT;
+    img.src = image.src;
+    img.alt = opts.decorative ? "" : image.alt;
     if (opts.decorative) img.setAttribute("aria-hidden", "true");
     canvas.appendChild(img);
 
@@ -207,11 +267,12 @@ window.JDXI_LESSON_RENDERER = (function () {
   /* -------------------------------------------------------------- crop view */
 
   /*
-   * Exact normalized crop, generated at runtime from the master image. No
-   * derivative image files are created or committed.
+   * Exact normalized crop, generated at runtime from the referenced hardware
+   * image. No derivative image files are created or committed.
    *
-   * The frame is given the crop's true pixel aspect ratio, then the full master
-   * is scaled so the crop exactly fills the frame:
+   * The frame is given the crop's true pixel aspect ratio (using that image's
+   * natural dimensions), then the full image is scaled so the crop exactly
+   * fills the frame:
    *
    *   scaled image width  = frame width  / zoom.width
    *   scaled image height = frame height / zoom.height
@@ -220,15 +281,15 @@ window.JDXI_LESSON_RENDERER = (function () {
    * Percentage left/top resolve against frame width/height respectively, so the
    * mapping stays exact at any rendered size.
    */
-  function buildCrop(zoom, resolved, opts) {
+  function buildCrop(image, zoom, resolved, opts) {
     opts = opts || {};
     var frame = el("div", "crop-frame" + (opts.extraClass ? " " + opts.extraClass : ""));
-    frame.style.aspectRatio = zoom.width * IMG_W + " / " + zoom.height * IMG_H;
+    frame.style.aspectRatio = zoom.width * image.width + " / " + zoom.height * image.height;
 
     var inner = el("div", "crop-inner");
     var img = new Image();
     img.className = "crop-img";
-    img.src = IMG_SRC;
+    img.src = image.src;
     img.alt = "";
     img.setAttribute("aria-hidden", "true"); // the full view carries the description
     img.style.width = 100 / zoom.width + "%";
@@ -292,6 +353,33 @@ window.JDXI_LESSON_RENDERER = (function () {
       return r.state === "ok";
     });
 
+    /*
+     * Same-image rule: every measurable target in a Step must live on one
+     * hardware image. Mixed steps get an explicit notice, never a guess.
+     */
+    var imageIds = [];
+    measurable.forEach(function (r) {
+      if (imageIds.indexOf(r.imageId) < 0) imageIds.push(r.imageId);
+    });
+    if (imageIds.length > 1) {
+      host.classList.add("vis-mixed");
+      host.appendChild(mixedImageNotice(measurable));
+      problems.forEach(function (res) {
+        host.appendChild(offImageNotice(res));
+      });
+      return host;
+    }
+
+    // With no measurable target the default image still provides the anchor.
+    var image = measurable.length
+      ? measurable[0].image
+      : imageMeta(registry().defaultImageId);
+    if (!image) {
+      host.appendChild(offImageNotice({ id: "(default image)", target: null, imageId: registry().defaultImageId, state: "unknown-image" }));
+      return host;
+    }
+    host.classList.add("vis-img-" + image.id);
+
     // Prefer the first measurable target's zoom for inset/close-up modes.
     var zoomSource = measurable.filter(function (r) {
       return r.target.zoom;
@@ -300,12 +388,12 @@ window.JDXI_LESSON_RENDERER = (function () {
     switch (step.visualMode) {
       case "full-plus-inset": {
         var stackA = el("div", "vis-stack");
-        stackA.appendChild(buildFullInstrument(measurable));
+        stackA.appendChild(buildHardwareImage(image, measurable));
         if (zoomSource) {
           var insetWrap = el("div", "inset-wrap");
           insetWrap.appendChild(el("div", "vis-cap", "Magnified"));
           insetWrap.appendChild(
-            buildCrop(zoomSource.target.zoom, [zoomSource], { extraClass: "inset" })
+            buildCrop(image, zoomSource.target.zoom, [zoomSource], { extraClass: "inset" })
           );
           stackA.appendChild(insetWrap);
         }
@@ -322,7 +410,7 @@ window.JDXI_LESSON_RENDERER = (function () {
           // crop gets clipped by the frame's overflow.
           framed.appendChild(el("div", "vis-cap", zoomSource.target.label));
           framed.appendChild(
-            buildCrop(zoomSource.target.zoom, [zoomSource], { extraClass: "dominant" })
+            buildCrop(image, zoomSource.target.zoom, [zoomSource], { extraClass: "dominant" })
           );
           main.appendChild(framed);
           wrapB.appendChild(main);
@@ -330,7 +418,7 @@ window.JDXI_LESSON_RENDERER = (function () {
         var ctx = el("div", "closeup-ctx");
         ctx.appendChild(el("div", "vis-cap", "Where this is"));
         ctx.appendChild(
-          buildFullInstrument(measurable, {
+          buildHardwareImage(image, measurable, {
             small: true,
             labels: false,
             decorative: true,
@@ -354,18 +442,18 @@ window.JDXI_LESSON_RENDERER = (function () {
         if (dz) {
           var dwrap = el("div", "inset-wrap");
           dwrap.appendChild(el("div", "vis-cap", "On the instrument"));
-          dwrap.appendChild(buildCrop(dz.target.zoom, measurable, { extraClass: "inset" }));
+          dwrap.appendChild(buildCrop(image, dz.target.zoom, measurable, { extraClass: "inset" }));
           top.appendChild(dwrap);
         }
         stackC.appendChild(top);
-        stackC.appendChild(buildFullInstrument(measurable));
+        stackC.appendChild(buildHardwareImage(image, measurable));
         host.appendChild(stackC);
         break;
       }
 
       case "full":
       default:
-        host.appendChild(buildFullInstrument(measurable));
+        host.appendChild(buildHardwareImage(image, measurable));
         break;
     }
 
@@ -467,6 +555,7 @@ window.JDXI_LESSON_RENDERER = (function () {
     togglePanel: togglePanel,
     closePanel: closePanel,
     resolveTarget: resolveTarget,
+    resolveImage: imageMeta,
     _pct: pct,
   };
 })();

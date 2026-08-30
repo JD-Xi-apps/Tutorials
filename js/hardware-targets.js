@@ -5,8 +5,16 @@
  * canonical data-only hardware-target registry; it contains no rendering or
  * interaction behaviour of its own.
  *
+ * Image registry: the hardware is documented by more than one visual source.
+ * `images` is the single canonical place that knows each source's path,
+ * natural pixel size, label and alt text; nothing else may duplicate that
+ * metadata. `defaultImageId` names the image a target uses when it carries no
+ * imageId of its own (the top view - the normal visual anchor).
+ *
  * Coordinate system: every region and zoom is normalized 0..1 against the
- * authoritative top-view master image assets/images/JD-Xi.jpg (3153 x 1339).
+ * natural dimensions of the image the target references - the top-view master
+ * assets/images/JD-Xi.jpg (3153 x 1339) by default, or the rear-panel image
+ * assets/images/JD-Xi_R.jpg (2520 x 371) for targets with imageId "rear".
  * Never stage pixels, never browser pixels, never physical units.
  *
  * Shape of a target:
@@ -15,10 +23,13 @@
  *   panelLegend  what is physically printed on the instrument (null if nothing)
  *   kind         "button" | "knob" | "control" | "section" | "group" |
  *                "keys" | "display" | "off-image"
- *   region       { x, y, width, height } normalized, or null for a target
- *                not visible in the top-view master (kind "off-image")
+ *   imageId      optional id in `images`; absent/null means defaultImageId
+ *   region       { x, y, width, height } normalized within the referenced
+ *                image, or null for a target visible in no registered image
+ *                (kind "off-image")
  *   group        id of the parent target, or null
- *   zoom         optional normalized crop for close-up presentation, or null
+ *   zoom         optional normalized crop (same image) for close-up
+ *                presentation, or null
  *   notes        implementation notes, not lesson prose
  *
  * Regions are instructional hit/highlight boxes, not forensic object-detection
@@ -32,8 +43,23 @@
  */
 
 window.JDXI_HARDWARE_TARGETS = {
-  imageWidth: 3153,
-  imageHeight: 1339,
+  defaultImageId: "top",
+  images: {
+    top: {
+      src: "assets/images/JD-Xi.jpg",
+      width: 3153,
+      height: 1339,
+      label: "Top view",
+      alt: "Roland JD-Xi synthesizer viewed from above, showing the control panel and keyboard",
+    },
+    rear: {
+      src: "assets/images/JD-Xi_R.jpg",
+      width: 2520,
+      height: 371,
+      label: "Rear panel",
+      alt: "Roland JD-Xi rear panel, showing the connector strip",
+    },
+  },
   targets: {
     display: {
       label: "display",
@@ -735,23 +761,35 @@ window.JDXI_HARDWARE_TARGETS = {
       zoom: null,
       notes: "Enter+[Auto Note] toggles Chord Edit Switch on 1.50+ (v1.50 p.2).",
     },
-    powerSwitch: {
-      label: "POWER switch",
-      panelLegend: "POWER (rear legend printed on the top edge)",
-      kind: "off-image",
-      region: null,
+    rearPanel: {
+      label: "Rear panel",
+      panelLegend: null,
+      kind: "section",
+      imageId: "rear",
+      region: { x: 0.0635, y: 0.5553, width: 0.8714, height: 0.3881 },
       group: null,
       zoom: null,
-      notes: "On the rear panel (OM p.3 item 19); the authoritative master image is top-view only, so it has no honest top-view region. Needs a rear-panel photo or dedicated illustrated inset before it can be highlighted (source-map Q6).",
+      notes: "The recessed connector strip across the back of the instrument (OM p.3 rear panel). Image-level orientation target for rear-panel steps; measured on JD-Xi_R.jpg, excluding the case top and the knob silhouettes above the recess.",
+    },
+    powerSwitch: {
+      label: "POWER switch",
+      panelLegend: "POWER",
+      kind: "control",
+      imageId: "rear",
+      region: { x: 0.1889, y: 0.7116, width: 0.0222, height: 0.1024 },
+      group: "rearPanel",
+      zoom: { x: 0.1190, y: 0.4987, width: 0.1190, height: 0.4313 },
+      notes: "Slide switch on the rear panel (OM p.3 item 19), immediately right of DC IN. Region and zoom are normalized against the rear image (source-map Q6). The image is location evidence only; power-on/off procedure stays an official-document claim.",
     },
     dcInJack: {
       label: "DC IN jack",
-      panelLegend: "DC IN (rear legend printed on the top edge)",
-      kind: "off-image",
-      region: null,
-      group: null,
-      zoom: null,
-      notes: "Rear panel (OM p.3); same off-image rationale as powerSwitch (source-map Q6).",
+      panelLegend: "DC IN",
+      kind: "control",
+      imageId: "rear",
+      region: { x: 0.1476, y: 0.6846, width: 0.0190, height: 0.1563 },
+      group: "rearPanel",
+      zoom: { x: 0.1190, y: 0.4987, width: 0.1190, height: 0.4313 },
+      notes: "Barrel jack on the rear panel (OM p.3), between the cord hook and the POWER switch. Shares its zoom with powerSwitch so both legends are framed together. Adapter/voltage requirements are not established by the image (source-map Q6).",
     },
   },
 };

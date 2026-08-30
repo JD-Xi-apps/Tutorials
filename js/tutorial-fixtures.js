@@ -3,10 +3,15 @@
  *
  * THIS FILE CONTAINS NO CANONICAL TUTORIAL CONTENT.
  *
- * Everything here exists to exercise the renderer: one non-canonical fixture
- * whose id ("renderer-demo") deliberately does not match the canonical B##/N##/I##
- * scheme, so it can never be confused with a real tutorial, and can never be
- * picked up by the guided path or by a topic collection.
+ * Everything here exists to exercise the renderer: non-canonical fixtures
+ * whose ids ("renderer-demo", "rear-panel-demo") deliberately do not match the
+ * canonical B##/N##/I## scheme, so they can never be confused with a real
+ * tutorial, and can never be picked up by the guided path or by a topic
+ * collection.
+ *
+ *   renderer-demo    top-view regression suite: one step per visual mode
+ *   rear-panel-demo  rear-image rendering proof: POWER switch and DC IN jack,
+ *                    location only - no power-on/off or connection procedure
  *
  * No step below describes a real JD-Xi operation. Nothing here claims what the
  * instrument does, what its display shows, or what any control sounds like.
@@ -100,6 +105,44 @@ window.JDXI_TUTORIAL_FIXTURES = {
           "Renderer test: verified display strings will be supplied by later content work, not invented by the renderer.",
         checkpoint:
           "Renderer test: the preview is clearly marked synthetic and both targets are highlighted.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted area matches the label, then continue.",
+      },
+    ],
+  },
+
+  "rear-panel-demo": {
+    id: "rear-panel-demo",
+    canonical: false,
+    title: "Rear-panel renderer test fixture",
+    shortTitle: "Rear panel test",
+    summary:
+      "Engineering fixture that proves the renderer can select and crop the rear-panel hardware image. Not a tutorial.",
+    steps: [
+      {
+        id: "r1",
+        title: "Rear image: full-plus-inset",
+        instruction: "Renderer test: locate the POWER switch on the rear panel.",
+        detail:
+          "This step exercises rear-image resolution. The target carries imageId \"rear\", so the renderer shows the full rear strip as context and generates the magnified inset from the same rear image. Location test only.",
+        hardwareTargets: ["powerSwitch"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: the highlight sits on the small slide switch beside DC IN, in both the full strip and the inset.",
+        recoveryHelp:
+          "Renderer test: confirm the highlighted area matches the label, then continue.",
+        nextHint: "Next: the DC IN jack on the same rear image.",
+      },
+      {
+        id: "r2",
+        title: "Rear image: full-plus-inset",
+        instruction: "Renderer test: locate the DC IN jack on the rear panel.",
+        detail:
+          "This step exercises a second rear-image target sharing the same zoom crop. Location test only; nothing here describes connecting or powering the instrument.",
+        hardwareTargets: ["dcInJack"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "Renderer test: the highlight sits on the round barrel jack left of the POWER switch, in both the full strip and the inset.",
         recoveryHelp:
           "Renderer test: confirm the highlighted area matches the label, then continue.",
       },

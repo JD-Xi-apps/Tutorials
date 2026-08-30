@@ -686,14 +686,24 @@ hardware.*
 buttons are sixteen individual targets in a `favoritePatternRow` group that is
 deliberately **not** a child of `patternSequencerSection`, matching the panel; and every
 missing control tabled in §5.2 that is visible in the top view is defined and measured.
-Rear-panel items are registered off-image without fabricated coordinates (Q6 remains
-open for how to *show* them).
+Rear-panel items were registered off-image without fabricated coordinates until the
+rear-panel image arrived (see Q6).
 
-**Q6 — The rear panel cannot be shown.** The [POWER] switch and DC IN jack are on the rear
-(OM p.3), and the master image is a top view. B01 and B02 both need them. Options include a
-second image, an illustrated inset, or wording the step so it needs no highlight. All three
-have baseline consequences (`DESIGN-RULES.md` §5), so this is not ours to decide. *Product
-decision.*
+**Q6 — The rear panel cannot be shown.** ✅ **RESOLVED (visual) — Phase 4C.** The
+[POWER] switch and DC IN jack are on the rear (OM p.3), and the original master image is
+a top view. The repository now contains an owner-supplied rear-panel visual asset,
+`assets/images/JD-Xi_R.jpg` (2520 × 371), registered as image `rear` in the canonical
+hardware registry alongside the top view. `powerSwitch` and `dcInJack` are measured and
+highlightable on it (`HARDWARE-TARGETS.md` §5, §7), and the lesson renderer selects the
+rear image automatically when a step's target lives there. B01/B02 can therefore show
+where these controls are.
+
+Scope of the resolution: the asset is **location/visual evidence only**. It has not been
+established to be a photograph of the owner's own physical unit, and it proves nothing
+about power-on order, adapter/voltage requirements, connection sequence or operating
+procedure — those remain official-document claims to be verified when B01/B02 are
+authored. Other rear connectors (USB, MIDI, outputs, phones, pedal) are visible but
+unregistered until a canonical tutorial needs them.
 
 **Q7 — "Keyboard" is ambiguous on this instrument.** ✅ **RESOLVED — PM decision.**
 Learner-facing terminology for the playable keyboard: **the keys** (target label
@@ -753,5 +763,9 @@ never states the boxed-legend convention (Q3).
 > (`js/hardware-targets.js` + [`HARDWARE-TARGETS.md`](HARDWARE-TARGETS.md)), the §5.2
 > targets are defined and grouped there, and Q1, Q2, Q5, Q7, Q9 and Q12 are resolved
 > in §12 above. Q3, Q4, Q6, Q8, Q10, Q11 and Q13 remain open.
+>
+> **Phase 4C postscript:** Q6 is resolved on the visual side — a rear-panel image is
+> registered and `powerSwitch`/`dcInJack` are measured on it. Q3, Q4, Q8, Q10, Q11 and
+> Q13 remain open.
 - Whether Vocoder/Auto Pitch gets canonical tutorials.
 - The Novice capstone question (architecture §4).

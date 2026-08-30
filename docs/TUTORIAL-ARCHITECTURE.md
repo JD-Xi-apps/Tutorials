@@ -57,9 +57,12 @@ These are the load-bearing rules. Changing any of them is a redesign, not a revi
    recommended-next lists are all *references*, never copies.
 2. **One reusable lesson renderer; tutorials are primarily data.** Adding a tutorial
    must not mean writing a new screen.
-3. **One reusable hardware-target registry.** Tutorials reference target IDs.
-4. **Hardware geometry is image-relative**, in the authoritative 3153 × 1339 master
-   image coordinate system. Never stage-space pixels.
+3. **One reusable hardware-target registry.** Tutorials reference target IDs. The
+   registry may hold more than one hardware image (top view, rear panel); each target
+   names the image it lives on.
+4. **Hardware geometry is image-relative**, normalized within the coordinate system of
+   the image the target references — the authoritative 3153 × 1339 top-view master by
+   default. Never stage-space pixels.
 5. **The full instrument is the normal visual anchor.** Zoomed views are the exception
    and must earn their place.
 6. **Menu navigation is unusually explicit.** For beginners, "open the settings" is a
@@ -297,8 +300,12 @@ HardwareTarget
                 required to be identical to the printed legend
   panelLegend   exact wording/symbols physically printed on the instrument, if any
   kind          button | knob | control | section | group | keys | display | off-image
-  region        normalized image-relative geometry, or null for an off-image target
-  zoom          optional normalized crop for magnified presentation
+  imageId       optional ID of the hardware image the target lives on; omitted means
+                the registry's default image (the top view)
+  region        normalized geometry within the referenced image, or null for an
+                off-image target
+  zoom          optional normalized crop, within the same image, for magnified
+                presentation
   group         optional parent target ID
   notes         concise implementation caveats; not lesson prose
 ```
@@ -318,10 +325,11 @@ The fourteen IDs this section originally sketched were proven too coarse by the
 source reconciliation (ROLAND-SOURCE-MAP §5, Q5) and are **superseded**. The
 canonical registry now lives in:
 
-- **`js/hardware-targets.js`** — the registry itself: 85 targets, normalized
-  against the 3153 × 1339 master, loaded by `index.html` as a plain classic
-  script and consumed by the reusable lesson renderer; tutorials and steps go on
-  referencing target IDs rather than coordinates;
+- **`js/hardware-targets.js`** — the registry itself: 86 targets plus the canonical
+  image registry (`images`: `top` = 3153 × 1339 top view, `rear` = 2520 × 371 rear
+  panel; `defaultImageId: "top"`), loaded by `index.html` as a plain classic script
+  and consumed by the reusable lesson renderer; tutorials and steps go on
+  referencing target IDs rather than coordinates or images;
 - **`docs/HARDWARE-TARGETS.md`** — its human-readable reconciliation and the
   measurement record.
 
@@ -332,15 +340,20 @@ The canonical JS registry implements this full schema. Properties worth naming:
   introducing the panel and the single button when asking for a press. The same
   applies to Cursor, Program Value, Tone, Octave, the step buttons, FILTER,
   AMP/ENV, LFO and EFFECTS.
-- **Off-image targets may exist without coordinates.** Rear-panel controls
-  (`powerSwitch`, `dcInJack`) are registered with `region: null` rather than
-  fabricated top-view geometry.
+- **Multiple visual sources coexist in one registry.** Rear-panel controls
+  (`powerSwitch`, `dcInJack`, grouped under `rearPanel`) are measured on the rear
+  image and carry `imageId: "rear"`; every top-view target simply omits `imageId`.
+  A step references IDs only and never says which image to show — the target does.
+- **Off-image targets may exist without coordinates.** A target that no registered
+  image can show is registered with `region: null` rather than fabricated geometry
+  (none exist since the rear image was added).
 
 ### Geometry rules
 
 - Geometry is expressed as **normalized image-relative values** — percentages of the
-  master image, exactly as the five home-screen regions already are. It is never
-  expressed in stage-space pixels, so a target stays attached at any rendered size.
+  image the target references, exactly as the five home-screen regions already are
+  for the top view. It is never expressed in stage-space pixels, so a target stays
+  attached at any rendered size. `region` and `zoom` are always in the same image.
 - `zoom` metadata describes how to present the target magnified: which area to frame
   and how tightly. It is optional; targets that are always legible at full size do not
   need it.
@@ -376,7 +389,9 @@ Regions:
 - tutorial title and progress;
 - primary instruction panel;
 - the JD-Xi visual stage:
-  - full instrument by default,
+  - full instrument by default — the top view for normal front-panel lessons; the
+    renderer shows the rear-panel image instead when the step's target lives there
+    (one image per step; see `LESSON-RENDERER.md`),
   - highlighted hardware target(s),
   - leader lines / callouts,
   - optional magnified inset for dense controls or menu navigation,

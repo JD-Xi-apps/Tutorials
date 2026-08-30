@@ -24,16 +24,20 @@ Load order matters and is fixed in `index.html`: registry → fixtures → rende
 Classic scripts only — no modules, no `fetch`, no bundler, no network. The app runs
 from `file://`.
 
-## Development fixture
+## Development fixtures
 
-Route: `#dev/lesson-renderer/step/1` … `/step/4`.
+| Fixture id | Route | Purpose |
+|---|---|---|
+| `renderer-demo` | `#dev/lesson-renderer/step/1` … `/step/4` | Top-view suite: one step per visual mode. The regression baseline for the top image. |
+| `rear-panel-demo` | `#dev/rear-panel/step/1` … `/step/2` | Rear-image proof: `powerSwitch`, then `dcInJack`, both `full-plus-inset`. |
 
-Id `renderer-demo` is deliberately outside the canonical `B##`/`N##`/`I##` scheme, so
-it cannot be mistaken for a tutorial or picked up by the guided path or a collection.
-The lesson view carries a permanent **DEVELOPMENT FIXTURE — NOT A TUTORIAL** badge.
+Both ids are deliberately outside the canonical `B##`/`N##`/`I##` scheme, so they
+cannot be mistaken for a tutorial or picked up by the guided path or a collection. The
+lesson view carries a permanent **DEVELOPMENT FIXTURE — NOT A TUTORIAL** badge.
 
-Four steps, one per visual mode. No step describes a real JD-Xi operation; the display
-preview text is synthetic and labelled as such.
+No step describes a real JD-Xi operation; the display preview text is synthetic and
+labelled as such, and the rear steps are location tests only — they never tell the
+learner to power the instrument on or off, or to connect anything.
 
 ## Data flow
 
@@ -42,16 +46,47 @@ Step.hardwareTargets: ["menuWriteButton"]
         |
         v
 window.JDXI_HARDWARE_TARGETS.targets.menuWriteButton
-        |  .region  { x, y, width, height }  normalized 0..1
-        |  .zoom    { x, y, width, height }  normalized 0..1
+        |  .imageId  (absent -> registry.defaultImageId, i.e. "top")
+        |  .region   { x, y, width, height }  normalized 0..1 within that image
+        |  .zoom     { x, y, width, height }  normalized 0..1 within that image
+        v
+window.JDXI_HARDWARE_TARGETS.images[imageId]
+        |  .src .width .height .label .alt
         v
 renderer converts normalized -> CSS percentage, once, in one place
         v
 overlay positioned inside the image-relative coordinate container
 ```
 
-`resolveTarget(id)` returns `{ id, target, state }` with state `ok`, `off-image`, or
-`unknown`. Nothing else in the renderer touches the registry.
+`resolveTarget(id)` returns `{ id, target, imageId, image, state }` with state `ok`,
+`off-image` (region null), `unknown-image` (imageId not in the registry), or `unknown`
+(id not in the registry). `resolveImage(imageId)` returns the image metadata or null.
+Nothing else in the renderer touches the registry.
+
+## Image resolution
+
+The renderer holds **no image path and no pixel dimension**. Every hardware image —
+the top view and the rear panel alike — is described once in
+`JDXI_HARDWARE_TARGETS.images` and resolved from there:
+
+1. resolve every id in `hardwareTargets[]`;
+2. each measurable target's image is `target.imageId`, else `defaultImageId`;
+3. the image's `src`, `width`, `height` and `alt` come from `images[imageId]`;
+4. the full view and every crop are drawn in that image's coordinate system.
+
+The full-view canvas takes the image's own natural aspect (`width / height`), so the
+2520 × 371 rear strip is never stretched to the top view's shape. The renderer tags the
+visual host with `vis-img-<imageId>` and each canvas with `img-<imageId>`; CSS adapts
+layout per image, never per target (for the rear strip: full column width, a taller
+inset, wider stack gap). Top-view rendering is pixel-identical to Phase 4B.
+
+### Same-image constraint (current renderer)
+
+All **measurable** targets in one Step must resolve to the same image id. That is a
+constraint of this renderer, not of the registry. A Step mixing images (say
+`powerSwitch` + `menuWriteButton`) does not crash and does not silently pick one image:
+it renders an explicit *Mixed-image step — unsupported* notice listing each target and
+its image. Real lessons use one Step per image, which is the better instruction anyway.
 
 ## Coordinate rules
 
@@ -74,14 +109,15 @@ overlay positioned inside the image-relative coordinate container
 
 ## Crop generation
 
-Insets and close-ups are generated **at runtime from the master image**. No cropped
-derivative files exist or are committed.
+Insets and close-ups are generated **at runtime from the referenced hardware image**.
+No cropped derivative files exist or are committed.
 
-Given a normalized `zoom`, the frame takes the crop's true pixel aspect ratio and the
-master is scaled so the crop exactly fills it:
+Given a normalized `zoom` and the resolved image's natural `image.width` /
+`image.height`, the frame takes the crop's true pixel aspect ratio and the image is
+scaled so the crop exactly fills it — the same formulas for every image:
 
 ```
-frame aspect  = (zoom.width * 3153) / (zoom.height * 1339)
+frame aspect  = (zoom.width * image.width) / (zoom.height * image.height)
 image width   = 100 / zoom.width   %      (of frame width)
 image height  = 100 / zoom.height  %      (of frame height)
 image left    = -(zoom.x / zoom.width)  * 100 %
@@ -117,13 +153,14 @@ over the other's control. A flip is kept only if it reduces collisions.
 Labels are placed outside a dominant close-up crop as a caption, because a label
 positioned inside the crop is clipped by the frame's `overflow: hidden`.
 
-## Off-image targets
+## Off-image, unknown and bad-image targets
 
-Some registry entries (`powerSwitch`, `dcInJack`) have `region: null` — they are not
-visible in the top view. The renderer **never invents a region**. It resolves them to
-state `off-image` and renders an explicit notice that an alternate visual is required.
-Unknown ids resolve to `unknown` and render a notice rather than throwing. No current
-fixture step reaches either path; both are covered by test.
+The renderer **never invents a region**. A registry entry with `region: null` resolves
+to state `off-image` and renders an explicit notice that an alternate visual is
+required (no current target is in that state — `powerSwitch` and `dcInJack` moved to
+the rear image in Phase 4C). Unknown ids resolve to `unknown`, and a target naming an
+unregistered `imageId` resolves to `unknown-image`; each renders a notice rather than
+throwing. No fixture step reaches these paths; all three are covered by test.
 
 ## View switching
 
@@ -145,8 +182,9 @@ Hash routing, so direct links and Back/Forward work from `file://` with no serve
 | Route | Result |
 |---|---|
 | *(empty)*, `#home` | Home |
-| `#dev/lesson-renderer/step/1..4` | Fixture step |
-| out-of-range step | replaced with step 1 |
+| `#dev/lesson-renderer/step/1..4` | Top-view fixture step |
+| `#dev/rear-panel/step/1..2` | Rear-panel fixture step |
+| out-of-range step (either fixture) | replaced with step 1 of that fixture |
 | anything else | replaced with `#home` |
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
@@ -159,5 +197,7 @@ and Back write the hash, so browser history follows step navigation naturally.
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
   emulator;
-- a rear-panel visual for off-image targets;
+- Steps that mix hardware images (same-image constraint above);
+- rear connectors beyond POWER and DC IN — added to the registry only when a canonical
+  tutorial needs them;
 - Favorites, My Progress, Settings views.

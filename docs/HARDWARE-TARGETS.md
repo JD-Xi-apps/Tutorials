@@ -31,18 +31,40 @@ This registry supersedes the fourteen-ID placeholder list that architecture §8
 carried; that list was proven too coarse by the source reconciliation
 (ROLAND-SOURCE-MAP §5.2, Q5).
 
-## 2. Coordinate system
+## 2. Image registry and coordinate system
 
-All geometry is normalized 0..1 against the authoritative top-view master image:
+Since Phase 4C the registry documents the hardware from **two visual sources**, held
+in one canonical image registry, `JDXI_HARDWARE_TARGETS.images`. Nothing else in the
+application duplicates this metadata — the renderer reads path, size and alt text
+from here.
 
-- `assets/images/JD-Xi.jpg`, **3153 × 1339** (verified with `sips` before measuring)
-- `region: { x, y, width, height }` — fractions of image width/height
+| Image ID | Source | Natural size | Label | Role |
+|---|---|---|---|---|
+| `top` | `assets/images/JD-Xi.jpg` | **3153 × 1339** | Top view | default image (`defaultImageId: "top"`); the normal visual anchor |
+| `rear` | `assets/images/JD-Xi_R.jpg` | **2520 × 371** | Rear panel | owner-supplied repository asset; connector strip, POWER switch, DC IN |
+
+Every target references exactly one image: its optional `imageId`, or the registry
+`defaultImageId` when absent/null. The 83 top-view targets carry **no** `imageId` —
+the default exists precisely so their data stayed untouched.
+
+All geometry is normalized 0..1 **against the natural dimensions of the image the
+target references**, not against a global master:
+
+- `region: { x, y, width, height }` — fractions of that image's width/height
+- `zoom` — a crop in the same image's coordinate system
 - never stage pixels, never browser pixels, never physical units
-- values are stored at 4 decimal places (≈ 0.3 px of the master at full size —
-  well inside the blur radius of the photograph, so repeated rendering cannot drift)
+- values are stored at 4 decimal places (≈ 0.3 px of the top master, ≈ 0.25 px of the
+  rear image at full size — well inside the blur radius of either photograph)
 
-A target that is not visible in the top-view master has `region: null` and
-`kind: "off-image"` — see §7.
+A target visible in no registered image would have `region: null` and
+`kind: "off-image"`. As of Phase 4C there are none — see §7.
+
+The rear asset was validated read-only before use: 2520 × 371, 79,049 bytes, SHA-256
+`c041233eb4c1f24f00dd176c621b6b719a0c572ad1a2983ab7e26136074fa868`, complete JPEG
+(SOI/EOI intact). It is an owner-supplied repository visual asset; it has not been
+established to be a photograph of the owner's own physical unit, and it is treated as
+location evidence only — control identity and terminology still come from the Roland
+source map.
 
 ## 3. Target schema
 
@@ -51,9 +73,10 @@ id           permanent internal identifier (never reused, never renumbered)
 label        preferred learner-facing wording
 panelLegend  what the learner physically sees printed on the instrument (null if nothing)
 kind         button | knob | control | section | group | keys | display | off-image
-region       normalized geometry, or null for off-image targets
-group        optional parent target id
-zoom         optional normalized crop for later lesson inset use
+imageId      optional image id (§2); absent/null = the registry default image (top)
+region       normalized geometry within the referenced image, or null for off-image targets
+group        optional parent target id (a child references the same image as its parent)
+zoom         optional normalized crop, within the same image, for inset/close-up use
 notes        concise implementation information, not lesson prose
 ```
 
@@ -103,12 +126,49 @@ Repeatable, and repeated until the overlay was clean:
    exactly as the app one day will, via a classic `<script src>` from `file://`)
    checked every structural invariant in §8.
 
+### Rear-panel measurement (Phase 4C)
+
+The same method, applied to `assets/images/JD-Xi_R.jpg` at its native 2520 × 371:
+
+1. Verified the asset's dimensions, byte size, hash and JPEG completeness (§2).
+2. Rendered gridded, pixel-exact (`image-rendering: pixelated`) crops of the left
+   connector area at 3× and 6× with labeled 10 px / 50 px source-pixel gridlines, and
+   read the bounding boxes off the grid.
+3. Converted to normalized values against 2520 / 371, 4 decimals.
+4. Rendered an overlay page placing every rear box as a percent-positioned element over
+   the full rear image and inspected it at magnification; the boxes sit on the physical
+   slide switch and barrel jack, and the shared zoom frames both together with their
+   printed `DC IN` / `POWER` legends.
+5. Rendered the rear development fixture in the real application at 1440 × 900,
+   1280 × 720, 1000 × 700 and 1920 × 1080 and confirmed the highlight and inset stay
+   attached at every size.
+
+Measured values (source px on the rear image → normalized):
+
+| ID | Kind | Group | Panel legend | Source-pixel box (x0,y0 → x1,y1) | Normalized region (x, y, w, h) |
+|---|---|---|---|---|---|
+| `rearPanel` | section | — | — | 160,206 → 2356,350 | 0.0635, 0.5553, 0.8714, 0.3881 |
+| `dcInJack` | control | `rearPanel` | DC IN | 372,254 → 420,312 | 0.1476, 0.6846, 0.0190, 0.1563 |
+| `powerSwitch` | control | `rearPanel` | POWER | 476,264 → 532,302 | 0.1889, 0.7116, 0.0222, 0.1024 |
+
+Shared zoom for `dcInJack` and `powerSwitch`: source 300,185 → 600,345 → normalized
+`{ x: 0.1190, y: 0.4987, width: 0.1190, height: 0.4313 }` (crop aspect ≈ 1.87:1), framing
+both connectors and the legends printed above them.
+
+`rearPanel` is the recessed connector strip only. The JPEG also shows the case top, the
+knob silhouettes and white background at the lower corners; those are not panel
+hardware, so the region was measured rather than set to the full image.
+
+The top-view measurement record above was not touched: before and after Phase 4C the
+ordered `region`/`zoom` data of all 83 top-view targets was extracted programmatically
+and compared byte-for-byte — identical. No top-view control was remeasured.
+
 Measurement/debug scripts and screenshots lived in the session scratchpad and are
 **not** committed.
 
 ## 6. Registry inventory
 
-85 targets. Hierarchy (children indented under their `group`):
+86 targets. Hierarchy (children indented under their `group`):
 
 ```
 Display / navigation          Sound shaping
@@ -152,9 +212,10 @@ Arpeggiator                       favoriteButton
   arpeggioSection                 stepButtons
     arpeggioOnButton                stepButton01 … stepButton16
     keyHoldButton
-                              Keys        Mic / voice      Rear (off-image)
-                                keys        micJack          powerSwitch
-                                            autoNoteButton   dcInJack
+                              Keys        Mic / voice      Rear panel (imageId "rear")
+                                keys        micJack          rearPanel
+                                            autoNoteButton     dcInJack
+                                                               powerSwitch
 ```
 
 Structural notes:
@@ -258,24 +319,36 @@ Structural notes:
 | `keys` | keys | — | drum instrument names BD1..OTHER2 pri… | 545,788 → 2965,1258 | 0.1729, 0.5885, 0.7675, 0.3510 |
 | `micJack` | control | — | MIC (See Owner's Manual) | 118,132 → 262,298 | 0.0374, 0.0986, 0.0457, 0.1240 |
 | `autoNoteButton` | button | — | Auto Note | 156,417 → 214,487 | 0.0495, 0.3114, 0.0184, 0.0523 |
-| `powerSwitch` | off-image | — | POWER (rear legend printed on the top… | — | — (`region: null`) |
-| `dcInJack` | off-image | — | DC IN (rear legend printed on the top… | — | — (`region: null`) |
+| `rearPanel` | section (rear) | — | — | rear 160,206 → 2356,350 | 0.0635, 0.5553, 0.8714, 0.3881 |
+| `dcInJack` | control (rear) | `rearPanel` | DC IN | rear 372,254 → 420,312 | 0.1476, 0.6846, 0.0190, 0.1563 |
+| `powerSwitch` | control (rear) | `rearPanel` | POWER | rear 476,264 → 532,302 | 0.1889, 0.7116, 0.0222, 0.1024 |
 
-Labels, zoom crops and per-target notes live in the registry file itself.
+The three rows marked *(rear)* are normalized against the 2520 × 371 rear image; every
+other row is normalized against the 3153 × 1339 top view. Labels, zoom crops and
+per-target notes live in the registry file itself.
 
-## 7. Off-image targets
+## 7. Rear-panel targets (formerly off-image)
 
-`powerSwitch` and `dcInJack` are on the rear panel (OM p.3). The authoritative
-current master image is a top view and physically cannot show them, so they carry
-`kind: "off-image"` and `region: null` — **no coordinates were fabricated**. Their
-rear-panel legends happen to be printed along the top edge of the instrument and are
-faintly visible in the master, but a legend is not the control, and highlighting it
-would point the learner at the wrong physical place.
+`powerSwitch` and `dcInJack` are on the rear panel (OM p.3 item 19 / p.3). Through
+Phase 4B they were registered as `kind: "off-image"` with `region: null` because the
+only image was a top view — no coordinates were ever fabricated, and their legends
+faintly visible along the top edge of the top view were deliberately not used as
+stand-ins for the controls.
 
-Before these can be highlighted, a future phase needs a rear-panel photograph or a
-dedicated illustrated inset — a product decision recorded as ROLAND-SOURCE-MAP Q6,
-which this registry does not resolve. The top-view master image was not changed and
-no artificial rear panel was generated.
+Phase 4C added the rear image to the registry and measured both controls on it, so
+they are now ordinary measurable `control` targets with `imageId: "rear"`, grouped
+under the new `rearPanel` section target. Their IDs are unchanged, so any future step
+referencing them needs no edit. The `off-image` kind stays in the schema for any
+future target that no registered image can show; no current target uses it.
+
+What the rear image does **not** establish: power-on order, voltage/adapter
+requirements, connection sequence, or any operating procedure. Those remain
+official-document claims for the B01/B02 authoring phase (ROLAND-SOURCE-MAP Q6).
+
+Rendering note: a Step whose measurable targets span both images is refused by the
+current renderer with an explicit notice. That is a **renderer** constraint, not a
+registry one — the registry happily holds both images, and a lesson simply uses one
+Step per image (which is the better pedagogy anyway).
 
 ## 8. Verification results
 
@@ -284,13 +357,18 @@ Validated against the committed `js/hardware-targets.js` in a real browser conte
 
 | Check | Result |
 |---|---|
-| Total targets | 85 |
-| All measurable targets have regions | ✓ (83 regions; 2 off-image nulls) |
-| Every region within 0..1, positive width/height, inside the image | ✓ |
+| Total targets | 86 (83 top + 3 rear) |
+| All measurable targets have regions | ✓ (86 regions; 0 off-image nulls) |
+| Every region within 0..1, positive width/height, inside its image | ✓ |
+| `defaultImageId` resolves; image IDs unique; every image has src/width/height | ✓ |
+| Every target `imageId` (explicit or default) resolves | ✓ |
+| Every child references the same image as its `group` | ✓ |
+| Top-view `region`/`zoom` data numerically identical before/after Phase 4C | ✓ 83/83 |
+| `powerSwitch`, `dcInJack` resolve to `rear`, no stale `off-image` kind | ✓ |
 | Step buttons | ✓ 16/16 individually measured |
 | Part Select buttons individually present | ✓ 4/4 |
 | Tone vs Program Value distinct | ✓ |
-| Rear-panel targets have no fake coordinates | ✓ |
+| Rear-panel targets measured on the rear image, not guessed | ✓ |
 | Target IDs unique | ✓ |
 | All `group` references resolve | ✓ |
 | Every child within (≤ 12 px overhang tolerance) its group's box | ✓ |
@@ -302,5 +380,6 @@ Validated against the committed `js/hardware-targets.js` in a real browser conte
 - Highlight rendering, leader lines, and the zoom UI (lesson-screen phase).
 - Learner-facing wording beyond the recorded `label` values; in particular the
   Pitch/Mod wording question (Q8) stays open and both targets carry neutral labels.
-- The boxed-legend hypothesis (Q3), display character dimensions (Q4), and the
-  rear-panel presentation (Q6).
+- The boxed-legend hypothesis (Q3) and display character dimensions (Q4).
+- Rear connectors beyond POWER and DC IN (USB, MIDI, outputs, phones, pedal…): not
+  registered until a canonical tutorial needs them.
