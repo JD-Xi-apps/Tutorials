@@ -14,13 +14,15 @@ registry, and about nothing else.
 | File | Role |
 |---|---|
 | `js/hardware-targets.js` | Canonical target registry. **Loaded, never edited by the renderer.** |
+| `js/tutorials.js` | `window.JDXI_TUTORIALS` — canonical learner-facing tutorials (currently B01). Source record per tutorial in `docs/tutorials/`. |
 | `js/tutorial-fixtures.js` | Development fixture only. No canonical content. |
 | `js/lesson-renderer.js` | `window.JDXI_LESSON_RENDERER` — builds the lesson view from a Step. |
 | `js/app.js` | Stage fitting (unchanged) plus the hash router. |
 | `index.html` | Both views inside the one stage; static lesson skeleton the renderer fills. |
 | `css/app.css` | Lesson styles appended below a banner. Nothing above it was modified. |
 
-Load order matters and is fixed in `index.html`: registry → fixtures → renderer → app.
+Load order matters and is fixed in `index.html`: registry → tutorials → fixtures →
+renderer → app.
 Classic scripts only — no modules, no `fetch`, no bundler, no network. The app runs
 from `file://`.
 
@@ -32,8 +34,25 @@ from `file://`.
 | `rear-panel-demo` | `#dev/rear-panel/step/1` … `/step/6` | Complete rear-panel visual verification tour: orientation (`rearPanel`, `full`), then the power, computer/MIDI, input, output and utility clusters (`full-plus-inset`, several same-image targets per step). |
 
 Both ids are deliberately outside the canonical `B##`/`N##`/`I##` scheme, so they
-cannot be mistaken for a tutorial or picked up by the guided path or a collection. The
-lesson view carries a permanent **DEVELOPMENT FIXTURE — NOT A TUTORIAL** badge.
+cannot be mistaken for a tutorial or picked up by the guided path or a collection.
+
+## Lesson badge
+
+The badge above the lesson title (`#lsn-badge`) is renderer-aware. The router tells
+`render()` whether it is drawing a canonical tutorial (`canonical: true`) or a
+development fixture (default). A fixture keeps the exact **DEVELOPMENT FIXTURE — NOT
+A TUTORIAL** text and warning styling; a canonical tutorial shows its level and
+guided-path position derived from the Tutorial object (B01 → **BEGINNER • TUTORIAL
+1**) with the `.canonical` modifier. Fixture rendering is pixel-identical to before the
+badge became dynamic.
+
+## Canonical tutorials
+
+`js/tutorials.js` holds the real tutorials, keyed by permanent ID. The first
+production canonical route is **`#tutorial/B01`** (B01 *Meet your JD-Xi*, 10 steps),
+launched from the home screen's Beginner tile. Tutorials use the same renderer and
+the same Step shape as the fixtures; nothing tutorial-specific lives in
+`lesson-renderer.js`.
 
 No step describes a real JD-Xi operation; the display preview text is synthetic and
 labelled as such, and the rear steps are location tests only — they never tell the
@@ -78,7 +97,13 @@ The full-view canvas takes the image's own natural aspect (`width / height`), so
 2520 × 371 rear strip is never stretched to the top view's shape. The renderer tags the
 visual host with `vis-img-<imageId>` and each canvas with `img-<imageId>`; CSS adapts
 layout per image, never per target (for the rear strip: full column width, a taller
-inset, wider stack gap). Top-view rendering is pixel-identical to Phase 4B.
+inset, wider stack gap).
+
+Renderer output is a pure function of the registry: the Phase 5A re-measurement of four
+section boxes and `masterVolumeKnob` (HARDWARE-TARGETS §8) changed
+`#dev/lesson-renderer/step/3`, which renders `effectsSection` as a close-up. That is the
+coordinate rule working as intended — a corrected box fixes every view at once — not a
+renderer change. The other nine fixture steps stay byte-identical.
 
 ### Same-image constraint (current renderer)
 
@@ -194,18 +219,25 @@ Hash routing, so direct links and Back/Forward work from `file://` with no serve
 | Route | Result |
 |---|---|
 | *(empty)*, `#home` | Home |
+| `#tutorial/<id>` | Canonical tutorial `<id>` (resolved in `window.JDXI_TUTORIALS`), step 1 |
+| `#tutorial/<id>/step/<n>` | Canonical tutorial, step *n* |
 | `#dev/lesson-renderer/step/1..4` | Top-view fixture step |
 | `#dev/rear-panel/step/1..6` | Rear-panel fixture step |
-| out-of-range step (either fixture) | replaced with step 1 of that fixture |
-| anything else | replaced with `#home` |
+| out-of-range step (tutorial or fixture) | replaced with step 1 (`#tutorial/<id>` / fixture step 1) |
+| unknown tutorial id, `#tutorial/<id>/anything-else`, anything else | replaced with `#home` |
+
+The router is generic: a new canonical tutorial needs only an entry in
+`js/tutorials.js`. Development fixture routes stay separate and unchanged.
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
-and Back write the hash, so browser history follows step navigation naturally.
+and Back write the hash, so browser history follows step navigation naturally. Back
+from a tutorial's step 1 goes to `#home`; Back from step 2 goes to `#tutorial/<id>`;
+the last step's Next returns home.
 
 ## Deferred
 
-- real tutorial content (B/N/I) — requires Roland-source verification first;
-- the production route catalog (levels, topics, canonical tutorials);
+- further tutorial content (B02 onward) — requires Roland-source verification first;
+- the rest of the production route catalog (levels, topics, favorites, progress);
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
   emulator;

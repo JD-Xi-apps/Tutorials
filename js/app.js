@@ -42,46 +42,75 @@
 
   /* ---------------------------------------------------------------- routing */
 
-  // Development routes only: the home screen and the two development
-  // fixtures (top-view renderer suite, rear-panel suite). The production route
-  // catalog (levels, topics, canonical tutorials, favorites, progress,
-  // settings) is deliberately not implemented yet.
+  /*
+   * Two route families share one lesson view and one renderer:
+   *
+   *   development fixtures   #dev/<key>/step/<n>        js/tutorial-fixtures.js
+   *   canonical tutorials    #tutorial/<id>             js/tutorials.js
+   *                          #tutorial/<id>/step/<n>
+   *
+   * A canonical id resolves through window.JDXI_TUTORIALS, so a later
+   * tutorial (B02, N01, ...) needs only a data entry - no router change. The
+   * rest of the production catalog (levels, topics, favorites, progress,
+   * settings) is deliberately not implemented yet.
+   */
   const DEV_FIXTURES = {
     'lesson-renderer': 'renderer-demo',
     'rear-panel': 'rear-panel-demo',
   };
   const DEV_ROUTE = /^#dev\/(lesson-renderer|rear-panel)\/step\/(\d+)$/;
+  const TUTORIAL_ROUTE = /^#tutorial\/([A-Za-z0-9]+)(?:\/step\/(\d+))?$/;
 
   function fixture(routeKey) {
     const all = window.JDXI_TUTORIAL_FIXTURES || {};
     return all[DEV_FIXTURES[routeKey]] || null;
   }
 
+  function canonical(id) {
+    const all = window.JDXI_TUTORIALS || {};
+    return Object.prototype.hasOwnProperty.call(all, id) ? all[id] : null;
+  }
+
+  // Lesson descriptor: { kind, key, tutorial }. `kind` decides the hash shape
+  // and how the renderer labels the lesson; `key` is the routing token.
+  function lesson(kind, key) {
+    const tut = kind === 'dev' ? fixture(key) : canonical(key);
+    return tut ? { kind: kind, key: key, tutorial: tut } : null;
+  }
+
+  function stepHash(lsn, n) {
+    if (lsn.kind === 'dev') return '#dev/' + lsn.key + '/step/' + n;
+    // #tutorial/<id> IS step 1; deeper steps carry the step segment.
+    return n === 1 ? '#tutorial/' + lsn.key : '#tutorial/' + lsn.key + '/step/' + n;
+  }
+
   /*
    * Every unresolvable route degrades to a defined destination rather than
-   * failing: an out-of-range step falls back to step 1 of the same fixture,
-   * and anything else falls back to #home.
+   * failing: an out-of-range step falls back to step 1 of the same lesson,
+   * an unknown tutorial id or any malformed route falls back to #home.
    */
   function parse(hash) {
     if (!hash || hash === '#' || hash === '#home') return { view: 'home' };
 
-    const m = DEV_ROUTE.exec(hash);
+    let lsn = null;
+    let asked = 1;
+    let m = DEV_ROUTE.exec(hash);
     if (m) {
-      const key = m[1];
-      const tut = fixture(key);
-      if (!tut) return { view: 'home', redirect: '#home' };
-      const asked = parseInt(m[2], 10);
-      const total = tut.steps.length;
-      if (!(asked >= 1 && asked <= total)) {
-        return { view: 'lesson', fixture: key, stepIndex: 0, redirect: stepHash(key, 1) };
-      }
-      return { view: 'lesson', fixture: key, stepIndex: asked - 1 };
+      lsn = lesson('dev', m[1]);
+      asked = parseInt(m[2], 10);
+    } else if ((m = TUTORIAL_ROUTE.exec(hash))) {
+      lsn = lesson('tutorial', m[1]);
+      asked = m[2] === undefined ? 1 : parseInt(m[2], 10);
+    } else {
+      return { view: 'home', redirect: '#home' };
     }
-    return { view: 'home', redirect: '#home' };
-  }
 
-  function stepHash(key, n) {
-    return '#dev/' + key + '/step/' + n;
+    if (!lsn) return { view: 'home', redirect: '#home' };
+    const total = lsn.tutorial.steps.length;
+    if (!(asked >= 1 && asked <= total)) {
+      return { view: 'lesson', lesson: lsn, stepIndex: 0, redirect: stepHash(lsn, 1) };
+    }
+    return { view: 'lesson', lesson: lsn, stepIndex: asked - 1 };
   }
 
   function applyRoute() {
@@ -94,20 +123,23 @@
     }
 
     if (route.view === 'lesson') {
-      const tut = fixture(route.fixture);
       showView('lesson');
-      window.JDXI_LESSON_RENDERER.render({ tutorial: tut, stepIndex: route.stepIndex });
+      window.JDXI_LESSON_RENDERER.render({
+        tutorial: route.lesson.tutorial,
+        stepIndex: route.stepIndex,
+        canonical: route.lesson.kind === 'tutorial',
+      });
       current = route.stepIndex;
-      currentFixture = route.fixture;
+      currentLesson = route.lesson;
     } else {
       showView('home');
       current = null;
-      currentFixture = null;
+      currentLesson = null;
     }
   }
 
   let current = null;
-  let currentFixture = null;
+  let currentLesson = null;
 
   function go(hash) {
     if (window.location.hash === hash) applyRoute();
@@ -125,14 +157,13 @@
 
   backBtn.addEventListener('click', () => {
     if (current === null) return;
-    go(current === 0 ? '#home' : stepHash(currentFixture, current));
+    go(current === 0 ? '#home' : stepHash(currentLesson, current));
   });
 
   nextBtn.addEventListener('click', () => {
     if (current === null) return;
-    const tut = fixture(currentFixture);
-    const last = current === tut.steps.length - 1;
-    go(last ? '#home' : stepHash(currentFixture, current + 2));
+    const last = current === currentLesson.tutorial.steps.length - 1;
+    go(last ? '#home' : stepHash(currentLesson, current + 2));
   });
 
   const R = window.JDXI_LESSON_RENDERER;

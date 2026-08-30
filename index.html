@@ -63,7 +63,7 @@
           <div class="card">
             <div class="card-head"><div><h2>1. Guided learning path</h2><div class="eyebrow">Recommended order</div></div><span class="chev">›</span></div>
             <div class="level-grid">
-              <button class="tile" type="button" title="Placeholder only"><div class="ico green">♧</div><b>Beginner</b><p>First sounds,<br>keys, knobs</p></button>
+              <button class="tile" type="button" title="Start the Beginner path" data-route="#tutorial/B01"><div class="ico green">♧</div><b>Beginner</b><p>First sounds,<br>keys, knobs</p></button>
               <button class="tile" type="button" title="Placeholder only"><div class="ico purple">❖</div><b>Novice</b><p>Menus, patterns,<br>editing basics</p></button>
               <button class="tile" type="button" title="Placeholder only"><div class="ico blue">◭</div><b>Intermediate</b><p>Designing tones,<br>layering, performance</p></button>
             </div>
@@ -115,7 +115,7 @@
       <main class="lesson" id="view-lesson" hidden>
         <div class="lesson-head">
           <div class="lesson-ident">
-            <span class="fixture-badge">DEVELOPMENT FIXTURE — NOT A TUTORIAL</span>
+            <span class="fixture-badge" id="lsn-badge">DEVELOPMENT FIXTURE — NOT A TUTORIAL</span>
             <h1 class="lesson-title" id="lsn-title"></h1>
           </div>
           <div class="lesson-prog">
@@ -165,6 +165,7 @@
     </div>
   </div>
   <script src="js/hardware-targets.js"></script>
+  <script src="js/tutorials.js"></script>
   <script src="js/tutorial-fixtures.js"></script>
   <script src="js/lesson-renderer.js"></script>
   <script src="js/app.js"></script>

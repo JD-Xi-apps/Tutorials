@@ -523,6 +523,7 @@ window.JDXI_LESSON_RENDERER = (function () {
     var n = ctx.stepIndex + 1;
 
     document.getElementById("lsn-title").textContent = tut.title;
+    setBadge(!!ctx.canonical, tut);
     document.getElementById("lsn-steptitle").textContent = step.title || "";
     document.getElementById("lsn-instruction").textContent = step.instruction || "";
 
@@ -579,6 +580,27 @@ window.JDXI_LESSON_RENDERER = (function () {
     next.textContent = n === total ? "Return home" : "Next ›";
     next.classList.toggle("finish", n === total);
     document.getElementById("lsn-hint").textContent = step.nextHint || "";
+  }
+
+  /*
+   * Lesson badge. The caller says whether it is rendering a canonical
+   * tutorial (ctx.canonical) or a development fixture (default). A fixture
+   * keeps the exact development-warning text and styling; a canonical
+   * tutorial shows its level and guided-path position, derived from the
+   * Tutorial object - nothing tutorial-specific lives here.
+   */
+  function setBadge(canonical, tut) {
+    var badge = document.getElementById("lsn-badge");
+    if (!badge) return;
+    badge.classList.toggle("canonical", canonical);
+    if (!canonical) {
+      badge.textContent = "DEVELOPMENT FIXTURE — NOT A TUTORIAL";
+      return;
+    }
+    var parts = [];
+    if (tut.level) parts.push(String(tut.level).toUpperCase());
+    if (tut.order != null) parts.push("TUTORIAL " + tut.order);
+    badge.textContent = parts.join(" \u2022 ");
   }
 
   function closePanel(btn, panel) {

@@ -313,7 +313,7 @@ Structural notes:
 | `digitalSynth2Button` | button | `partSelectGroup` | Digital Synth 2 | 884,257 → 951,323 | 0.2804, 0.1919, 0.0212, 0.0493 |
 | `drumsButton` | button | `partSelectGroup` | Drums | 884,357 → 951,422 | 0.2804, 0.2666, 0.0212, 0.0485 |
 | `analogSynthButton` | button | `partSelectGroup` | Analog Synth | 885,458 → 952,526 | 0.2807, 0.3420, 0.0212, 0.0508 |
-| `masterVolumeKnob` | knob | — | Master Volume | 136,596 → 236,712 | 0.0431, 0.4451, 0.0317, 0.0866 |
+| `masterVolumeKnob` | knob | — | Master Volume | 136,600 → 246,710 | 0.0431, 0.4481, 0.0349, 0.0821 |
 | `tempoSection` | section | — | TEMPO | 293,548 → 516,714 | 0.0929, 0.4093, 0.0707, 0.1240 |
 | `tempoKnob` | knob | `tempoSection` | — | 299,597 → 397,712 | 0.0948, 0.4459, 0.0311, 0.0859 |
 | `tapButton` | button | `tempoSection` | Tap | 436,617 → 510,700 | 0.1383, 0.4608, 0.0235, 0.0620 |
@@ -349,19 +349,19 @@ Structural notes:
 | `stepButton14` | button | `stepButtons` | 14 | 2765,616 → 2833,690 | 0.8769, 0.4600, 0.0216, 0.0553 |
 | `stepButton15` | button | `stepButtons` | 15 | 2856,616 → 2924,690 | 0.9058, 0.4600, 0.0216, 0.0553 |
 | `stepButton16` | button | `stepButtons` | 16 | 2948,616 → 3016,690 | 0.9350, 0.4600, 0.0216, 0.0553 |
-| `filterSection` | section | — | FILTER | 1443,70 → 1830,530 | 0.4577, 0.0523, 0.1227, 0.3435 |
+| `filterSection` | section | — | FILTER | 1443,70 → 1752,530 | 0.4577, 0.0523, 0.0980, 0.3435 |
 | `cutoffKnob` | knob | `filterSection` | Cutoff | 1468,156 → 1577,266 | 0.4656, 0.1165, 0.0346, 0.0822 |
 | `resonanceKnob` | knob | `filterSection` | Resonance | 1637,156 → 1746,266 | 0.5192, 0.1165, 0.0346, 0.0822 |
 | `filterTypeButton` | button | `filterSection` | Type | 1648,419 → 1713,503 | 0.5227, 0.3129, 0.0206, 0.0627 |
-| `ampEnvSection` | section | — | AMP/ENV | 1790,70 → 1980,530 | 0.5677, 0.0523, 0.0603, 0.3435 |
+| `ampEnvSection` | section | — | AMP/ENV | 1776,70 → 1985,530 | 0.5633, 0.0523, 0.0663, 0.3435 |
 | `levelKnob` | knob | `ampEnvSection` | Level | 1830,158 → 1938,264 | 0.5804, 0.1180, 0.0343, 0.0792 |
 | `envelopeKnob` | knob | `ampEnvSection` | Envelope | 1828,400 → 1938,513 | 0.5798, 0.2987, 0.0349, 0.0844 |
-| `lfoSection` | section | — | LFO | 1998,70 → 2368,548 | 0.6337, 0.0523, 0.1173, 0.3570 |
+| `lfoSection` | section | — | LFO | 1998,70 → 2320,530 | 0.6337, 0.0523, 0.1021, 0.3435 |
 | `lfoWaveformControl` | knob | `lfoSection` | waveform icons + RND | 2035,155 → 2143,268 | 0.6454, 0.1158, 0.0343, 0.0844 |
 | `lfoRateKnob` | knob | `lfoSection` | Rate | 2204,155 → 2312,268 | 0.6990, 0.1158, 0.0343, 0.0844 |
 | `lfoDepthKnob` | knob | `lfoSection` | Depth −/+ | 2039,400 → 2149,513 | 0.6467, 0.2987, 0.0349, 0.0844 |
 | `lfoDestinationKnob` | knob | `lfoSection` | Destination | 2220,419 → 2313,509 | 0.7041, 0.3129, 0.0295, 0.0672 |
-| `effectsSection` | section | — | EFFECTS | 2365,70 → 3040,530 | 0.7501, 0.0523, 0.2141, 0.3435 |
+| `effectsSection` | section | — | EFFECTS | 2349,70 → 3040,530 | 0.7450, 0.0523, 0.2192, 0.3435 |
 | `effectsOnOffButton` | button | `effectsSection` | Effects On/Off | 2368,268 → 2444,344 | 0.7510, 0.2001, 0.0241, 0.0568 |
 | `effect1Knob` | knob | `effectsSection` | Effect 1 | 2480,150 → 2592,262 | 0.7866, 0.1120, 0.0355, 0.0836 |
 | `effect1TypeButton` | button | `effectsSection` | Type | 2495,423 → 2568,503 | 0.7913, 0.3159, 0.0232, 0.0597 |
@@ -435,6 +435,29 @@ Validated against the committed `js/hardware-targets.js` in a real browser conte
 | Every child within (≤ 12 px overhang tolerance) its group's box | ✓ |
 | Every zoom crop within 0..1 and containing its target's region | ✓ |
 | Overlay alignment at 3153 / 1440 / 700 px render widths | ✓ scale-invariant |
+| Sound-shaping section boxes contain their own title underline and all children, and do not overlap a neighbour (Phase 5A re-measure) | ✓ 4/4 |
+| `masterVolumeKnob` box fully contains the illuminated ring | ✓ 3 px margin on all four sides |
+
+### Phase 5A re-measurement (owner-reported highlight misfit)
+
+Owner review of the first canonical tutorial reported highlight boxes that were
+"not lined up" or "too small to envelop the thing". Re-measured against the master
+image by column/row luminance profile; the red title underline Roland prints beneath
+each section name is the authoritative horizontal delimiter.
+
+| Target | Was | Now | Defect |
+|---|---|---|---|
+| `filterSection` | 1443,70 → 1830,530 | 1443,70 → **1752**,530 | Right edge ran ~85 px past its own content (ends 1733) and overlapped the AMP/ENV title, so AMP/ENV read as misaligned. |
+| `ampEnvSection` | 1790,70 → 1980,530 | **1776**,70 → **1985**,530 | Left edge started 2 px *inside* its own underline (1788) and sat beneath the FILTER overshoot. Now padded 12 px both sides. |
+| `lfoSection` | 1998,70 → 2368,**548** | 1998,70 → **2320**,**530** | Right edge ran 71 px past its content (ends 2297); bottom dipped 18 px below the other three sections, crossing the step-button strip. |
+| `effectsSection` | **2365**,70 → 3040,530 | **2349**,70 → 3040,530 | Left edge clipped the first 4 px of its underline (starts 2361). The right edge was checked and is correct: it clears the Reverb knob (3028) and stops short of the case edge. |
+| `masterVolumeKnob` | 136,596 → 236,712 (100 × 116) | 136,600 → 246,710 (**110 × 110**) | The illuminated ring is 105 × 105 at 139,603. The old box clipped the right of the ring and was not square. |
+
+Each section's shared `zoom` crop was widened or narrowed with its region so the crop
+still contains it. `effectsSection`'s right edge and every other B01 target
+(`keys`, `partSelectGroup`, `categoryDial`, `toneButtons`, `display`,
+`patternSequencerSection`, `stepButtons`, `rearPanel`, `dcInJack`, `powerSwitch`)
+were audited by overlay in the same pass and needed no change.
 
 ## 9. What this registry does not decide
 

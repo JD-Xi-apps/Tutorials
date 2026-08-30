@@ -54,7 +54,7 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .synth { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 8px 9px rgba(0,0,0,.14)); }
 
 .region { position:absolute; border:2px solid currentColor; border-radius:9px; pointer-events:none; background:color-mix(in srgb,currentColor 4%,transparent); }
-.sound-region   { color:var(--blue);   left:10.5%; top:6.5%;  width:34.7%; height:31.5%; }
+.sound-region   { color:var(--blue);   left:10.5%; top:6.5%;  width:34.7%; height:34.7%; }
 .knobs-region   { color:var(--green);  left:45.5%; top:5.5%;  width:28.5%; height:32.5%; }
 .effects-region { color:var(--orange); left:74.3%; top:5.5%;  width:22.7%; height:32.5%; }
 .steps-region   { color:var(--purple); left:49.5%; top:41%;   width:46.5%; height:11.5%; }
@@ -142,6 +142,9 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .lesson-head { display:flex; align-items:center; justify-content:space-between; gap:20px; min-width:0; }
 .lesson-ident { display:flex; flex-direction:column; gap:4px; min-width:0; }
 .fixture-badge { align-self:flex-start; background:#fff4e5; color:#a05a00; border:1px solid #f0c98a; border-radius:6px; padding:2px 7px; font-size:9.5px; font-weight:850; letter-spacing:.3px; }
+/* Canonical tutorial: same badge geometry, level colouring instead of the
+   development warning. Fixtures never carry this class. */
+.fixture-badge.canonical { background:#eef7f0; color:#1f7a3f; border-color:#bfe0c9; }
 .lesson-title { margin:0; font-size:19px; letter-spacing:-.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .lesson-prog { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:none; }
 .prog-text { font-size:12px; font-weight:750; color:var(--muted); }
