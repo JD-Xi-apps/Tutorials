@@ -14,7 +14,7 @@
           <span class="brand-mark" aria-hidden="true"></span>
           <span>Roland</span>
         </div>
-        <button class="homebtn" type="button" title="Placeholder only">
+        <button class="homebtn" type="button" title="Home" data-route="#home">
           <span class="iconline" aria-hidden="true">⌂</span><span>Home</span>
         </button>
         <nav class="nav" aria-label="Application navigation">
@@ -24,7 +24,7 @@
         </nav>
       </header>
 
-      <main class="shell">
+      <main class="shell" id="view-home">
         <section class="hero">
           <div class="hero-copy">
             <h1>JD-Xi<br>Tutorial Hub</h1>
@@ -111,8 +111,62 @@
           <span>Designed for complete beginners. &nbsp;No music theory required.</span>
         </div>
       </main>
+
+      <main class="lesson" id="view-lesson" hidden>
+        <div class="lesson-head">
+          <div class="lesson-ident">
+            <span class="fixture-badge">DEVELOPMENT FIXTURE — NOT A TUTORIAL</span>
+            <h1 class="lesson-title" id="lsn-title"></h1>
+          </div>
+          <div class="lesson-prog">
+            <span class="prog-text" id="lsn-progress"></span>
+            <div class="prog-track" id="lsn-progtrack" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="lesson-body">
+          <section class="lesson-instr" aria-label="Instruction">
+            <div class="step-kicker" id="lsn-steptitle"></div>
+            <p class="instr" id="lsn-instruction"></p>
+            <p class="instr-detail" id="lsn-detail"></p>
+
+            <div class="icard hear-card" id="lsn-hear-card" hidden>
+              <div class="icard-cap">What you should hear</div>
+              <div class="icard-body" id="lsn-hear-body"></div>
+            </div>
+            <div class="icard check-card" id="lsn-check-card" hidden>
+              <div class="icard-cap">You did it when</div>
+              <div class="icard-body" id="lsn-check-body"></div>
+            </div>
+
+            <div class="disclosure">
+              <button class="disc-btn" id="lsn-why-btn" type="button"
+                      aria-expanded="false" aria-controls="lsn-why-panel">Why?</button>
+              <button class="disc-btn lost" id="lsn-lost-btn" type="button"
+                      aria-expanded="false" aria-controls="lsn-lost-panel">I&rsquo;m lost</button>
+            </div>
+            <div class="panelwrap">
+              <div class="disc-panel" id="lsn-why-panel" role="region"
+                   aria-labelledby="lsn-why-btn" hidden></div>
+              <div class="disc-panel lost" id="lsn-lost-panel" role="region"
+                   aria-labelledby="lsn-lost-btn" hidden></div>
+            </div>
+          </section>
+
+          <section class="lesson-visual" id="lsn-visual" aria-label="JD-Xi hardware view"></section>
+        </div>
+
+        <div class="lesson-foot">
+          <button class="lsn-nav back" id="lsn-back" type="button">&lsaquo; Back</button>
+          <span class="foot-hint" id="lsn-hint"></span>
+          <button class="lsn-nav next" id="lsn-next" type="button">Next &rsaquo;</button>
+        </div>
+      </main>
     </div>
   </div>
+  <script src="js/hardware-targets.js"></script>
+  <script src="js/tutorial-fixtures.js"></script>
+  <script src="js/lesson-renderer.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
