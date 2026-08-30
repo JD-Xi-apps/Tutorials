@@ -44,7 +44,7 @@ Card padding should look balanced on every side. In particular, button rows must
 
 - The full Roland JD-Xi should usually remain on screen.
 - Display it on a clean white or very light background with useful negative space for annotations.
-- Use the tightly cropped 1428 × 695 master image at `assets/images/jd-xi-master.webp`.
+- Use the tightly cropped 3153 × 1339 master image at `assets/images/JD-Xi.jpg`.
 - Do **not** position annotations against arbitrary page coordinates.
 - All control regions, highlights, callouts, and future zoom targets must be defined relative to the master keyboard image coordinate system so they scale with the instrument.
 - Major home-screen regions currently include Sound Select, Knobs & Controls, Effects, Step Buttons, and Keys.

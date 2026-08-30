@@ -5,7 +5,7 @@
 }
 * { box-sizing:border-box; }
 html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#ececea; }
-body { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); }
+body { font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); }
 button { font:inherit; color:inherit; }
 button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .red{color:var(--red)} .orange{color:var(--orange)} .green{color:var(--green)} .blue{color:var(--blue)} .purple{color:var(--purple)}
@@ -27,7 +27,8 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .topbar button:hover { opacity:.72; }
 .iconline { font-size:14px; line-height:1; }
 
-.shell { height:864px; padding:22px 34px 18px; display:grid; grid-template-rows:360px 192px 190px 42px; gap:14px; }
+/* 864 = 22 top pad + 394 + 14 + 196 + 14 + 150 + 14 + 42 + 18 bottom pad */
+.shell { height:864px; padding:22px 34px 18px; display:grid; grid-template-rows:394px 196px 150px 42px; gap:14px; }
 .hero { display:grid; grid-template-columns:380px 1fr; gap:26px; min-height:0; }
 .hero-copy { padding:9px 0 0 8px; }
 .hero-copy h1 { font-size:56px; line-height:.96; letter-spacing:-2.4px; margin:0; }
@@ -39,29 +40,46 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .mode b { font-size:16px; }
 .mode p { font-size:13px; line-height:1.34; color:var(--muted); margin:3px 0 0; }
 
-.visual { position:relative; min-width:0; height:360px; background:#fff; border-radius:18px; border:1px solid #ecece9; overflow:hidden; box-shadow:0 5px 18px rgba(0,0,0,.045); }
-.synth-canvas { position:absolute; left:42px; right:42px; top:62px; aspect-ratio:1428 / 695; }
-.synth { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 8px 9px rgba(0,0,0,.14)); }
-.region { position:absolute; border:2px solid currentColor; border-radius:9px; pointer-events:none; background:color-mix(in srgb,currentColor 4%,transparent); }
-.sound-region { color:var(--blue); left:2.8%; top:4.5%; width:43.5%; height:47%; }
-.knobs-region { color:var(--green); left:49%; top:4.5%; width:34.8%; height:32.5%; }
-.effects-region { color:var(--orange); left:84%; top:4.5%; width:12%; height:32.5%; }
-.steps-region { color:var(--purple); left:49%; top:37.4%; width:47%; height:15%; }
-.keys-region { color:var(--orange); left:15.4%; top:54.2%; width:80.5%; height:39%; }
+.visual { position:relative; min-width:0; height:100%; background:#fff; border-radius:18px; border:1px solid #ecece9; overflow:hidden; box-shadow:0 5px 18px rgba(0,0,0,.045); }
 
-.callout { position:absolute; z-index:3; background:#fff; border:2px solid currentColor; border-radius:10px; padding:7px 13px; font-size:14px; font-weight:780; white-space:nowrap; box-shadow:0 3px 8px rgba(0,0,0,.05); }
-.callout .stem { position:absolute; width:2px; background:currentColor; left:50%; transform:translateX(-50%); }
-.callout .stem::after { content:""; position:absolute; width:8px; height:8px; border-radius:50%; background:currentColor; left:50%; transform:translateX(-50%); }
-.sound-callout { color:var(--blue); left:24.5%; top:-50px; transform:translateX(-50%); }
-.sound-callout .stem { top:100%; height:72px; } .sound-callout .stem::after { bottom:-4px; }
-.knobs-callout { color:var(--green); left:66.5%; top:-50px; transform:translateX(-50%); }
-.knobs-callout .stem { top:100%; height:72px; } .knobs-callout .stem::after { bottom:-4px; }
-.effects-callout { color:var(--orange); left:90%; top:-50px; transform:translateX(-50%); }
-.effects-callout .stem { top:100%; height:72px; } .effects-callout .stem::after { bottom:-4px; }
-.steps-callout { color:var(--purple); left:75%; top:42%; transform:translate(-50%,-50%); }
-.steps-callout .stem { bottom:100%; height:30px; } .steps-callout .stem::after { top:-4px; }
-.keys-callout { color:var(--orange); left:55%; top:104%; transform:translate(-50%,0); }
-.keys-callout .stem { bottom:100%; height:54px; } .keys-callout .stem::after { top:-4px; }
+/* The synth canvas IS the master-image coordinate system. Height-driven so the
+   whole instrument always fits the card; width follows the real 3153x1339 ratio.
+   Every hardware-spatial value below is a percentage of this box, so annotations
+   stay attached if the canvas is ever resized. */
+.synth-canvas {
+  position:absolute; left:50%; transform:translateX(-50%);
+  top:44px; height:calc(100% - 82px);
+  aspect-ratio:3153 / 1339;
+}
+.synth { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 8px 9px rgba(0,0,0,.14)); }
+
+.region { position:absolute; border:2px solid currentColor; border-radius:9px; pointer-events:none; background:color-mix(in srgb,currentColor 4%,transparent); }
+.sound-region   { color:var(--blue);   left:10.5%; top:6.5%;  width:34.7%; height:31.5%; }
+.knobs-region   { color:var(--green);  left:45.5%; top:5.5%;  width:28.5%; height:32.5%; }
+.effects-region { color:var(--orange); left:74.3%; top:5.5%;  width:22.7%; height:32.5%; }
+.steps-region   { color:var(--purple); left:49.5%; top:41%;   width:46.5%; height:11.5%; }
+.keys-region    { color:var(--orange); left:17.5%; top:59.5%; width:78%;   height:37.5%; }
+
+/* An .anno IS its own leader line: the box spans, in image percentages, exactly
+   the gap between the label and the hardware it points at. The dot marks the
+   hardware end, the label hangs off the other end. No stage-space offsets. */
+.anno { position:absolute; width:2px; margin-left:-1px; background:currentColor; z-index:3; }
+.anno::after { content:""; position:absolute; left:50%; top:50%; width:9px; height:9px; border-radius:50%; background:currentColor; transform:translate(-50%,-50%); }
+.anno.above::after { top:100%; }
+.anno.below::after { top:0; }
+.anno.right { margin-left:0; margin-top:-1px; }
+.anno.right::after { top:50%; left:0; }
+.anno-label { position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; background:#fff; border:2px solid currentColor; border-radius:10px; padding:5px 11px; font-size:12.5px; font-weight:780; line-height:1.2; box-shadow:0 3px 8px rgba(0,0,0,.05); }
+.anno.above .anno-label { bottom:100%; }
+.anno.below .anno-label { top:100%; }
+.anno.right .anno-label { left:100%; top:50%; transform:translate(0,-50%); }
+
+.sound-anno   { color:var(--blue);   left:27.85%; top:-3%; height:9.5%; }
+.knobs-anno   { color:var(--green);  left:59.75%; top:-3%; height:8.5%; }
+.effects-anno { color:var(--orange); left:85.65%; top:-3%; height:8.5%; }
+.steps-anno   { color:var(--purple); left:96%;    top:46.75%; width:3.2%; height:2px; }
+.keys-anno    { color:var(--orange); left:56.5%;  top:97%; height:5%; }
+
 .demo-tag { position:absolute; right:13px; bottom:10px; background:#1a1a1a; color:white; border-radius:999px; padding:5px 10px; font-size:10px; font-weight:800; opacity:.84; }
 
 .cards-row { display:grid; grid-template-columns:.8fr 1.35fr; gap:14px; min-height:0; }
@@ -75,12 +93,12 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .tile,.topic { border:1px solid var(--line); background:#fff; border-radius:12px; cursor:pointer; transition:.12s ease; }
 .tile:hover,.topic:hover,.ghost:hover { transform:translateY(-1px); border-color:#bebebb; background:#fcfcfb; }
 .tile:active,.topic:active,.ghost:active { transform:translateY(0); }
-.tile { height:116px; padding:12px; text-align:center; }
+.tile { height:106px; padding:12px; text-align:center; }
 .tile .ico { font-size:26px; margin-bottom:5px; }
 .tile b { display:block; font-size:14px; }
 .tile p { margin:4px 0 0; color:var(--muted); font-size:11.5px; line-height:1.3; }
 .topic-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-.topic { height:53px; padding:8px 9px; display:flex; align-items:center; gap:7px; text-align:left; font-size:12px; font-weight:680; }
+.topic { height:50px; padding:8px 9px; display:flex; align-items:center; gap:7px; text-align:left; font-size:12px; font-weight:680; }
 .topic span:first-child { font-size:18px; }
 
 .roadmap { padding:14px 16px; }
