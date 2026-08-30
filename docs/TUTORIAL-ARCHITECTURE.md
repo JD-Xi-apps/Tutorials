@@ -65,7 +65,7 @@ These are the load-bearing rules. Changing any of them is a redesign, not a revi
 7. **Hearing and doing come before theory.**
 8. **"Why" content is secondary and optional.**
 9. **No scrolling within the overall page.** The 1440 × 900 fixed stage scales to fit.
-10. **Technical procedures require Roland-source verification** (see §12).
+10. **Technical procedures require Roland-source verification** (see §13).
 
 ## 4. Canonical learning path
 
@@ -150,6 +150,25 @@ Collection
   status        "live" | "planned"
 ```
 
+### Topic membership has one source of truth
+
+**`Collection.tutorialIds[]` is authoritative for topic membership and ordering.**
+
+Collections are discovery and navigation structures: they need explicit, curated
+ordering, which a flat per-tutorial list cannot express. Storing the same membership
+independently on both the tutorial and the collection would create two copies that can
+drift, and no defined winner when they disagree.
+
+Therefore:
+
+- authors edit collection membership **only** in `Collection.tutorialIds[]`;
+- a tutorial-facing topic list may be **generated at load time** by inverting the
+  collections, as a read-only index;
+- content must **never** require maintaining both sides by hand.
+
+This is the same rule as invariant 1 in §3, applied to collections: one canonical
+record, many references.
+
 ### Collections mapped to the current home screen
 
 These ten already exist as home-screen categories. The mapping below is the starting
@@ -198,7 +217,6 @@ Tutorial
   summary           one or two plain sentences: what you will be able to do afterwards
   estimatedMinutes  honest expectation, used for planning and for challenge framing
   prerequisites[]   tutorial IDs assumed already done
-  topics[]          collection IDs this tutorial appears in
   learningGoals[]   plain-language outcomes, learner-facing, not jargon
   steps[]           ordered Step objects
 ```
@@ -208,9 +226,10 @@ Field notes:
 - **`prerequisites`** are advisory, not gates. The à-la-carte promise is that a learner
   may enter any tutorial directly; prerequisites let the UI *offer* a prior tutorial,
   never refuse entry.
-- **`topics`** is the tutorial's own view of its membership. It must stay consistent
-  with the collections in §5; one of the two is generated from the other at build or
-  load time rather than maintained twice.
+- **`topics` is deliberately absent from the authored shape.** Topic membership lives
+  in `Collection.tutorialIds[]` (§5) and nowhere else. A read-only `topics` index may
+  be derived at load time for rendering — "which collections is this tutorial in?" —
+  but it is generated, never authored, and never written back.
 - **`learningGoals`** are written for the learner ("you'll be able to find a sound you
   like"), not for a curriculum document.
 
@@ -387,7 +406,71 @@ being permanent but step lists being editable.
 
 Not implemented in this phase.
 
-## 12. Content-authority rule
+## 12. Progress model
+
+A future local-browser progress model. Not implemented in this phase.
+
+```
+ProgressState
+  schemaVersion          integer; the shape version of this stored record
+  completedTutorialIds[] canonical tutorial IDs the learner has finished
+  currentTutorialId      where the learner was last working
+  currentStepId          which step within that tutorial
+  favoriteTutorialIds[]  canonical tutorial IDs the learner has starred
+  completionByTutorial{} optional cached per-tutorial percentage, keyed by tutorial ID
+```
+
+### Storage
+
+- **Local browser storage only**, initially — consistent with a no-build, no-server page
+  opened directly over `file://`.
+- **No login, no account, no cloud synchronization.** None of these are in scope, and
+  the model must not be shaped in anticipation of them.
+- **One namespaced application record** is preferred over a scatter of unrelated loose
+  keys: a single key holding the whole `ProgressState`. That keeps reads and writes
+  coherent, makes migration tractable, and makes "reset my progress" one deletion
+  rather than a hunt for stragglers.
+- Storage can legitimately be **absent or unreadable** — a private window, cleared site
+  data, storage disabled by policy. Every read must tolerate that and fall back to an
+  empty state. Nothing may fail hard because progress could not be loaded.
+
+### Field meanings
+
+- **`schemaVersion`** exists so a future version can migrate stored state safely instead
+  of misreading an older shape as a current one. A record whose version is *newer* than
+  the running app understands must be treated as unreadable rather than guessed at.
+- **`completedTutorialIds`** records canonical tutorial IDs (§4). Because those IDs are
+  permanent and never renumbered, a completion record stays meaningful even as titles,
+  ordering, and step lists evolve. This is a large part of why the IDs are permanent.
+- **`currentTutorialId`** and **`currentStepId`** together allow resume.
+- **`favoriteTutorialIds`** powers Favorites and the `#favorites` route.
+- **`completionByTutorial`** is optional, derived, cached percentage information. It is
+  a convenience for rendering and **must never become more authoritative than actual
+  completion state**. Where the two disagree, `completedTutorialIds` and the real step
+  records win, and the cache is recomputed from them.
+
+### Stale references must fail safely
+
+Content evolves; stored state does not. Every stored reference is therefore a hint, not
+a guarantee:
+
+- a `currentStepId` that no longer exists resolves to the **first valid step** of that
+  tutorial;
+- a `currentTutorialId` that no longer exists yields **no resume point**, and the
+  learner is returned to `#home`;
+- unknown IDs in `completedTutorialIds` or `favoriteTutorialIds` are **ignored on read**
+  and dropped on the next write, rather than raising an error or rendering as broken
+  entries.
+
+This mirrors the routing rule in §11: an unresolvable reference degrades to a defined
+safe destination instead of failing.
+
+### Reset
+
+Resetting progress must be possible later through Settings (`#settings`). With a single
+namespaced record, reset is the deletion of that one key.
+
+## 13. Content-authority rule
 
 **No detailed JD-Xi technical procedure becomes authoritative merely because it sounds
 plausible.**
@@ -411,7 +494,7 @@ source verification before they appear in learner-facing content.
 
 A plausible-sounding sequence that has not been verified is a defect, not a draft.
 
-## 13. What this phase does not decide
+## 14. What this phase does not decide
 
 Recorded so later phases do not mistake silence for a decision:
 
@@ -420,5 +503,4 @@ Recorded so later phases do not mistake silence for a decision:
 - step counts, or the actual steps of any tutorial;
 - the Novice capstone question raised in §4;
 - content for the Vocoder collection;
-- whether topic membership is authored on the tutorial or on the collection;
 - visual design of the lesson screen beyond the region contract in §10.
