@@ -319,8 +319,9 @@ source reconciliation (ROLAND-SOURCE-MAP §5, Q5) and are **superseded**. The
 canonical registry now lives in:
 
 - **`js/hardware-targets.js`** — the registry itself: 85 targets, normalized
-  against the 3153 × 1339 master, loaded as a plain classic script (not yet
-  referenced by `index.html`);
+  against the 3153 × 1339 master, loaded by `index.html` as a plain classic
+  script and consumed by the reusable lesson renderer; tutorials and steps go on
+  referencing target IDs rather than coordinates;
 - **`docs/HARDWARE-TARGETS.md`** — its human-readable reconciliation and the
   measurement record.
 

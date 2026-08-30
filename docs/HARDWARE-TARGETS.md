@@ -15,10 +15,17 @@ Companion documents:
 
 ## 1. Status
 
-Phase 4A deliverable: the registry is **defined and measured, not yet wired in**.
-`index.html` does not load `js/hardware-targets.js`, and no runtime behaviour changed.
-The file is a plain classic script assigning `window.JDXI_HARDWARE_TARGETS` — no
-modules, no fetch, no network — because the application runs directly from `file://`.
+Defined and measured in Phase 4A; **wired in by Phase 4B**. `index.html` now loads
+`js/hardware-targets.js`, and the reusable lesson renderer consumes it — normalized
+regions become the instructional highlights, and `zoom` metadata drives the inset and
+close-up crops generated at runtime from the master image.
+
+This registry remains the canonical single source of hardware geometry: tutorials and
+steps reference target IDs, never coordinates, so a corrected target fixes every
+tutorial at once. The file is still a plain classic script assigning
+`window.JDXI_HARDWARE_TARGETS` — no modules, no fetch, no network — because the
+application runs directly from `file://`. It stays data-only; the renderer holds all
+behaviour.
 
 This registry supersedes the fourteen-ID placeholder list that architecture §8
 carried; that list was proven too coarse by the source reconciliation

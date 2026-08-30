@@ -1,9 +1,9 @@
 /*
  * JD-Xi Tutorial Hub - canonical hardware-target registry (data only).
  *
- * NOT LOADED BY THE APPLICATION YET. index.html must not reference this file
- * until the lesson-screen phase wires it in. Defining it changes no runtime
- * behaviour.
+ * Loaded by index.html before the lesson renderer. This file remains the
+ * canonical data-only hardware-target registry; it contains no rendering or
+ * interaction behaviour of its own.
  *
  * Coordinate system: every region and zoom is normalized 0..1 against the
  * authoritative top-view master image assets/images/JD-Xi.jpg (3153 x 1339).
