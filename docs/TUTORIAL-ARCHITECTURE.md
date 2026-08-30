@@ -292,12 +292,25 @@ across the whole library — and would silently leave stale copies behind.
 
 ```
 HardwareTarget
-  id            stable key, e.g. "menuWriteButton"
-  label         student-facing name matching the panel legend
-  region        image-relative geometry in the 3153x1339 master coordinate system
-  zoom          optional metadata for magnified presentation
-  group         optional parent area, for "where is this on the instrument" context
+  id            stable permanent key
+  label         preferred learner-facing wording; accurate to the hardware but not
+                required to be identical to the printed legend
+  panelLegend   exact wording/symbols physically printed on the instrument, if any
+  kind          button | knob | control | section | group | keys | display | off-image
+  region        normalized image-relative geometry, or null for an off-image target
+  zoom          optional normalized crop for magnified presentation
+  group         optional parent target ID
+  notes         concise implementation caveats; not lesson prose
 ```
+
+`label` and `panelLegend` are deliberately distinct fields: `label` is what the
+tutorial may call the thing for a beginner, `panelLegend` is what the learner
+actually sees printed on the JD-Xi, and the two may legitimately differ. Established
+examples: the playable keyboard is learner-facing **Keys** while the panel prints
+only drum-instrument names above it; the Menu button is learner-facing **Menu/Write**
+while the panel reads `Menu /` with `Write` boxed; the Pitch/Mod controls carry
+neutral labels while their wording question remains unresolved despite Roland's
+documented "wheel" terminology (ROLAND-SOURCE-MAP Q8).
 
 ### Canonical registry
 
@@ -311,7 +324,7 @@ canonical registry now lives in:
 - **`docs/HARDWARE-TARGETS.md`** — its human-readable reconciliation and the
   measurement record.
 
-Properties the canonical registry adds to the model above:
+The canonical JS registry implements this full schema. Properties worth naming:
 
 - **Group and individual targets coexist.** `partSelectGroup` and
   `digitalSynth1Button` are both real targets; a lesson highlights the group when
@@ -321,8 +334,6 @@ Properties the canonical registry adds to the model above:
 - **Off-image targets may exist without coordinates.** Rear-panel controls
   (`powerSwitch`, `dcInJack`) are registered with `region: null` rather than
   fabricated top-view geometry.
-- `panelLegend`, `kind` and `notes` fields record what the learner physically
-  sees, what sort of control it is, and implementation caveats.
 
 ### Geometry rules
 
