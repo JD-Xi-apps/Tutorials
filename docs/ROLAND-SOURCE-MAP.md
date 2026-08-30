@@ -201,11 +201,37 @@ artefacts, and must not carry them into content:
 Throughout this document the cursor buttons are written **Cursor [◄] [►]** and the transport
 button **[▶/■]**.
 
+### 4.8 Owner-observed installed system version
+
+Recorded in its own evidence class: this is **owner-observed hardware evidence**, from
+physically checking the instrument's VERSION INFO screen — not a Roland-document claim,
+and not a property of Roland's download page (§4.6).
+
+| Field | Value |
+|---|---|
+| Installed system version | **1.51** |
+| Evidence class | Owner-observed on the instrument, 2026-08-30 |
+| Consequences | All Version 1.10 additions are available. All Version 1.50 additions are available. The Version 1.51 Interactive Chord bug fix is present. 1.52 is **not** required for tutorial behaviour — Roland states 1.52 did not change specifications (§4.6) |
+
+The tutorial system may therefore target **1.51 behaviour for this owner's
+instrument**: every firmware-gated feature in §10–§11 is teachable, and the 1.50
+additions need no version precondition *for this instrument*.
+
+The general firmware-precedence rules (§3) and the per-feature version caveats
+(§11) are **retained deliberately**: they document how to re-derive the applicable
+behaviour set for anyone using another JD-Xi, whose version must still be checked
+rather than assumed.
+
 ## 5. Hardware terminology reconciliation
 
 The architecture's §8 registry names are checked below against Roland's documentation and
 against the panel legend visible in this repository's own master image
 (`assets/images/JD-Xi.jpg`).
+
+> **Superseded in Phase 4A:** the fourteen-ID list examined here has been replaced by
+> the canonical measured registry — `js/hardware-targets.js`, reconciled in
+> [`HARDWARE-TARGETS.md`](HARDWARE-TARGETS.md) — which resolves every gap tabled in
+> §5.2. The analysis below is retained as the evidence that drove that registry.
 
 Two evidence classes are kept apart deliberately:
 
@@ -613,29 +639,36 @@ Export, Extra Banks S–Z, Interactive Chord, Transpose, Shuffle, side-chain com
 Startup Program are absent on an un-updated instrument. Any tutorial teaching them needs a
 version precondition, not a footnote.
 
-### 11.5 Flag for the PM
+### 11.5 Flag for the PM — resolved
 
-> **The owner's installed system version is unknown and must not be assumed.**
+> **Resolved 2026-08-30: the owner checked the instrument; installed version is 1.51**
+> (owner-observed hardware evidence, §4.8).
 
-It is checkable in about ten seconds: [Menu/Write], then Cursor [►] repeatedly to
-`Version Info`, then [Enter] (v1.10 p.1; v1.50 p.1 — the Menu item appears as `VERSION INFO`
-in OM p.14's list). The answer determines whether B05, B09, I06 and I09 may reference
-1.50 features at all, and whether N01 must account for `Chord Edit`. Until it is known, the
-safe default is to author to **baseline** and treat every 1.10/1.50 feature as optional
-enrichment.
+Consequences: B05, B09, I06 and I09 may reference 1.50 features freely for this
+instrument, and N01 **must** account for `Chord Edit` appearing in the Menu (§11.3).
+The 1.51 Interactive Chord fix is present; 1.52 adds nothing teachable.
+
+The check procedure is retained for any other instrument: [Menu/Write], then Cursor
+[►] repeatedly to `Version Info`, then [Enter] (v1.10 p.1; v1.50 p.1 — the Menu item
+appears as `VERSION INFO` in OM p.14's list). For an instrument whose version is
+unknown, the safe default remains authoring to **baseline** with every 1.10/1.50
+feature treated as optional enrichment.
 
 ## 12. Reconciliation queue
 
 Open items for PM review. Nothing here is resolved by assumption.
 
-**Q1 — What system version is the owner's JD-Xi running?** Blocks the firmware decisions
-throughout §11. Cheapest possible check (§11.5). *Needs hardware.*
+**Q1 — What system version is the owner's JD-Xi running?** ✅ **RESOLVED 2026-08-30.**
+The owner physically checked the JD-Xi: **installed version = 1.51** (owner-observed
+hardware evidence, §4.8). All 1.10 additions available; all 1.50 additions available;
+the 1.51 Interactive Chord bug fix present; 1.52 **not** treated as required, because
+Roland states it did not change specifications. The tutorial system targets 1.51
+behaviour for this owner's instrument. The firmware-precedence rules (§3, §11) are
+preserved for anyone using another JD-Xi.
 
-**Q2 — Which name do we use for the [Menu/Write] button?** Roland uses `[Menu/Write]` in the
-panel description (OM p.2) and `[Menu]` in both Shortcut Lists (OM p.16, PG p.2); the panel
-itself reads `Menu` with `Write` boxed beneath. All three are defensible. One must be chosen
-and applied everywhere, because architecture invariant 6 makes the exact control name the
-instruction. *Product decision.*
+**Q2 — Which name do we use for the [Menu/Write] button?** ✅ **RESOLVED — PM decision.**
+Learner-facing name: **Menu/Write**; exact button instructions are written **[Menu/Write]**.
+Internal target ID: `menuWriteButton`. Applied in the canonical registry.
 
 **Q3 — Does a boxed panel legend mean "Shift function"?** Consistent with `Write` and `Mute`,
 apparently contradicted by `Rest`. Roland states no such convention. If true it is a single
@@ -647,11 +680,14 @@ sixteen characters, but Roland never states it. The `display-focus` visual mode
 (architecture §9) needs the real figure to render `expectedDisplay` faithfully. *Needs
 hardware.*
 
-**Q5 — `partSelect` must become four targets.** A single ID cannot support "press the Drums
-button". Same class of problem: `patternSequencer` does not contain the [01]–[16] step
-buttons that TR-REC is performed on — on the panel those sit in the row Roland calls
-*Favorite/Pattern Sequencer* (OM p.2 item 16). *Registry change; see §5.2 for the full list
-of missing targets.*
+**Q5 — `partSelect` must become four targets.** ✅ **RESOLVED by the canonical registry**
+(`js/hardware-targets.js`, reconciled in [`HARDWARE-TARGETS.md`](HARDWARE-TARGETS.md)).
+`partSelectGroup` now has four individually measured child buttons; the [01]–[16] step
+buttons are sixteen individual targets in a `favoritePatternRow` group that is
+deliberately **not** a child of `patternSequencerSection`, matching the panel; and every
+missing control tabled in §5.2 that is visible in the top view is defined and measured.
+Rear-panel items are registered off-image without fabricated coordinates (Q6 remains
+open for how to *show* them).
 
 **Q6 — The rear panel cannot be shown.** The [POWER] switch and DC IN jack are on the rear
 (OM p.3), and the master image is a top view. B01 and B02 both need them. Options include a
@@ -659,23 +695,22 @@ second image, an illustrated inset, or wording the step so it needs no highlight
 have baseline consequences (`DESIGN-RULES.md` §5), so this is not ours to decide. *Product
 decision.*
 
-**Q7 — "Keyboard" is ambiguous on this instrument.** The category dial has a position
-legended `Keyboard` that selects a class of sounds (OM p.5), while the keys are also "the
-keyboard". A beginner told to "use Keyboard" has two plausible referents on the same panel.
-*Terminology decision, affects B03 and B04.*
+**Q7 — "Keyboard" is ambiguous on this instrument.** ✅ **RESOLVED — PM decision.**
+Learner-facing terminology for the playable keyboard: **the keys** (target label
+**Keys**, id `keys`). Bare "Keyboard" is never used casually, because `Keyboard` is
+also a sound category printed at the category dial; when the dial position is meant,
+say **Keyboard category**. Applied in the canonical registry.
 
 **Q8 — Are the Pitch and Mod controls "wheels"?** Roland's text says wheel (OM p.3 item 17,
 p.6); the panel legend says only `Pitch` and `Mod`; the master image shows what read as
 levers or paddles rather than classic wheels. Roland's word governs, but a learner looking
 for a wheel may not find one. *Needs hardware confirmation of what the learner sees.*
 
-**Q9 — N06 "Layer sounds" may be misnamed.** Roland is explicit that **only one part can be
-selected and played at a time**, and that multiple parts are heard together by recording
-them into a pattern (OM p.5). A learner reading "layer sounds" will reasonably expect to
-play two parts from the keys at once, which the instrument does not do. The tutorial is
-achievable as written; the *title* may promise something else. *Product decision — an
-instance of the general question of whether a working title implies behaviour Roland
-describes differently.*
+**Q9 — N06 "Layer sounds" may be misnamed.** ✅ **RESOLVED — PM decision.** The working
+title overpromised. N06's architectural working title is now **"Combine parts in a
+pattern"** (tutorial ID N06 preserved). The intended concept: arranging multiple JD-Xi
+parts together through a pattern — not simultaneously playing several parts from the
+keys. Applied in TUTORIAL-ARCHITECTURE §4.
 
 **Q10 — N10 "Getting unstuck" has thinner recovery material than it needs.** The instrument
 has **no undo**. Recovery consists of [Exit], [Shift]+[Enter] to revert a sound, selecting
@@ -691,9 +726,9 @@ content gap (§5) and the question as undecided (§14). This phase confirms the 
 ready whenever the PM wants it, and adds that Vocoder/AutoPitch **silences the Analog Synth
 part**, which is exactly the kind of surprise a beginner needs warned about.
 
-**Q12 — B09 "Change the feel" is firmware-split.** Tempo is baseline (OM p.6); shuffle,
-which is what "feel" most naturally means, is 1.50-only (v1.50 p.2). Depending on Q1 this
-tutorial either has one mechanism or two. *Blocked on Q1.*
+**Q12 — B09 "Change the feel" is firmware-split.** ✅ **RESOLVED by Q1.** The owner's
+instrument is at 1.51, so shuffle exists on it: B09 has **two** mechanisms in scope,
+tempo (baseline, OM p.6) and shuffle (v1.50 p.2).
 
 **Q13 — Confirmation prompts disagree with each other.** Factory Reset renders
 `[Ent]:Y [Exit]:N`; the Pattern Length prompt renders `[Exit]:N [Ent]:Y` (OM p.14, p.10).
@@ -713,5 +748,10 @@ never states the boxed-legend convention (Q3).
 - Any learner-facing wording, title, or step.
 - Whether the missing targets in §5.2 are added, and how they are grouped.
 - Any of the fourteen queue items in §12.
+
+> **Phase 4A postscript:** coordinates have since been measured
+> (`js/hardware-targets.js` + [`HARDWARE-TARGETS.md`](HARDWARE-TARGETS.md)), the §5.2
+> targets are defined and grouped there, and Q1, Q2, Q5, Q7, Q9 and Q12 are resolved
+> in §12 above. Q3, Q4, Q6, Q8, Q10, Q11 and Q13 remain open.
 - Whether Vocoder/Auto Pitch gets canonical tutorials.
 - The Novice capstone question (architecture §4).

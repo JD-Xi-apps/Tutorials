@@ -17,7 +17,9 @@ only. Nothing here changes `index.html`, `css/app.css`, `js/app.js`, or the mast
 image.
 
 Deferred to later phases, by explicit decision: routing, lesson screens, progress
-storage, hardware-target coordinates, and all tutorial content.
+storage, and all tutorial content. Hardware-target coordinates, deferred by this
+phase, have since been measured — the canonical registry is `js/hardware-targets.js`
+(see §8).
 
 ## 2. The learner
 
@@ -99,7 +101,7 @@ is the key that collections, progress records, and deep links all resolve agains
 | N03 | Sequencer basics | The step buttons and pattern structure. |
 | N04 | Make a simple drum beat | First authored rhythmic content. |
 | N05 | Make a simple bass line | First authored pitched content. |
-| N06 | Layer sounds | Combining parts deliberately. |
+| N06 | Combine parts in a pattern | Arranging multiple JD-Xi parts together through a pattern. Deliberately not "layer sounds": only one part is playable from the keys at a time (ROLAND-SOURCE-MAP Q9). |
 | N07 | Try the arpeggiator | Automatic note generation as an ear-first experience. |
 | N08 | Edit a sound more deliberately | Move from happy accidents to intent. |
 | N09 | Save your work | Persistence; the first genuinely destructive-risk operation. |
@@ -297,17 +299,30 @@ HardwareTarget
   group         optional parent area, for "where is this on the instrument" context
 ```
 
-### Initial registry
+### Canonical registry
 
-Coordinates are **deliberately not defined in this phase**.
+The fourteen IDs this section originally sketched were proven too coarse by the
+source reconciliation (ROLAND-SOURCE-MAP §5, Q5) and are **superseded**. The
+canonical registry now lives in:
 
-```
-menuWriteButton     cursorButtons       valueButtons
-enterButton         exitButton          shiftButton
-lcdDisplay          partSelect          filterSection
-ampEnvSection       lfoSection          effectsSection
-patternSequencer    keyboard
-```
+- **`js/hardware-targets.js`** — the registry itself: 85 targets, normalized
+  against the 3153 × 1339 master, loaded as a plain classic script (not yet
+  referenced by `index.html`);
+- **`docs/HARDWARE-TARGETS.md`** — its human-readable reconciliation and the
+  measurement record.
+
+Properties the canonical registry adds to the model above:
+
+- **Group and individual targets coexist.** `partSelectGroup` and
+  `digitalSynth1Button` are both real targets; a lesson highlights the group when
+  introducing the panel and the single button when asking for a press. The same
+  applies to Cursor, Program Value, Tone, Octave, the step buttons, FILTER,
+  AMP/ENV, LFO and EFFECTS.
+- **Off-image targets may exist without coordinates.** Rear-panel controls
+  (`powerSwitch`, `dcInJack`) are registered with `region: null` rather than
+  fabricated top-view geometry.
+- `panelLegend`, `kind` and `notes` fields record what the learner physically
+  sees, what sort of control it is, and implementation caveats.
 
 ### Geometry rules
 
@@ -499,7 +514,6 @@ A plausible-sounding sequence that has not been verified is a defect, not a draf
 Recorded so later phases do not mistake silence for a decision:
 
 - final student-facing tutorial titles and copy;
-- hardware-target coordinates;
 - step counts, or the actual steps of any tutorial;
 - the Novice capstone question raised in §4;
 - content for the Vocoder collection;
