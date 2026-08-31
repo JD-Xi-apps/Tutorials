@@ -534,10 +534,27 @@ keys), except Pitch/Mod at y 860–1150, and each includes its printed section l
 Roland's red title underline — the same framing the FILTER/AMP-ENV/LFO/EFFECTS crops
 use, so an inset always tells the learner which section they are looking at.
 
-`arpeggioSection`, `arpeggioOnButton`, `keyHoldButton`, `keys`, `micJack`,
-`autoNoteButton` and `rearPanel` still carry `zoom: null`. That is deliberate: no
-tutorial has yet needed a magnified view of them, and geometry is not added
-speculatively.
+### Phase 6B addition — the ARPEGGIO section gains a canonical zoom
+
+`N07 Try the arpeggiator` asks the learner to press ARPEGGIO [ON] and [Key Hold],
+two small buttons whose printed legends are unreadable at full-instrument scale.
+Measured and verified by the same method, in the same pass as the Phase 6A crops, and
+adopted only when N07 needed it. **No `region` was touched.**
+
+| Target(s) | Source-pixel crop | Normalized `zoom` | Needed by |
+|---|---|---|---|
+| `arpeggioSection`, `arpeggioOnButton`, `keyHoldButton` | 757,530 → 987,730 (**230 × 200**) | `0.2400, 0.3958, 0.0729, 0.1494` | N07-S01 – N07-S06, N10 |
+
+Clearance, read off the master image: `octaveButtons` ends at x 742 (15 px left),
+`patternSequencerSection` begins at x 1000 and `analogOscSection` at x 998 (13 px and
+11 px right), and `analogSynthButton` bottoms out at y 526 against the crop's top edge
+at y 530. The crop frames the `ARPEGGIO` legend, its red underline and both buttons,
+matching the framing of the TEMPO and OCTAVE crops beside it.
+
+`keys`, `micJack`, `autoNoteButton` and `rearPanel` still carry `zoom: null`. That is
+deliberate: no tutorial has yet needed a magnified view of them, and geometry is not
+added speculatively. `keys` in particular spans 77% of the image width, so a crop of the
+whole row would barely magnify anything.
 
 ## 9. What this registry does not decide
 

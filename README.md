@@ -8,10 +8,10 @@ The product goal is not to reproduce a conventional manual. The app should keep 
 
 The home-screen visual baseline is complete and frozen.
 
-**The Beginner path is complete.** B01–B10 run as one guided sequence, from *Meet your
-JD-Xi* through to the *First 15-minute challenge*, and **N01 Learn the menu controls**
-is live from Novice. The rest of the Novice path and the whole Intermediate path are
-not authored yet.
+**The Beginner and Novice paths are complete.** B01–B10 run as one guided sequence,
+from *Meet your JD-Xi* through to the *First 15-minute challenge*; N01–N10 continue it
+from *Learn the menu controls* through building patterns and sounds to *Save your work*
+and *Getting unstuck*. The Intermediate path is not authored yet.
 
 Tutorials are reached from the home screen's level tiles and by direct link —
 `index.html#tutorial/B05`, or `index.html#tutorial/B05/step/8` for a specific step.

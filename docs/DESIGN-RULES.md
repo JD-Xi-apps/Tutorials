@@ -134,8 +134,8 @@ recovery.
 
 - Home screen, and a reusable lesson screen that renders every tutorial from data.
 - Hash routing for tutorials and their steps, working from `file://`.
-- **The Beginner path is complete: B01–B10.** N01 is live; the rest of the Novice and
-  Intermediate paths are not authored yet.
+- **The Beginner and Novice paths are complete: B01–B10 and N01–N10.** The
+  Intermediate path is not authored yet.
 - Level, topic, Favorites, My Progress and Settings routes are not implemented yet, and
   those controls remain placeholders.
 - No persistence, accounts, audio or MIDI.

@@ -311,7 +311,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "section",
       region: { x: 0.2461, y: 0.4093, width: 0.0590, height: 0.1158 },
       group: null,
-      zoom: null,
+      zoom: { x: 0.2400, y: 0.3958, width: 0.0729, height: 0.1494 },
     },
     arpeggioOnButton: {
       label: "Arpeggio On",
@@ -319,7 +319,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.2518, y: 0.4608, width: 0.0232, height: 0.0605 },
       group: "arpeggioSection",
-      zoom: null,
+      zoom: { x: 0.2400, y: 0.3958, width: 0.0729, height: 0.1494 },
       notes: "Shift+[ON] jumps to Arpeggio Edit (OM p.6).",
     },
     keyHoldButton: {
@@ -328,7 +328,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.2772, y: 0.4608, width: 0.0235, height: 0.0605 },
       group: "arpeggioSection",
-      zoom: null,
+      zoom: { x: 0.2400, y: 0.3958, width: 0.0729, height: 0.1494 },
       notes: "Also the tie entry in step recording (OM p.12) and a documented cause of stuck notes (OM p.17).",
     },
     patternSequencerSection: {
