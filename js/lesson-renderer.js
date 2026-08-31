@@ -577,7 +577,15 @@ window.JDXI_LESSON_RENDERER = (function () {
     var back = document.getElementById("lsn-back");
     var next = document.getElementById("lsn-next");
     back.textContent = n === 1 ? "‹ Home" : "‹ Back";
-    next.textContent = n === total ? "Return home" : "Next ›";
+    /*
+     * The last step's forward button depends on whether the guided path
+     * continues. The renderer does not look that up - the caller resolves it
+     * (ctx.nextTutorial) so this file still knows nothing about any
+     * particular tutorial, and a lesson with no follow-on simply finishes.
+     * Either way the last step keeps the completion styling.
+     */
+    next.textContent =
+      n === total ? (ctx.nextTutorial ? "Next tutorial ›" : "Return home") : "Next ›";
     next.classList.toggle("finish", n === total);
     document.getElementById("lsn-hint").textContent = step.nextHint || "";
   }

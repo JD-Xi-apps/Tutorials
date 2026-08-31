@@ -234,8 +234,8 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "knob",
       region: { x: 0.0431, y: 0.4481, width: 0.0349, height: 0.0821 },
       group: null,
-      zoom: null,
-      notes: "Power-on procedure requires it fully left first (OM p.4). Re-measured (Phase 5A): the illuminated ring is 105 x 105 px at 139,603. The previous 100 x 116 box clipped the right of the ring and was not square; the box is now 110 x 110 at 136,600.",
+      zoom: { x: 0.0349, y: 0.4093, width: 0.0533, height: 0.1329 },
+      notes: "Power-on procedure requires it fully left first (OM p.4). Re-measured (Phase 5A): the illuminated ring is 105 x 105 px at 139,603. The previous 100 x 116 box clipped the right of the ring and was not square; the box is now 110 x 110 at 136,600. Zoom added (Phase 5B): 168 x 178 px at 110,548 - frames the printed Master Volume legend (125-263 x, 561-575 y) and the whole illuminated ring with ~15 px padding, stopping short of the TEMPO knob whose ring starts at x 300. B02 asks the learner to turn this knob to a specific end position, so the pointer must be legible.",
     },
     tempoSection: {
       label: "TEMPO section",

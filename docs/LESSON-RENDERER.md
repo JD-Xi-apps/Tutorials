@@ -50,12 +50,19 @@ badge became dynamic.
 
 `js/tutorials.js` holds the real tutorials, keyed by permanent ID. The first
 production canonical route is **`#tutorial/B01`** (B01 *Meet your JD-Xi*, 10 steps),
-launched from the home screen's Beginner tile. Tutorials use the same renderer and
-the same Step shape as the fixtures; nothing tutorial-specific lives in
-`lesson-renderer.js`.
+launched from the home screen's Beginner tile; **`#tutorial/B02`** (B02 *Get your
+first sound*, 11 steps) follows it. Tutorials use the same renderer and the same Step
+shape as the fixtures; nothing tutorial-specific lives in `lesson-renderer.js`.
 
-No step describes a real JD-Xi operation; the display preview text is synthetic and
-labelled as such, and the rear steps are location tests only — they never tell the
+B01 is a silent orientation tour. **B02 is the first canonical tutorial that
+describes real JD-Xi operation** — connections, Roland's power-on order, part
+selection and listening level — and every claim in it is reconciled against official
+documentation in `docs/tutorials/B02-SOURCE-NOTES.md`. That changes nothing in this
+file: the renderer has no notion of whether a step is an operating procedure.
+
+Development fixtures remain the exception in the other direction. No fixture step
+describes a real JD-Xi operation; the display preview text is synthetic and labelled
+as such, and the rear fixture steps are location tests only — they never tell the
 learner to power the instrument on or off, connect, ground, or set up anything.
 
 ## Data flow
@@ -231,17 +238,40 @@ The router is generic: a new canonical tutorial needs only an entry in
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
 and Back write the hash, so browser history follows step navigation naturally. Back
-from a tutorial's step 1 goes to `#home`; Back from step 2 goes to `#tutorial/<id>`;
-the last step's Next returns home.
+from a tutorial's step 1 goes to `#home`; Back from step 2 goes to `#tutorial/<id>`.
+
+### Guided next tutorial
+
+The last step's forward button depends on whether the guided path continues.
+`js/app.js` resolves the follow-on generically — **the canonical tutorial in the same
+`level` whose `order` is one greater** — and hands it to `render()` as
+`ctx.nextTutorial`:
+
+| Last step of | `ctx.nextTutorial` | Button | Destination |
+|---|---|---|---|
+| a tutorial with a same-level successor | that tutorial | **Next tutorial ›** | `#tutorial/<successor id>` |
+| a tutorial with none | `null` | **Return home** | `#home` |
+| a development fixture | `null` (fixtures have no guided position) | **Return home** | `#home` |
+
+Either way the last step keeps the `.finish` completion styling.
+
+Nothing is hardcoded per tutorial, in `app.js` or here. B01's last step currently
+offers **Next tutorial ›** → B02 because B02 exists; B02's last step offers **Return
+home** because B03 does not. Adding B03 to `js/tutorials.js` will give B02 a
+**Next tutorial ›** button with no edit to B02 and no router change.
+
+The renderer performs no catalog lookup of its own. It is told what follows; it does
+not go and find out. That keeps the "adding a tutorial must not mean editing the
+renderer" invariant intact.
 
 ## Deferred
 
-- further tutorial content (B02 onward) — requires Roland-source verification first;
+- further tutorial content (B03 onward) — requires Roland-source verification first;
 - the rest of the production route catalog (levels, topics, favorites, progress);
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
   emulator;
 - Steps that mix hardware images (same-image constraint above);
-- rear connectors beyond POWER and DC IN — added to the registry only when a canonical
-  tutorial needs them;
+- rear connectors beyond those a canonical tutorial has needed (B02 uses OUTPUT and
+  PHONES; the rest of the OM p.3 strip is registered but unused by any tutorial);
 - Favorites, My Progress, Settings views.

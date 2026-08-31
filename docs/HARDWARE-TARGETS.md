@@ -459,6 +459,42 @@ still contains it. `effectsSection`'s right edge and every other B01 target
 `patternSequencerSection`, `stepButtons`, `rearPanel`, `dcInJack`, `powerSwitch`)
 were audited by overlay in the same pass and needed no change.
 
+### Phase 5B addition — `masterVolumeKnob` gains a canonical zoom
+
+B02 *Get your first sound* asks the learner to turn Master Volume to a specific end
+position (fully left at B02-S03) and then off it by a small amount (B02-S09). Both
+are only checkable if the knob's pointer is legible, so the target — which carried
+`zoom: null` through Phase 5A — was given a measured crop. **The Phase 5A `region`
+above was not touched.**
+
+| Field | Value |
+|---|---|
+| Source-pixel crop | 110,548 → 278,726 (**168 × 178**) |
+| Normalized `zoom` | `0.0349, 0.4093, 0.0533, 0.1329` |
+| Measured against | `assets/images/JD-Xi.jpg`, 3153 × 1339 |
+
+What the crop is built around, read off the master image at 4×–5× with a 10 px grid:
+
+| Feature | Source-pixel extent |
+|---|---|
+| Printed `Master Volume` legend | x 125–263, y 561–575 |
+| Illuminated ring (the region's basis) | 105 × 105 at 139,603 |
+| `masterVolumeKnob` region | 136,600 → 246,710 |
+| Nearest neighbouring control (TEMPO knob ring) | begins at x 300 |
+
+The crop clears the legend and the ring by roughly 15 px on every side and stops at
+x 278, twenty-two pixels short of the TEMPO knob, so no neighbouring control is
+swallowed. Legend and ring share a horizontal centre near x 194, which the crop's
+centre (x 194) matches. Aspect is near-square (168 × 178), in family with the
+`display` crop (400 × 410).
+
+Containment check, as required by §8: region 0.0431–0.0780 x / 0.4481–0.5302 y lies
+inside zoom 0.0349–0.0882 x / 0.4093–0.5422 y. ✓
+
+B01-S08 keeps `visualMode: "full"` and is unaffected — a target gaining a zoom does
+not change any step that does not ask for an inset, and B01's rendering was verified
+pixel-identical after the change.
+
 ## 9. What this registry does not decide
 
 - Highlight rendering, leader lines, and the zoom UI (lesson-screen phase).

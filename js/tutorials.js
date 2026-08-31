@@ -191,4 +191,192 @@ window.JDXI_TUTORIALS = {
       },
     ],
   },
+  B02: {
+    id: "B02",
+    level: "beginner",
+    order: 2,
+    title: "Get your first sound",
+    shortTitle: "First sound",
+    summary:
+      "Connect one way to listen, power the JD-Xi on in the order Roland documents, choose a playable part, and hear your first sound.",
+    estimatedMinutes: 8,
+    prerequisites: ["B01"],
+    learningGoals: [
+      "Connect headphones or powered speakers safely.",
+      "Power the JD-Xi on in the documented order.",
+      "Choose a playable part and hear a sound from the keys.",
+      "Set a comfortable listening level.",
+    ],
+    // Source record: docs/tutorials/B02-SOURCE-NOTES.md
+    // The power-on order is Roland's, not ours (OM p.4). B02-S02 is the one
+    // step that offers two mutually exclusive listening options; the learner
+    // performs only the one they are using. B02 deliberately promises no
+    // particular program or tone: the instrument supports a Startup Program
+    // (v1.50 p.3), so what it boots into can vary.
+    steps: [
+      {
+        id: "B02-S01",
+        title: "Start with everything off",
+        instruction: "Make sure the JD-Xi and any powered speakers are off.",
+        detail:
+          "Roland asks you to turn the volume down and switch every unit off before making any connections.",
+        hardwareTargets: ["powerSwitch"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Roland's reason is direct: connecting while the units are powered up risks malfunction and equipment failure.",
+        checkpoint:
+          "The JD-Xi is off, and any powered speakers you plan to use are off.",
+        recoveryHelp:
+          "If something is already on, turn its volume down first, then switch it off before you connect any cables.",
+        nextHint: "Now decide how you are going to listen.",
+      },
+      {
+        id: "B02-S02",
+        title: "Choose how you will listen",
+        instruction: "Connect one listening path while everything is off.",
+        detail:
+          "Headphones: connect them to the PHONES jack. Powered speakers: connect the JD-Xi OUTPUT jacks to your speakers — Roland says to use the L/MONO jack by itself if you are outputting in mono. Optional: if you want to watch the signal on your NTS-2, put it between the JD-Xi and the speakers — JD-Xi audio → NTS-2 INPUT → matching THRU → speakers. Use THRU for this, not the NTS-2 function-generator OUTPUT.",
+        hardwareTargets: ["outputJacks", "phonesJack"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Connecting before anything is powered up helps avoid unwanted noise and equipment problems.",
+        checkpoint:
+          "One listening path is connected, and any powered equipment is still off.",
+        recoveryHelp:
+          "PHONES is for headphones. OUTPUT is for powered speakers. You only need one of the two.",
+        nextHint: "Before any power goes on, turn the volume down.",
+      },
+      {
+        id: "B02-S03",
+        title: "Master Volume fully left",
+        instruction: "Turn Master Volume all the way to the left.",
+        detail:
+          "Use the magnified view to check the pointer on the knob.",
+        hardwareTargets: ["masterVolumeKnob"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Roland's power-on procedure has you turn Master Volume fully left before the power goes on, so nothing arrives loud.",
+        checkpoint: "Master Volume is at its far-left position.",
+        recoveryHelp:
+          "Gently turn the highlighted knob counterclockwise until it stops. It does not need force.",
+        nextHint: "Now the JD-Xi can be switched on.",
+      },
+      {
+        id: "B02-S04",
+        title: "Turn on the JD-Xi",
+        instruction: "Turn on the POWER switch.",
+        detail:
+          "Leave any powered speakers off for the moment — they come on later, in that order.",
+        hardwareTargets: ["powerSwitch"],
+        visualMode: "full-plus-inset",
+        checkpoint: "The JD-Xi's display lights up.",
+        recoveryHelp:
+          "If nothing lights up, switch POWER back off and check that the included AC adaptor is connected to the DC IN jack next to it, and to power.",
+        nextHint: "Give it a moment before you expect it to respond.",
+      },
+      {
+        id: "B02-S05",
+        title: "Wait for ready",
+        instruction: "Wait a few seconds.",
+        detail:
+          "Roland states the JD-Xi has a protection circuit, and that a brief interval after switch-on is needed before it operates normally.",
+        hardwareTargets: ["display"],
+        visualMode: "full-plus-inset",
+        checkpoint:
+          "The display has settled on its normal top screen and is no longer changing.",
+        recoveryHelp:
+          "If the display is still changing, give it another moment before going on.",
+        nextHint: "Now the rest of your listening setup can be powered.",
+      },
+      {
+        id: "B02-S06",
+        title: "Turn on listening equipment",
+        instruction:
+          "If you are using powered speakers, turn them on now. If you are using headphones, there is nothing to power on.",
+        detail:
+          "Keep the speaker level low to start with. Anything else in your listening path, such as an NTS-2, counts as connected equipment too.",
+        hardwareTargets: ["outputJacks", "phonesJack"],
+        visualMode: "full",
+        whyItMatters:
+          "Roland's order is the JD-Xi first, then the connected equipment. Powering up in the wrong order risks malfunction or equipment failure.",
+        checkpoint:
+          "Your listening path is ready, with the speaker level low if you are using speakers.",
+        recoveryHelp:
+          "With headphones there is nothing to switch on here — go straight on to the next step.",
+        nextHint: "Next, choose which part of the JD-Xi the keys will play.",
+      },
+      {
+        id: "B02-S07",
+        title: "Choose Digital Synth 1",
+        instruction: "Press Digital Synth 1.",
+        detail:
+          "This chooses Digital Synth 1 as the part that the keys play.",
+        hardwareTargets: ["digitalSynth1Button"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "The JD-Xi has four parts, and the keys play one selected part at a time. Digital Synth 1 is a dependable place to start.",
+        checkpoint: "You have pressed Digital Synth 1.",
+        recoveryHelp:
+          "Find the Part Select column and press the button labeled Digital Synth 1 — it is the top one of the four.",
+        nextHint: "Now try a key, while everything is still quiet.",
+      },
+      {
+        id: "B02-S08",
+        title: "Try one key quietly",
+        instruction: "Press one white key near the middle.",
+        detail:
+          "You may hear nothing yet — Master Volume is still all the way down. That is expected.",
+        hardwareTargets: ["keys"],
+        visualMode: "full",
+        checkpoint:
+          "You have pressed a key and are ready to bring the listening level up gradually.",
+        recoveryHelp:
+          "Any white key near the middle is fine. You do not need to know note names.",
+        nextHint: "Now bring the level up, a little at a time.",
+      },
+      {
+        id: "B02-S09",
+        title: "Bring the volume up slowly",
+        instruction: "Turn Master Volume a little to the right.",
+        detail:
+          "Move it only a small amount for this first check. You can always come back for more.",
+        hardwareTargets: ["masterVolumeKnob"],
+        visualMode: "full-plus-inset",
+        checkpoint: "Master Volume is no longer at zero, but is still low.",
+        recoveryHelp:
+          "If you moved it too far, turn it back to the left before you go on.",
+        nextHint: "Now press that key again.",
+      },
+      {
+        id: "B02-S10",
+        title: "Hear your first sound",
+        instruction: "Press the same key again.",
+        hardwareTargets: ["keys"],
+        visualMode: "full",
+        expectedSound:
+          "A synthesizer sound, from your headphones or your speakers.",
+        checkpoint: "You hear a sound when you press the key.",
+        recoveryHelp:
+          "Check the listening connection, check that your speakers are on if you are using them, and check that Master Volume is above zero. Press Digital Synth 1 once more and try again. If it is still silent, stop here rather than changing other settings — a later tutorial covers what else can silence the keys.",
+        nextHint: "Last step: set a level you actually want to play at.",
+      },
+      {
+        id: "B02-S11",
+        title: "Comfortable level",
+        instruction: "Adjust Master Volume until the sound is comfortable.",
+        hardwareTargets: ["masterVolumeKnob"],
+        visualMode: "full",
+        expectedSound:
+          "The same sound gets quieter or louder as you move Master Volume.",
+        whyItMatters:
+          "Master Volume sets the level going to both the OUTPUT jacks and the PHONES jack, so it controls what you hear either way.",
+        checkpoint:
+          "You can press a few keys and hear them clearly at a level that is comfortable.",
+        recoveryHelp:
+          "If it is too loud, turn Master Volume to the left straight away.",
+        nextHint:
+          "You have your first sound. Next, you will learn how to find sounds you like.",
+      },
+    ],
+  },
 };

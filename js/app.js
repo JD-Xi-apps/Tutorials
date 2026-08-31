@@ -78,6 +78,31 @@
     return tut ? { kind: kind, key: key, tutorial: tut } : null;
   }
 
+  /*
+   * Guided path: the tutorial that follows this one is simply the canonical
+   * tutorial in the SAME level whose order is one greater. Nothing here is
+   * hardcoded per tutorial - adding B03 gives B02 a Next tutorial destination
+   * with no edit to either tutorial's data. Development fixtures have no
+   * guided position, so they never gain one and keep their existing end
+   * behaviour. Returns { id, tutorial } or null when this is the last
+   * tutorial of its level.
+   */
+  function nextInLevel(lsn) {
+    if (!lsn || lsn.kind !== 'tutorial') return null;
+    const tut = lsn.tutorial;
+    if (!tut.level || tut.order == null) return null;
+    const all = window.JDXI_TUTORIALS || {};
+    // sorted so a malformed catalog with a duplicate (level, order) still
+    // resolves to one defined destination rather than a load-order accident
+    const id = Object.keys(all)
+      .sort()
+      .filter((k) => {
+        const t = all[k];
+        return t && t.level === tut.level && t.order === tut.order + 1;
+      })[0];
+    return id ? { id: id, tutorial: all[id] } : null;
+  }
+
   function stepHash(lsn, n) {
     if (lsn.kind === 'dev') return '#dev/' + lsn.key + '/step/' + n;
     // #tutorial/<id> IS step 1; deeper steps carry the step segment.
@@ -128,6 +153,7 @@
         tutorial: route.lesson.tutorial,
         stepIndex: route.stepIndex,
         canonical: route.lesson.kind === 'tutorial',
+        nextTutorial: nextInLevel(route.lesson),
       });
       current = route.stepIndex;
       currentLesson = route.lesson;
@@ -163,7 +189,12 @@
   nextBtn.addEventListener('click', () => {
     if (current === null) return;
     const last = current === currentLesson.tutorial.steps.length - 1;
-    go(last ? '#home' : stepHash(currentLesson, current + 2));
+    if (!last) {
+      go(stepHash(currentLesson, current + 2));
+      return;
+    }
+    const nxt = nextInLevel(currentLesson);
+    go(nxt ? '#tutorial/' + nxt.id : '#home');
   });
 
   const R = window.JDXI_LESSON_RENDERER;
