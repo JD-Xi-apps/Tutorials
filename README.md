@@ -8,7 +8,15 @@ The product goal is not to reproduce a conventional manual. The app should keep 
 
 The home-screen visual baseline is complete and frozen.
 
-Three tutorials are live and are reached from the home screen's level tiles: **B01 Meet your JD-Xi** and **B02 Get your first sound** from Beginner, and **N01 Learn the menu controls** from Novice. Every other button on the home screen is still a placeholder and intentionally does not navigate.
+**The Beginner path is complete.** B01–B10 run as one guided sequence, from *Meet your
+JD-Xi* through to the *First 15-minute challenge*, and **N01 Learn the menu controls**
+is live from Novice. The rest of the Novice path and the whole Intermediate path are
+not authored yet.
+
+Tutorials are reached from the home screen's level tiles and by direct link —
+`index.html#tutorial/B05`, or `index.html#tutorial/B05/step/8` for a specific step.
+The remaining home-screen buttons (topic cards, My Progress, Favorites, Settings) are
+still placeholders and intentionally do not navigate.
 
 The home screen supports two learning modes:
 

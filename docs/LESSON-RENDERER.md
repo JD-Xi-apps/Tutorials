@@ -224,6 +224,50 @@ so the crop would map onto `(W-2) x (H-2)` and be exact only to within a border 
 The hairline is drawn with an inset `box-shadow` instead, leaving the mapping exact —
 measured scale ×1.0000, max positional delta `0.0001`.
 
+### Wide crops are clamped, not overflowed
+
+A crop's natural size in an inset is *the mode's height times the crop's own aspect*.
+Most canonical crops are near-square, so that is unremarkable — but some are extreme
+strips. The Favorite and step-button row is **1630 × 200 source pixels, an aspect of
+8.15:1**, which at the inset height of 196 px wants to be **1597 px wide** in a column
+roughly 640 px across. Before this was handled, the three steps that magnify that row
+(`B03-S11`, `B03-S12`, `B08-S08`) pushed the crop 320 px past each side of the card.
+
+The fix is generic and lives in the stylesheet, not in the renderer's logic:
+
+- `buildCrop()` publishes the crop's aspect as a custom property,
+  `--crop-aspect`, alongside the `aspect-ratio` it already set. It is a **ratio, not a
+  coordinate** — no geometry leaves the registry, and no step or stylesheet gains a
+  measurement;
+- the stacked `full-plus-inset` layout gives the inset wrapper a definite width, and
+  sizes the crop `width: min(100%, calc(<mode height> * var(--crop-aspect)))` with
+  `height: auto`, so height stays derived from `aspect-ratio` and the crop is never
+  stretched. A crop that fits is unaffected; a crop that does not loses height instead
+  of overflowing.
+
+**Scope matters here.** The clamp is applied only to the stacked layout
+(`.vis-stack > .inset-wrap > .crop-frame.inset`). In `display-focus` the inset sits in
+a row beside the display preview, where the wrapper is shrink-to-fit and a percentage
+width has nothing to resolve against — applying the clamp there collapsed the display
+crop from 191 × 196 to 83 × 85. That was caught by the frozen-surface comparison, and
+the rule was narrowed rather than the symptom patched.
+
+One bounded consequence is recorded rather than hidden: because the clamped rule
+derives height from `aspect-ratio` instead of taking it as a literal, an inset computes
+**339.984 px where it previously computed 340 px** (measured against the parent commit).
+That 0.016 px re-samples a thin band along one edge of the crop. Across the frozen
+surfaces it accounts for every difference except the intended guided-next button:
+
+| Engine | Affected frozen surfaces | Worst case |
+|---|---|---|
+| Chromium | `B02` step 2 | 988 px, 0.08% of the frame |
+| Firefox | `B02` steps 2, 3, 7, 9 | 1187 px, 0.09%; the other three are **2 px each** |
+
+The two engines round sub-pixel layout differently, which is why the affected set is not
+identical; the cause is the same in both. It is invisible at any rendered size, and it is
+the unavoidable cost of deriving the height — which is exactly what keeps a clamped crop
+undistorted rather than stretched.
+
 ## Highlights and labels
 
 Border, translucent fill and a soft glow — the hardware underneath always stays
@@ -304,10 +348,17 @@ The last step's forward button depends on whether the guided path continues.
 
 Either way the last step keeps the `.finish` completion styling.
 
-Nothing is hardcoded per tutorial, in `app.js` or here. B01's last step currently
-offers **Next tutorial ›** → B02 because B02 exists; B02's last step offers **Return
-home** because B03 does not. Adding B03 to `js/tutorials.js` will give B02 a
-**Next tutorial ›** button with no edit to B02 and no router change.
+Nothing is hardcoded per tutorial, in `app.js` or here.
+
+**This has now been demonstrated.** The line that stood here predicted that adding B03
+to `js/tutorials.js` would give B02 a **Next tutorial ›** button with no edit to B02
+and no router change. Authoring B03–B10 did exactly that: B02's last step changed from
+**Return home** to **Next tutorial ›** → B03, and the whole Beginner chain B01 → B10
+resolved, with no change to `app.js`, to this renderer, or to any earlier tutorial's
+data. It was the single intended difference the frozen-surface comparison reported.
+
+B10's last step offers **Return home**, because it is order 10 with no successor; N01's
+still does, because N02 does not exist yet.
 
 The renderer performs no catalog lookup of its own. It is told what follows; it does
 not go and find out. That keeps the "adding a tutorial must not mean editing the
@@ -321,8 +372,9 @@ in `index.html`.
 
 ## Deferred
 
-- further tutorial content (B03 onward, N02 onward) — requires Roland-source
-  verification first;
+- further tutorial content (N02 onward, I01 onward) — requires Roland-source
+  verification first. **The Beginner path is complete**: B01–B10 are authored, each
+  with source notes in `docs/tutorials/`;
 - the rest of the production route catalog (levels, topics, favorites, progress);
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an

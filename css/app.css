@@ -222,6 +222,21 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .crop-frame.dominant { width:100%; height:auto; max-width:100%; max-height:100%; }
 .inset-wrap { flex:none; display:flex; flex-direction:column; align-items:center; }
 
+/* Wide-crop clamp. Some canonical crops are extreme strips - the Favorite and
+   step-button row is 8.15:1 - and at the mode's height would run far past the
+   card. The crop is therefore sized from its own aspect (--crop-aspect, set by
+   the renderer) and clamped to the column, losing height instead of
+   overflowing. Height stays derived from aspect-ratio, so the crop is never
+   stretched.
+   Scoped to the stacked full-plus-inset layout, which is the only place the
+   wrap can be given a definite width to clamp against: in display-focus the
+   wrap sits in a row beside the display preview and must stay shrink-to-fit,
+   where a percentage width has nothing to resolve against. */
+.vis-stack > .inset-wrap { width:100%; }
+.vis-stack > .inset-wrap > .crop-frame.inset {
+  width:min(100%,calc(196px * var(--crop-aspect,1))); height:auto;
+}
+
 .vis-closeup { flex:1; min-width:0; min-height:0; display:grid; grid-template-columns:1fr 236px; grid-template-rows:1fr; gap:20px; align-items:stretch; }
 .closeup-main { min-width:0; min-height:0; display:flex; align-items:center; justify-content:center; }
 .closeup-framed { display:flex; flex-direction:column; align-items:center; max-height:100%; min-height:0; width:100%; }
@@ -243,6 +258,9 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .vis-img-rear .jdxi-canvas { width:100%; }
 .vis-img-rear .vis-stack { gap:26px; }
 .vis-img-rear .crop-frame.inset { height:340px; }
+.vis-img-rear .vis-stack > .inset-wrap > .crop-frame.inset {
+  width:min(100%,calc(340px * var(--crop-aspect,1))); height:auto;
+}
 
 /* Mixed-image step: explicit development/error state, never a silent guess. */
 .mixedimg { align-self:center; max-width:520px; display:flex; flex-direction:column; gap:6px; background:#fff1ef; border:1px solid #f2b8b4; border-radius:11px; padding:12px 14px; font-size:12px; line-height:1.4; color:#7a2420; }

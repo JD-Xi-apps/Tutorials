@@ -243,7 +243,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "section",
       region: { x: 0.0929, y: 0.4093, width: 0.0707, height: 0.1240 },
       group: null,
-      zoom: null,
+      zoom: { x: 0.0856, y: 0.3958, width: 0.0872, height: 0.1494 },
       notes: "Contains the tempo knob and [Tap]. Doubles as the portamento-time control on the Portamento screen (OM p.6).",
     },
     tempoKnob: {
@@ -252,7 +252,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "knob",
       region: { x: 0.0948, y: 0.4459, width: 0.0311, height: 0.0859 },
       group: "tempoSection",
-      zoom: null,
+      zoom: { x: 0.0856, y: 0.3958, width: 0.0872, height: 0.1494 },
     },
     tapButton: {
       label: "Tap",
@@ -260,7 +260,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.1383, y: 0.4608, width: 0.0235, height: 0.0620 },
       group: "tempoSection",
-      zoom: null,
+      zoom: { x: 0.0856, y: 0.3958, width: 0.0872, height: 0.1494 },
     },
     octaveButtons: {
       label: "OCTAVE buttons",
@@ -268,7 +268,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "group",
       region: { x: 0.1782, y: 0.4093, width: 0.0571, height: 0.1158 },
       group: null,
-      zoom: null,
+      zoom: { x: 0.1713, y: 0.3958, width: 0.0698, height: 0.1494 },
       notes: "Both together resets. Shift+OCTAVE = Transpose on 1.50+ (v1.50 p.2).",
     },
     octaveDownButton: {
@@ -277,7 +277,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.1830, y: 0.4608, width: 0.0228, height: 0.0597 },
       group: "octaveButtons",
-      zoom: null,
+      zoom: { x: 0.1713, y: 0.3958, width: 0.0698, height: 0.1494 },
     },
     octaveUpButton: {
       label: "Octave Up",
@@ -285,7 +285,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.2081, y: 0.4608, width: 0.0232, height: 0.0597 },
       group: "octaveButtons",
-      zoom: null,
+      zoom: { x: 0.1713, y: 0.3958, width: 0.0698, height: 0.1494 },
     },
     pitchControl: {
       label: "Pitch control",
@@ -293,7 +293,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "control",
       region: { x: 0.0596, y: 0.6617, width: 0.0235, height: 0.1763 },
       group: null,
-      zoom: null,
+      zoom: { x: 0.0507, y: 0.6423, width: 0.0952, height: 0.2166 },
       notes: "Roland documents '[Pitch] wheel' (OM p.3, p.6); the panel legend reads only 'Pitch'; on the master image it reads as a lever/paddle travelling in a vertical slot. Learner-facing wording is source-map Q8, still open — do not commit to 'wheel' in copy yet.",
     },
     modControl: {
@@ -302,7 +302,7 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "control",
       region: { x: 0.1120, y: 0.6617, width: 0.0244, height: 0.1763 },
       group: null,
-      zoom: null,
+      zoom: { x: 0.0507, y: 0.6423, width: 0.0952, height: 0.2166 },
       notes: "Same wording question as pitchControl (Q8). Mod stays where you leave it; Pitch springs back (OM p.6).",
     },
     arpeggioSection: {

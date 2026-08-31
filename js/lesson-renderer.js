@@ -328,7 +328,18 @@ window.JDXI_LESSON_RENDERER = (function () {
   function buildCrop(image, zoom, resolved, opts) {
     opts = opts || {};
     var frame = el("div", "crop-frame" + (opts.extraClass ? " " + opts.extraClass : ""));
-    frame.style.aspectRatio = zoom.width * image.width + " / " + zoom.height * image.height;
+    var cropW = zoom.width * image.width;
+    var cropH = zoom.height * image.height;
+    frame.style.aspectRatio = cropW + " / " + cropH;
+    /*
+     * The crop's own aspect, published for the stylesheet. A mode asks for a
+     * height; the natural width follows from that height and this ratio. Some
+     * canonical crops are extreme strips - the Favorite/step-button row is
+     * 8.15:1 - and would run far past the column at any useful height, so the
+     * stylesheet sizes from this and clamps to the space available. It is a
+     * ratio, not a coordinate: no geometry leaves the registry.
+     */
+    frame.style.setProperty("--crop-aspect", cropW / cropH);
 
     var inner = el("div", "crop-inner");
     var img = new Image();

@@ -495,6 +495,50 @@ B01-S08 keeps `visualMode: "full"` and is unaffected — a target gaining a zoom
 not change any step that does not ask for an inset, and B01's rendering was verified
 pixel-identical after the change.
 
+### Phase 6A addition — three control groups gain canonical zooms
+
+`B05 Play with the keys` and `B09 Change the feel` ask the learner to find and use
+controls that carried `zoom: null` through every earlier phase. Each is a small
+button or lever whose printed legend is unreadable at full-instrument scale, so each
+step that names one needs an inset. **No `region` was touched**; only `zoom` was added.
+
+Measured on `assets/images/JD-Xi.jpg` (3153 × 1339) by the §5 method, then rendered as
+crops and inspected against the real controls before adoption.
+
+| Target(s) | Source-pixel crop | Normalized `zoom` | Needed by |
+|---|---|---|---|
+| `tempoSection`, `tempoKnob`, `tapButton` | 270,530 → 545,730 (**275 × 200**) | `0.0856, 0.3958, 0.0872, 0.1494` | B09-S02, B09-S03, B10-S09 |
+| `octaveButtons`, `octaveDownButton`, `octaveUpButton` | 540,530 → 760,730 (**220 × 200**) | `0.1713, 0.3958, 0.0698, 0.1494` | B05-S05 – B05-S07, B05-S10, B05-S11, B10-S05 |
+| `pitchControl`, `modControl` | 160,860 → 460,1150 (**300 × 290**) | `0.0507, 0.6423, 0.0952, 0.2166` | B05-S08, B05-S09, B05-S11, B10-S05 |
+
+Each crop follows the established convention that **children share their parent
+group's crop** (as `filterSection`/`cutoffKnob` and `partSelectGroup`/`drumsButton`
+already do), so a step may highlight the group or one member and get the same framing.
+`pitchControl` and `modControl` have no parent group but are a documented pair
+(OM p.6 describes them together), and share one crop deliberately so a step naming
+either shows both — which is what lets B05-S11 check them in one view.
+
+Neighbour clearance, read off the master image, is what fixes each crop's edges:
+
+| Crop | Left edge clears | Right edge clears |
+|---|---|---|
+| TEMPO | `masterVolumeKnob` region ends x 246; crop starts x 270 | `octaveButtons` region starts x 562; crop ends x 545 |
+| OCTAVE | TEMPO section ends x 516; crop starts x 540 | `arpeggioSection` starts x 776; crop ends x 760 |
+| Pitch/Mod | case edge; crop starts x 160, control starts x 188 | `keys` region starts x 545; crop ends x 460 |
+
+Every crop contains its own region with margin, and the automated containment check in
+`tools/validate-data.js` asserts that for all 99 targets on every run.
+
+Vertically all three sit on the row y 530–730 (the two button/knob rows above the
+keys), except Pitch/Mod at y 860–1150, and each includes its printed section legend and
+Roland's red title underline — the same framing the FILTER/AMP-ENV/LFO/EFFECTS crops
+use, so an inset always tells the learner which section they are looking at.
+
+`arpeggioSection`, `arpeggioOnButton`, `keyHoldButton`, `keys`, `micJack`,
+`autoNoteButton` and `rearPanel` still carry `zoom: null`. That is deliberate: no
+tutorial has yet needed a magnified view of them, and geometry is not added
+speculatively.
+
 ## 9. What this registry does not decide
 
 - Highlight rendering, leader lines, and the zoom UI (lesson-screen phase).

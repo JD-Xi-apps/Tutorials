@@ -85,9 +85,59 @@ Future lessons can branch from those fundamentals into bass, pads, leads, effect
 
 A learner may always jump into any available topic from the home screen without following the recommended order.
 
+## 7a. Protecting unsaved work — when the preflight applies
+
+Prerequisites are advisory, so a learner may open any tutorial at any moment, on an
+instrument in any state. A tutorial therefore may never assume there is no unsaved
+work in front of it. The JD-Xi has no general undo, and it asks no confirmation before
+a selection throws an edit away.
+
+The **protect-your-work preflight** is the established answer: a step, placed
+immediately before the first action that can lose work, that states plainly what kind
+of work could be lost, tells the learner not to go on if they have changes they want to
+keep, points at `N09` for saving, and never claims the instrument's state is clean.
+
+**It appears where a tutorial can lose the learner's unsaved work, and nowhere else.**
+Two cases qualify:
+
+1. **Discarding** — selecting another Program or Tone, which replaces the edit buffer
+   outright (OM p.6, p.9). This is the primary case.
+2. **Overwriting** — turning a knob that edits the loaded sound or the program's own
+   settings, which Roland lists alongside program selection as a way a created sound is
+   lost.
+
+A tutorial that only *selects a part*, *plays the keys*, or performs an action the same
+gesture reverses does not qualify, and does not carry one. `B04` and `B05` deliberately
+have no preflight for exactly that reason; `B03`, `B06`, `B07`, `B08`, `B09` and `B10`
+each carry one, placed at the step before the risk rather than at the top of the
+tutorial.
+
+The rule matters in both directions. Omitting a preflight where work can be lost strands
+a learner. Adding one everywhere turns it into wallpaper that stops being read, which
+strands them just the same.
+
+Where a tutorial creates an unsaved edit but cannot lose one, the honest handling is a
+step that says what happened to the change and what will lose it — not a preflight.
+
+### Recovery is context-specific
+
+There is no universal undo, so no step may imply one. A recovery may only offer a move
+Roland documents **for that context**, described with Roland's own scope. Worked
+example: `[Shift] + [Enter]` is documented as returning to the original sound after you
+have switched or edited it, so `B06` offers it for its filter, amp and LFO edits — and
+`B07` does not offer it for effect settings, which Roland places outside that sentence.
+Changing Program to get a stored version back may be offered only with an explicit
+warning that it discards everything unsaved. Factory Reset is never a step-level
+recovery.
+
 ## 8. Current implementation state
 
-- Main-menu UI only.
-- Navigation and cards are placeholders.
-- No persistence, accounts, audio, MIDI, or lesson routing yet.
-- The current baseline is intentionally simple HTML/CSS/JavaScript with no build system.
+- Home screen, and a reusable lesson screen that renders every tutorial from data.
+- Hash routing for tutorials and their steps, working from `file://`.
+- **The Beginner path is complete: B01–B10.** N01 is live; the rest of the Novice and
+  Intermediate paths are not authored yet.
+- Level, topic, Favorites, My Progress and Settings routes are not implemented yet, and
+  those controls remain placeholders.
+- No persistence, accounts, audio or MIDI.
+- The baseline remains plain HTML/CSS/JavaScript with no build system, no modules and
+  no runtime `fetch`; it opens by double-clicking `index.html`.
