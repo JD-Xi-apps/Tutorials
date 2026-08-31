@@ -394,6 +394,33 @@ a novice tutorial is not a beginner successor. No router or renderer edit was ne
 for the new tutorial itself — only the Novice tile gained `data-route="#tutorial/N01"`
 in `index.html`.
 
+## Frozen-surface accounting at beta
+
+`tools/frozen-surfaces.js` compares Home, the global topbar and every step of B01, B02
+and N01 against a baseline captured at the phase's parent commit. At beta, 38 surfaces
+compare as follows, and **every difference has exactly one of four causes**:
+
+| Cause | Surfaces | Size |
+|---|---|---|
+| No change at all — Home and the topbar | 2 | byte-identical |
+| The favourite control, added beside the lesson title | 33 | ~86 × 21 px, at most 543 px |
+| Also the guided-next button, now that a successor exists (B02 → B03, N01 → N02) | 2 | up to 4534 px, 0.35% |
+| Also the 0.016 px crop-height derivation described above | 1 | 1531 px, 0.12% |
+
+Two things are worth stating plainly, because they are what the comparison is for.
+
+**Home and the topbar are byte-identical**, even though every control on the home screen
+was rewired during this phase — the level tiles, the ten topic cards, My Progress,
+Favorites, Settings and the roadmap button all gained real destinations. That rewiring
+changed `data-route` and `title` attributes and nothing else, which is exactly what the
+zero-pixel result proves.
+
+**The favourite control is additive, not a reflow.** Measured against the parent: the
+lesson head is still 54 px tall, the title still sits at x 34, y 78.5, and the lesson body
+still begins at y 118. The control occupies previously empty space to the right of each
+title, which is why its box starts at a different x on every tutorial — it begins where
+that tutorial's title ends.
+
 ## Deferred
 
 - **(no longer deferred)** tutorial content: all thirty canonical tutorials are

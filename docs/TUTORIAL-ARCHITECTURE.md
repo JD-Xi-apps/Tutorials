@@ -420,7 +420,29 @@ The canonical JS registry implements this full schema. Properties worth naming:
 be justified by a specific legibility problem — dense controls, small legends, or
 display states that cannot be read at full-instrument scale.
 
-Not implemented in this phase.
+> **Implemented — and worth reading the numbers honestly.** All four modes are rendered
+> by `js/lesson-renderer.js`. Across the finished library of **318 steps**:
+>
+> | Mode | Steps | Share |
+> |---|---|---|
+> | `full-plus-inset` | 243 | 76.4% |
+> | `full` | 50 | 15.7% |
+> | `display-focus` | 25 | 7.9% |
+> | `control-closeup` | 0 | — |
+>
+> The rule above says `full` "should remain the common case", and it is not: an inset
+> alongside the full instrument is. That is a real departure from what this section
+> anticipated, and it is deliberate rather than drift — the JD-Xi's panel legends are
+> small enough that a learner asked to find a specific button usually needs the
+> magnified view, and `full-plus-inset` keeps the whole instrument on screen while
+> providing it. The invariant that actually matters — that the full instrument stays
+> visible — holds in 92% of steps, and the remaining 8% are display reproductions,
+> which draw the instrument underneath as well.
+>
+> `control-closeup` is implemented and exercised by the development fixture, but **no
+> canonical tutorial uses it**. That is a finding rather than an omission: a mode that
+> lets a crop dominate the view never turned out to be the better answer than an inset
+> beside the full instrument, so it was never forced on a step to justify its existence.
 
 ## 10. Lesson-screen contract
 

@@ -81,6 +81,28 @@ learner state, and an empty collection rendering a placeholder page. The first o
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
 the favourite control visible on a fixture.
 
+## `qa-runtime.js`
+
+```
+node tools/qa-runtime.js [chromium|firefox]
+```
+
+Checks the runtime contract two ways, because it is easy to break by accident and hard to
+notice — a development machine often has a server running, and a cached asset makes a
+remote reference look local.
+
+Statically, over the shipped files only (`tools/` and `docs/` excluded): no `fetch`, no
+`XMLHttpRequest`, no ES module syntax, no `type="module"`, no `require`, no WebSocket,
+no service worker; every `src`/`href` in `index.html` a relative path that exists on disk;
+no package manifest, lockfile or build config at the root; and the three canonical image
+assets byte-identical to their recorded SHA-256 baselines.
+
+Then dynamically: the app is opened cold on a **deep link** from a real `file://` URL, and
+every request the browser makes is watched. A single non-`file://` request fails the run.
+It also loads the app with `localStorage` rigged to throw on access and asserts that every
+route still renders, that no error is logged, and that the learner is told persistence is
+unavailable.
+
 ## `qa-accessibility.js`
 
 ```

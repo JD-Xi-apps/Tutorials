@@ -12,9 +12,14 @@ Companion documents:
 
 ## 1. Status and scope
 
-This is **research and documentation only**. It contains no lesson prose, no learner-facing
-procedures, no hardware coordinates, and no runtime changes. Nothing in
-`index.html`, `css/app.css`, `js/app.js`, or `assets/` was touched.
+This began as **research and documentation only**, and that is still what this file is:
+it contains no lesson prose and no learner-facing procedures. What has changed since is
+that the content it was written to govern now exists.
+
+> **Beta postscript.** All thirty canonical tutorials are authored, and every technical
+> claim in them traces back through this document to a Roland page. The per-tutorial
+> evidence records are in `docs/tutorials/`, one file per tutorial, each with a per-step
+> reconciliation table. See §14 for what this phase resolved and what remains open.
 
 What this document is *not*: it is not a rewrite of the manuals, and it is not a
 substitute for reading them. Its job is to tell a future author **exactly which page to
@@ -562,8 +567,12 @@ in the canonical set requires the MIDI Implementation** — it is the right docu
 JD-Xi, but the wrong document for this curriculum, and is retained for provenance rather
 than for authoring.
 
-Two mapped tutorials are thinner than their title implies and are flagged in §12: N06
-*Layer sounds* and N10 *Getting unstuck*.
+Two mapped tutorials were thinner than their title implied and were flagged in §12: N06
+*Layer sounds* and N10 *Getting unstuck*. Both are resolved — N06 was renamed to
+*Combine parts in a pattern* by PM decision (Q9) and authored around Roland's own answer
+to the one-playable-part constraint, and N10 is authored against Roland's troubleshooting
+table and error-message list as its spine, with the house recovery pattern Q10 asked for
+(see §14).
 
 ## 10. Version-1.10 and 1.50 detail
 
@@ -779,7 +788,41 @@ tensions worth PM attention are all *silences* rather than conflicts: the Owner'
 menu list and both shortcut lists are stale relative to 1.50 (§11.2, §11.3), and Roland
 never states the boxed-legend convention (Q3).
 
-## 13. What this phase does not decide
+## 14. Beta closeout — what authoring thirty tutorials settled, and what it did not
+
+Recorded so a later reader can see which of this document's open questions were answered
+by content and which are genuinely still open.
+
+### Answered by authoring
+
+| Item | How |
+|---|---|
+| **Q10 — no house recovery pattern existed** | `N10` is that pattern, stated for the learner and applied library-wide: `[Exit]` for the wrong screen, `[Shift]` + `[Enter]` for an edited sound, selecting another program for starting over (always with its discard warning), stopping playback for a "busy" message, and saving for anything that must survive. Every `recoveryHelp` in all thirty tutorials draws from that set. |
+| **Q13 — mirrored confirmation prompts** | Both are reproduced, each in its own documented order, and neither is normalised to match the other. `N03` and `I08` show `With Copying ?` / `[Exit]:N [Ent]:Y`; `N10` shows `Factory Reset ?` / `[Ent]:Y [Exit]:N` and tells the learner outright that the two are the opposite way round. |
+| **Q11 — Vocoder has no tutorial** | Confirmed as a deliberate gap by PM decision, not an oversight. The `vocoder` collection exists in `js/collections.js` with no members so the gap stays visible, and is deliberately not routable because an empty topic page would be a placeholder. |
+| **The scope of `[Shift]` + `[Enter]`** | Roland scopes it to "the original sound after you've switched or edited the sound" (OM p.5). It is therefore offered by the eight tutorials that edit tone parameters or point at doing so — `B06`, `B10`, `N08`, `N10`, `I01`, `I02`, `I04` and `I05` — and **withheld** from `B07` and `I06`, which edit effect settings. Roland places those outside that sentence, and extending it would be an unsourced claim about a shortcut's reach. The asymmetry is recorded in the `B06`, `B07`, `N08` and `I06` source-note files, and `N10` states the limits to the learner directly. |
+
+### Still open, and now worked around rather than waited on
+
+| Item | Status after authoring |
+|---|---|
+| **Q3 — does a boxed panel legend mean "Shift function"?** | Still unstated by Roland. No tutorial teaches it, and none needs to. |
+| **Q4 — the display's real dimensions** | Still unstated. Fifteen distinct screens are reproduced across the library, **every one of them a screen Roland illustrates**, and not one is composed. The ≤16-character data check remains a guard against invention, not a claim about the grid. |
+| **Q8 — are the Pitch and Mod controls "wheels"?** | Still unresolved. Every tutorial uses the panel names *Pitch* and *Mod*, so `B05`, `I03` and `I05` are correct whichever way it resolves. |
+| **SYSTEM's opening group, and whether menu lists wrap** | Still unobserved. Every step that navigates SYSTEM or the Menu is written to reach a named destination rather than assume a starting point, and every traversal step's recovery covers being at the end of a list. |
+
+### A rule this phase added
+
+**SYSTEM parameters are only changed where there is no alternative.** System settings
+save themselves on leaving the screen (OM p.7, p.13, p.15), so a tutorial that changes
+one cannot put it back unless it read the value first. Across thirty tutorials exactly
+one does it: `I09` sets `Start Prog`, which has no other route, and it tells the learner
+the change writes itself and has them note the old value first. Everywhere else — the
+metronome in `N04`, `Loop Rec` in `I08`, `Sync Mode` in `B08`, `Tempo Lock` in `B09`,
+keyboard feel in `B05` — the setting is named and deliberately not visited, with the
+auto-save behaviour given as the reason.
+
+## 15. What the research phase did not decide
 
 - Hardware-target coordinates — still deferred (architecture §8, §14).
 - Any learner-facing wording, title, or step.

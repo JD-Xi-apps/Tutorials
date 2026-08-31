@@ -5314,7 +5314,7 @@ window.JDXI_TUTORIALS = {
           "Copying is usually what you want when extending something that already works — you get a second measure to vary rather than an empty one to fill.",
         checkpoint: "The pattern is longer than it was.",
         recoveryHelp:
-          "Neither answer cancels; both apply the change. N03 covers this screen. The length reverts if you select another program before saving.",
+          "Neither answer cancels; both apply the change — N03 covers this screen. If you want the original length back, set it again the same way. Roland notes the length also reverts if you select another program before saving, but reach for that only if you want none of what you have: it discards every unsaved change on this program, your pattern and sounds included.",
         nextHint: "Now move around the measures you have.",
       },
       {

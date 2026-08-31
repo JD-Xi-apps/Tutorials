@@ -29,7 +29,7 @@ Source reconciliation record for I08. Content lives in `js/tutorials.js`
 | **I08-S03** Arm the recording | `partSelectGroup`, `realTimeRecButton` | `full-plus-inset` | Recording goes to the selected part; press [Real Time Rec] to arm. | OM p.10 ("When you record, the part that's selected by Part Select is recorded"); OM p.11 *Realtime Recording* steps 1–2. |
 | **I08-S04** Record in real time | `playStopButton`, `keys` | `full` | Press [▶/■] and play; the performance is layered onto the pattern; knob and wheel movements are recorded too. | OM p.11 steps 3–4, including "Your performance is recorded by layering it onto the selected pattern" and "Movements of the knobs and wheels are also recorded." |
 | **I08-S05** It stops at the end of the pattern | `realTimeRecButton` | `full-plus-inset` | Recording while the pattern plays stops automatically when playback returns to the beginning; the `Loop Rec` system parameter changes that. | OM p.11 *Tips for Realtime Recording*, quoted closely, and OM p.13's `Loop Rec` definition. See *SYSTEM handling*. |
-| **I08-S06** Give yourself more room | `menuWriteButton`, `display` | `display-focus` | Up to four measures; Enter copies from the existing pattern, Exit adds blank measures; neither cancels; the length reverts if you select another program before saving. | OM p.10 *Changing the Number of Measures*, its button table and its note. Screen from OM p.10 — see *Display provenance*. |
+| **I08-S06** Give yourself more room | `menuWriteButton`, `display` | `display-focus` | Up to four measures; Enter copies from the existing pattern, Exit adds blank measures; neither cancels; the length reverts if you select another program before saving — offered only with its discard warning. | OM p.10 *Changing the Number of Measures*, its button table and its note. Screen from OM p.10 — see *Display provenance*. The discard warning is required by the recovery house rule: Roland's revert-by-switching-program also throws away every other unsaved change, so it may never be offered bare. |
 | **I08-S07** Work on a later measure | `shiftButton`, `stepButtons` | `full-plus-inset` | `[Shift]` + one of the first four numbered buttons chooses the displayed measure, during playback or recording; the current measure blinks; with a 32nd-note scale the range is the first eight. | OM p.10, as in `N03`. |
 | **I08-S08** Record a knob movement | `realTimeRecButton`, `cutoffKnob` | `full-plus-inset` | Knob movements are recorded with the notes; recording a lot of movement can fill the pattern; extreme movements can make playback struggle. | OM p.11 for the recording; PG p.4: "If you record extreme knob movements, pattern playback might not keep up. If the storage capacity for knob movements reaches its limit, the display indicates 'Pattern Full!' and no further recording is possible." PG p.5's error row gives the documented action. |
 | **I08-S09** Removing recorded movement | `enterButton`, `eraseButton` | `full-plus-inset` | `[Enter]` + `[Erase]` during playback erases the selected part's knob and wheel movements while held; on the Drums part it clears them for every instrument at once. | v1.10 p.2, quoted closely: "While a pattern plays back, you can hold down the [Enter] button and press the [Erase] button to erase only the knob and wheel movements from the currently selected part. Erasure occurs while you hold down the button. Note that in the case of a Drums part, this erases the recorded movements for all of the instruments." See *Version-dependent content*. |
@@ -75,6 +75,18 @@ The first draft of this step named 1.50 in its `detail` while naming 1.10 in its
 `recoveryHelp`. That was caught writing this file and corrected before the checkpoint;
 it is recorded here because a version caveat that contradicts itself is exactly the kind
 of defect these notes exist to catch.
+
+## A recovery that had to be qualified
+
+I08-S06's `recoveryHelp` originally repeated Roland's note plainly — "the length reverts
+if you select another program before saving" — which is true and, on its own, dangerous.
+A learner following it to undo a pattern-length change would also lose the pattern, the
+sounds and everything else unsaved on that program.
+
+It now offers setting the length back as the ordinary fix, and presents the
+select-another-program route with its full cost attached. The rule that caught it is
+enforced in `tools/validate-data.js`: wherever a step offers selecting another program as
+a recovery, the discard has to be stated in the same breath.
 
 ## SYSTEM handling
 

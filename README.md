@@ -24,16 +24,43 @@ Completed tutorials, where you had got to, and your favourites are kept in the b
 own local storage and nowhere else. There is no account and nothing is sent anywhere. If
 storage is unavailable the app stays fully usable and says so; only persistence is lost.
 
-The home screen supports two learning modes:
+The home screen offers two ways in, and both now work:
 
-- **Guided learning path** — connected lessons in a recommended order.
-- **A la carte** — jump directly to a skill, sound type, or challenge (not yet routed).
+- **Guided learning path** — Beginner, Novice and Intermediate, each a level page listing
+  its ten tutorials in order with your progress against them.
+- **A la carte** — ten topic collections, from *Getting started* to *Mini challenges*,
+  each gathering tutorials from any level. Four further collections (*Sound design*,
+  *Arpeggiator*, *Troubleshooting*, *Performance*) are reachable from the *Other topics*
+  strip on any topic page.
 
-Initial categories include Beginner, Novice, Intermediate, Getting Started, Navigating Menus, Playing Notes, Making Beats, Bass Sounds, Pad Sounds, Lead Sounds, Effects & Motion, Saving Sounds, and Mini Challenges.
+Every tutorial belongs to exactly one guided level and to any number of topics. The
+content itself exists once; levels, topics and Favorites are all references to it.
 
 ## Running it
 
-Open `index.html` directly in a desktop browser. No build step or local server is currently required.
+Open `index.html` directly in a desktop browser by double-clicking it. There is no build
+step, no install, no package manager and no server — the app is static HTML, CSS and
+classic JavaScript, uses no modules and makes no network requests of any kind, so it
+works from a `file://` URL exactly as it does from anywhere else.
+
+Firefox is the primary target; it is also verified in Chromium.
+
+## Checking it
+
+Everything in [`tools/`](tools/) is development-only and is never loaded by the app.
+
+```
+node tools/validate-data.js --beta     # catalog, registry and collections (no dependencies)
+node tools/test-progress.js            # local-state failure modes (no dependencies)
+node tools/qa-runtime.js               # the runtime contract, statically and on file://
+node tools/qa-routes.js --strict-routes --viewports
+node tools/test-behaviour.js           # what the learner experiences, end to end
+node tools/qa-accessibility.js
+node tools/frozen-surfaces.js --out <dir> --compare <baseline>
+```
+
+The first two need nothing installed. The rest need Playwright, which the repository does
+not depend on and does not install.
 
 ## Layout contract
 

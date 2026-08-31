@@ -306,6 +306,39 @@ ids.forEach((id) => {
   });
 });
 
+/* ----------------------------------------------------- recovery house rules */
+
+/*
+ * Two content rules that no render or route check could ever see, both of
+ * which would put a learner's work at risk if broken.
+ *
+ * Factory Reset initialises every user program and every system setting
+ * (OM p.14). It is never a routine recovery, so it may not appear in any
+ * step's recoveryHelp - the one tutorial that names it at all, N10, does so to
+ * teach recognising the screen and pressing [Exit], in its detail rather than
+ * as a suggested fix.
+ *
+ * "Select another program" IS a documented recovery, but it discards every
+ * unsaved change - so wherever it is offered, the discard has to be stated in
+ * the same breath.
+ */
+const DISCARD_OFFER =
+  /(select|choos|switch)\w*\s+(to\s+)?(a\s+)?(different|another)\s+program/i;
+const DISCARD_WARNING = /discard|throw(s|ing)? (it |them |that |everything )?away|lose|lost|gone/i;
+
+ids.forEach((id) => {
+  const t = tutorials[id];
+  (t.steps || []).forEach((s) => {
+    const recovery = String(s.recoveryHelp || '');
+    check(!/factory reset/i.test(recovery),
+      `${id} step ${s.id}: offers Factory Reset as recovery, which is never a routine fix`);
+    if (DISCARD_OFFER.test(recovery)) {
+      check(DISCARD_WARNING.test(recovery),
+        `${id} step ${s.id}: offers selecting another program without saying it discards unsaved work`);
+    }
+  });
+});
+
 /* --------------------------------------------- source-note step references */
 
 /*
