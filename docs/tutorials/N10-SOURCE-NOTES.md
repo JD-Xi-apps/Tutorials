@@ -5,11 +5,48 @@ Source reconciliation record for N10. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **N10 — Getting unstuck** (novice, order 10, 12 steps, ~11 min) |
+| Tutorial | **N10 — Getting unstuck** (novice, order 10, 14 steps, ~13 min) |
 | Short title | Getting unstuck |
 | Prerequisites | `["N09"]` — advisory, not a gate |
 | Kind | **Recovery and recognition.** Performs no state-changing action. |
 | Authored | 2026-08-31 |
+
+## Master-plan reconciliation (2026-08-31)
+
+The brief's instruction for N10 was preservation first: **keep the recognition-first safety
+shape** so the tutorial is safe to open while the learner is already stuck and may be
+carrying unsaved work. That shape is intact — the first twelve steps still change nothing on
+the instrument except pressing Exit and Play/Stop, and the tutorial can be read end to end
+without altering a sound.
+
+One thing was added, and the master plan (§9) specifies it in unusual detail: an **optional
+final practice** in which the learner makes a small sound edit and reverts it with the
+documented `[Shift]` + `[Enter]`, offered *only after an explicit protect-your-work
+decision*, skippable, and not required to complete N10.
+
+`N10-S13` is that decision and `N10-S14` is the exercise. Four constraints from §9 are met
+explicitly:
+
+1. **After the toolkit, not inside it.** `N10-S12` still closes the recovery toolkit and its
+   `recoveryHelp` says plainly "this is the last step you have to do — the two that follow
+   are optional practice, and you can stop here."
+2. **An explicit decision first.** `N10-S13` asks the learner to judge whether the loaded
+   sound contains edits they want, and tells them to skip if so.
+3. **Genuinely skippable.** `N10-S14`'s instruction addresses both cases in its first
+   sentence, and its checkpoint accepts either — "or you skipped the exercise, which is
+   equally a finish."
+4. **No universal undo implied.** The step's text scopes the move to the sound, and its
+   recovery repeats what it does not reach.
+
+The exercise earns its place beyond compliance. `N10-S03` already described `[Shift]` +
+`[Enter]` and deliberately told the learner *not* to press it — correct for a
+recognition-first tutorial, but it means a learner could finish N10 having never used the one
+recovery move they are most likely to need. The optional pair lets them, on a sound they have
+chosen to sacrifice.
+
+**One item remains outstanding.** The master plan also gives N10 *Quick Reference links*.
+Quick Reference does not exist yet; it is built in the reference-surfaces batch, and the links
+are added when there is something to link to.
 
 ## Sources consulted
 
@@ -35,6 +72,8 @@ Source reconciliation record for N10. Content lives in `js/tutorials.js`
 | **N10-S10** A pattern that will not play | `playStopButton`, `display` | `full-plus-inset` | Sync Mode set to Slave makes the JD-Xi wait for timing messages from another device; Master is the setting for using it alone. | OM p.17's row, quoted closely, with OM p.13's definitions of both values. |
 | **N10-S11** The screen to back out of | `exitButton`, `display` | `display-focus` | Factory Reset initialises all user programs — with their arpeggios, patterns and effects — and all system settings; Exit answers no. | OM p.14: the confirmation screen, "If you decide to cancel, press the [Exit] button", and the *Items initialized by Factory Reset* list. See *Factory Reset handling*. |
 | **N10-S12** There is no undo, and that is workable | `exitButton` | `full-plus-inset` | The JD-Xi has no undo and no single reset that puts things back; the recovery set is Exit, `[Shift]` + `[Enter]`, selecting another program, Play/Stop, and saving. | `ROLAND-SOURCE-MAP.md` §7 row 34 and Q10 record that this is the complete documented set. Each member is sourced in its own step above. |
+| **N10-S13** Optional practice: decide whether to try it | `cutoffKnob` | `full` | **No factual claim about the instrument.** The step is a protect-your-work decision covering the optional exercise that follows. | Nothing to source — it asserts nothing about the JD-Xi. Its content is the master plan's own requirement (§9): the exercise may be offered *only after an explicit protect-your-work decision*, the learner must be told to skip it if the loaded sound contains edits they want to keep, and it must not be required to complete N10. All three are met in this step's text. |
+| **N10-S14** Optional practice: change it, then put it back | `shiftButton`, `enterButton`, `display` | `full-plus-inset` | Turning Cutoff edits the loaded sound and the tone number disappears from the lower line; `[Shift]` + `[Enter]` returns the original sound and the number comes back. | OM p.5, both halves: "Sounds that don't show a tone number are sounds that have been edited for an individual program. If you want to return to the original sound after you've switched or edited the sound, hold down the [Shift] button and press the [Enter] button." The knob edit is OM p.6 ("The sound you create will change if you move a knob"). The step's scope note — that the move does not reach effects, pattern edits or saved data — is the same boundary `B07` and `N08` observe, and is the absence of any Roland statement extending it. |
 
 ## N10 performs no state-changing action
 

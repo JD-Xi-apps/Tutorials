@@ -2108,24 +2108,28 @@ window.JDXI_TUTORIALS = {
     title: "Understand programs and parts",
     shortTitle: "Programs and parts",
     summary:
-      "Find out how the JD-Xi organizes everything: what a program holds, what a part is, and where the settings for each of them live. You will change nothing.",
-    estimatedMinutes: 9,
+      "A program is the whole setup: four parts, their effects and their pattern, all at once. You will switch between programs and hear how much changes, then recall one instantly from a Favorite button.",
+    estimatedMinutes: 10,
     prerequisites: ["N01"],
     learningGoals: [
       "Say what a program contains and what a part contains.",
-      "Open Program Edit and move around it safely.",
-      "Tell which part you are looking at from the display.",
-      "Know where your own saved programs go.",
+      "Switch between programs and hear that everything changes together.",
+      "Tell the Program buttons apart from the Tone buttons, and know why it matters.",
+      "Recall a program instantly from a Favorite button.",
     ],
     // Source record: docs/tutorials/N02-SOURCE-NOTES.md
-    // N02 changes nothing on the instrument. It selects no program and no
-    // tone, and presses no Value button anywhere -- the same discipline N01
-    // uses, for the same reason (prerequisites are advisory, so the learner
-    // may arrive with unsaved work). Part Select is used freely because it
-    // only chooses what you are looking at or playing.
+    // N02 is the practical Program lesson (PRODUCT-CURRICULUM-MASTER-PLAN.md
+    // sec 9): what a Program is, that it holds four Parts plus pattern and
+    // effect state, that Program Value changes all of it at once, and that
+    // a hardware Favorite recalls one instantly.
     //
-    // The teaching contrast with N01 is deliberate: SYSTEM saves itself as
-    // you leave it, and Program Edit does not. Both facts are Roland's.
+    // It selects Programs, so unlike N01 it IS discard-capable, and carries
+    // the protect-your-work preflight at N02-S04 -- immediately before the
+    // first Program change at N02-S05.
+    //
+    // Program Edit is deliberately ONE look-only step, not the lesson's
+    // centre. Saving and Favorite REGISTRATION are not taught here; N09
+    // owns both.
     steps: [
       {
         id: "N02-S01",
@@ -2141,32 +2145,33 @@ window.JDXI_TUTORIALS = {
           "Roland's own example of the top screen. Your JD-Xi shows its own program, tempo and tone name.",
         whyItMatters:
           "Everything in this tutorial hangs off that one label. When you save your own work later, you will be choosing one of these slots to put it in.",
-        checkpoint: "You can read your JD-Xi's current bank letter and program number.",
+        checkpoint:
+          "You can read your JD-Xi's current bank letter and program number.",
         recoveryHelp:
-          "Press Exit a few more times. Exit moves back one screen at a time, so it always takes you toward the top screen, never further in.",
-        nextHint: "That one program contains more than you might expect.",
+          "Press Exit a few more times. Exit only ever moves back toward the top screen, so you cannot overshoot it.",
+        nextHint: "Now what that label actually stands for.",
       },
       {
         id: "N02-S02",
         title: "A program holds four parts",
         instruction: "Find the four Part Select buttons.",
         detail:
-          "Digital Synth 1, Digital Synth 2, Drums and Analog Synth. Every program has all four, always.",
+          "Digital Synth 1, Digital Synth 2, Drums and Analog Synth. Every program has all four, always — along with the effects they share and the pattern they play.",
         hardwareTargets: ["partSelectGroup"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "This is why switching program changes so much at once: you are not swapping one sound, you are swapping all four parts, their effects, their arpeggio and their pattern together.",
+          "This is why switching program changes so much at once. You are not swapping one sound; you are swapping all four parts, their effects and their pattern together.",
         checkpoint: "You can point to all four Part Select buttons.",
         recoveryHelp:
-          "They are in the left half of the panel, to the right of the display, in a column of four.",
-        nextHint: "Each of those parts holds exactly one sound.",
+          "Look in the left half of the control panel, to the right of the display. The magnified view shows the four buttons in a column.",
+        nextHint: "Now the layer below a part.",
       },
       {
         id: "N02-S03",
         title: "Each part holds one tone",
         instruction: "Press Digital Synth 1, then press Drums, watching the lower line.",
         detail:
-          "The lower line shows the tone belonging to whichever part you have selected. Pressing these buttons only changes which part you are looking at and playing — it selects no new sound and throws nothing away.",
+          "The lower line shows the tone belonging to whichever part you have selected. Pressing these buttons only changes which part you are looking at and playing — it selects no new sound and throws nothing away. The keys play one part at a time, and this is how you choose which.",
         hardwareTargets: ["partSelectGroup", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
@@ -2174,16 +2179,84 @@ window.JDXI_TUTORIALS = {
         checkpoint:
           "The lower line of the display changes as you move between the two parts.",
         recoveryHelp:
-          "If the lower line does not change, press each button firmly and give the display a moment. If it shows no tone number at all, that is Roland's signal that the sound has been edited and not saved — it is not a fault.",
-        nextHint: "Now go and look at the program's own settings.",
+          "If the lower line looks the same on both, this program may use similarly-named tones. Press Digital Synth 1 and Drums back and forth and watch closely — the Drums part names a drum kit rather than a synth sound.",
+        nextHint: "Before you change program, one thing is worth checking.",
       },
       {
         id: "N02-S04",
-        title: "Open Program Edit",
+        title: "Protect any work you want to keep",
         instruction:
-          "Press Menu/Write, then use Cursor to select Program Edit and press Enter.",
+          "Decide whether there is a sound or a pattern on this JD-Xi you have been working on and have not saved.",
         detail:
-          "Program Edit is the second item in the Menu, just after SYSTEM. Use Cursor ► to reach it.",
+          "From the next step onward you will select different programs. On the JD-Xi, doing that throws away anything edited and not saved — a sound, an effect setting, a pattern, all of it at once. This tutorial cannot tell what state your instrument is in, so the decision is yours.",
+        hardwareTargets: ["programValueButtons"],
+        visualMode: "full",
+        whyItMatters:
+          "Selecting a program is the single most destructive ordinary action on this instrument, precisely because it replaces so much at once. Nothing warns you first, which is why this step exists.",
+        checkpoint:
+          "You have decided: either there is nothing you need to keep, or you are going to save it first.",
+        recoveryHelp:
+          "If you do have unsaved work you care about, the tutorial that teaches saving is N09 Save your work. Go there first and come back to N02 afterwards. If you are not sure, assume there is something worth keeping — you cannot get it back afterwards.",
+        nextHint: "Now change the whole thing at once.",
+      },
+      {
+        id: "N02-S05",
+        title: "Change the whole program",
+        instruction: "Press Value + once, then play a key.",
+        detail:
+          "This is the pair marked Value, with Program (Pattern) printed above it — not the Tone pair beside it. It selects a whole program: all four parts, the effects and the pattern together.",
+        hardwareTargets: ["programValuePlusButton"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "A different sound, and possibly a completely different character.",
+        whyItMatters:
+          "Reaching for Value when you meant Tone is the most common way a beginner loses the sound they had, because it replaces everything at once rather than just the one part you were listening to.",
+        checkpoint:
+          "The program number on the upper line has changed, and the keys sound different.",
+        recoveryHelp:
+          "Press Value − to step back to the program number you were on. The stored program is unchanged — only anything you had edited and not saved is gone.",
+        nextHint: "Now do it a few more times and listen to how much moves.",
+      },
+      {
+        id: "N02-S06",
+        title: "Compare several programs",
+        instruction:
+          "Step through four or five programs with Value +, playing a few keys on each and pressing Play/Stop to hear its pattern.",
+        detail:
+          "Try each of the Part Select buttons on one or two of them. You are listening for how much is different each time, not for a sound you like.",
+        hardwareTargets: ["programValueButtons", "playStopButton"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "Four or five completely different setups — different sounds on every part, different effects, and in most cases a different pattern.",
+        whyItMatters:
+          "Reading that a program contains four parts and their pattern is not the same as hearing it. Stepping through a handful is what makes the word 'program' mean something concrete.",
+        checkpoint:
+          "You have heard several programs and can say what changed between them beyond just the sound the keys play.",
+        recoveryHelp:
+          "Stop the pattern with Play/Stop before stepping to the next program, so you are listening to one thing at a time. If a program plays no pattern, that program simply has none recorded — step on to the next.",
+        nextHint: "Programs are grouped into banks.",
+      },
+      {
+        id: "N02-S07",
+        title: "Move between banks",
+        instruction: "Hold down Shift and press Value +.",
+        detail:
+          "This switches banks rather than stepping one program at a time. Roland's own programs are in banks A to D, and the user banks — where your saved programs will go — are E to H.",
+        hardwareTargets: ["shiftButton", "programValuePlusButton"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Sixty-four programs to a bank means stepping one at a time is a slow way to travel. This is how you cover ground.",
+        checkpoint: "The letter in front of the program number has changed.",
+        recoveryHelp:
+          "Hold Shift and press Value − to go back. If the letter did not change, make sure Shift is held down before you press Value.",
+        nextHint: "One quick look at where a program's own settings live.",
+      },
+      {
+        id: "N02-S08",
+        title: "A look inside Program Edit",
+        instruction: "Press Menu/Write, use Cursor to select Program Edit, and press Enter.",
+        detail:
+          "Look only — leave the Value buttons alone. These are the settings that belong to the whole program rather than to any one part, which is why the tempo you set in B09 lives in here.",
         hardwareTargets: ["menuWriteButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["PROG: COMMON", "Tempo 120"],
@@ -2191,107 +2264,45 @@ window.JDXI_TUTORIALS = {
         displayNote:
           "Roland's illustrated Program Edit COMMON screen. Your JD-Xi shows its own program's tempo.",
         whyItMatters:
-          "These are the settings that belong to the whole program rather than to any one part — which is why the tempo you set in B09 lives here.",
+          "You do not need this screen yet, and later tutorials reach it when they need something specific from it. Knowing it exists is enough for now — and knowing that, unlike SYSTEM, it does not save itself as you leave.",
         checkpoint:
           "The upper line reads PROG: COMMON and the lower line shows a parameter with a value.",
         recoveryHelp:
-          "If you held Menu/Write down instead of pressing it, the PORTAMENTO screen appears instead — press Exit once and try a short press. If you opened the wrong Menu item, press Exit once to get back to the list.",
-        nextHint: "Read the next step before pressing anything else.",
-      },
-      {
-        id: "N02-S05",
-        title: "Look, do not change",
-        instruction: "Leave the Value buttons alone from here on.",
-        detail:
-          "You are in a screen where the Value buttons edit the program. This tutorial is a tour, not an edit, so Cursor and Shift are all you need. One difference from SYSTEM is worth knowing: the JD-Xi does not save what you do in here as you leave, so an accidental change is not written anywhere — but it does replace what is loaded until you switch program.",
-        hardwareTargets: ["programValueButtons"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "N01 taught the opposite case: SYSTEM saves itself automatically as you leave the screen. Program Edit does not. Knowing which screens write and which do not is most of what makes the menus safe to explore.",
-        checkpoint:
-          "You know which two buttons to avoid in here, and why this screen behaves differently from SYSTEM.",
-        recoveryHelp:
-          "If you have already pressed Value, nothing has been written to storage. The change sits in the loaded program until you select another program, which discards it — and would discard anything else unsaved along with it.",
-        nextHint: "Now move to the other group of settings.",
-      },
-      {
-        id: "N02-S06",
-        title: "Jump to the part settings",
-        instruction: "Hold down Shift and press Cursor ►.",
-        detail:
-          "This moves between the groups of a settings screen, exactly as it did inside SYSTEM in N01. Program Edit has a COMMON group and a MAIN group.",
-        hardwareTargets: ["shiftButton", "cursorRightButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["PROG: MAIN D1", "Level 127"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Program Edit MAIN screen. The two letters at the right show the part being edited, and the value is your own program's.",
-        whyItMatters:
-          "The same gesture works here as in SYSTEM because both are settings screens. That is what makes N01's menu pattern worth learning once rather than per screen.",
-        checkpoint: "The upper line now reads PROG: MAIN, with two letters at its right.",
-        recoveryHelp:
-          "If the group did not change, you may already be at the last one — keep Shift held and press Cursor ◄ instead. Check Shift is held down before you press Cursor.",
-        nextHint: "Those two letters are the useful part.",
-      },
-      {
-        id: "N02-S07",
-        title: "Which part you are editing",
-        instruction: "Press Digital Synth 2, and watch the right of the upper line.",
-        detail:
-          "In this screen the two letters at the right show which part the settings belong to: D1 and D2 for the digital parts, DR for Drums, AN for Analog Synth. The Part Select buttons choose which one you are editing.",
-        hardwareTargets: ["partSelectGroup", "display"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "This is the answer to the question that confuses people most in here: the screen looks identical for all four parts, and those two letters are the only thing telling you which one you are about to change.",
-        checkpoint:
-          "The letters at the right of the upper line changed from D1 to D2 when you pressed the button.",
-        recoveryHelp:
-          "Press each of the four Part Select buttons in turn and watch the letters follow. Nothing is being changed by doing this — you are only choosing what the screen is showing you.",
-        nextHint: "Now see what settings a part actually has.",
-      },
-      {
-        id: "N02-S08",
-        title: "Walk along a part's settings",
-        instruction: "Press Cursor ► several times, reading each parameter name.",
-        detail:
-          "You will pass things like the part's own level, whether it is muted, where it sits left to right, and how it is routed to the effects. Read them; change none of them.",
-        hardwareTargets: ["cursorRightButton", "display"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "These are the controls you will reach for when you have several parts playing at once and need them to sit together — which is exactly what N06 is about.",
-        checkpoint:
-          "You have seen several different parameter names on the lower line, with the group name unchanged above.",
-        recoveryHelp:
-          "Cursor cannot change a value, so nothing has been altered no matter how far you walk. Press Cursor ◄ to come back.",
-        nextHint: "Now come out again.",
+          "If you cannot find Program Edit, it is the second item in the Menu, just after SYSTEM — press Cursor ► once from the top of the list. If you have gone somewhere else entirely, press Exit until you are back at the top screen and try again.",
+        nextHint: "Come straight back out.",
       },
       {
         id: "N02-S09",
         title: "Leave without changing anything",
         instruction: "Press Exit until you are back at the top screen.",
         detail:
-          "A few presses will do it. Nothing you did in here was written anywhere.",
+          "A few presses will do it. Nothing you did in there was written anywhere.",
         hardwareTargets: ["exitButton", "display"],
         visualMode: "full-plus-inset",
+        whyItMatters:
+          "N01 taught the opposite case: SYSTEM saves itself automatically as you leave the screen. Program Edit does not. Knowing which screens write and which do not is most of what makes the menus safe to explore.",
         checkpoint: "The two-line top screen is back.",
         recoveryHelp:
-          "Keep pressing Exit. If the screen still looks unfamiliar, one more press usually does it.",
-        nextHint: "One last thing: where your own work will live.",
+          "Keep pressing Exit. If you did move a Value button in there, the change is not written to storage, so the stored program is untouched — but it is part of what is loaded now, and it stays that way until the program is reloaded. Selecting another program clears it, at the cost of discarding every other unsaved change on this program too.",
+        nextHint: "Last thing: the fastest way back to a program you like.",
       },
       {
         id: "N02-S10",
-        title: "Where your programs go",
-        instruction: "Look at the bank letter on the upper line.",
+        title: "Recall a program from a Favorite button",
+        instruction:
+          "Press Favorite so it lights, then press one of the buttons numbered 01 to 16.",
         detail:
-          "Roland's programs are in banks A to D — sixty-four in each. Your own saved programs go in banks E to H, sixty-four in each of those too. So a full JD-Xi holds 256 sounds from Roland and room for 256 of yours.",
-        hardwareTargets: ["display"],
+          "With Favorite lit, the numbered buttons recall programs that have been registered to them. If the one you press has nothing on it, the display says “Not Registered!” — try another. Press Favorite again when you have finished, to give the numbered buttons their normal job back.",
+        hardwareTargets: ["favoriteButton", "stepButtons"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "Whatever program was registered to that button, loaded instantly — or nothing at all, if the slot is empty.",
         whyItMatters:
-          "When N09 asks you to choose somewhere to save, it will be one of the E to H slots. Knowing that now means the saving tutorial is about being careful rather than about being lost.",
+          "This is program selection without the stepping. Once you have saved programs of your own, a Favorite button is how you get to one in a single press while you are playing.",
         checkpoint:
-          "You can say which banks hold Roland's sounds and which hold yours.",
+          "Either a program loaded when you pressed a numbered button, or the display told you the slot was not registered.",
         recoveryHelp:
-          "To see a different bank, hold Shift and press a Value button — but be aware that changes program, which discards anything you have edited and not saved. This tutorial has changed nothing, so if you have not edited anything today it is safe to look.",
+          "Recalling a favorite selects a program, so it discards unsaved work exactly as Value does — you decided about that at N02-S04. If the numbered buttons still seem to be selecting sounds afterwards, Favorite is still lit; press it once more. Putting your own programs onto these buttons is part of N09.",
         nextHint:
           "You know how the JD-Xi is organized. Next, meet the part of it that plays without you.",
       },
@@ -2304,20 +2315,30 @@ window.JDXI_TUTORIALS = {
     title: "Sequencer basics",
     shortTitle: "Sequencer basics",
     summary:
-      "Learn how a JD-Xi pattern is built: steps, measures, and how long a step lasts. You will change the length of a pattern and see the JD-Xi ask you a question before it does it.",
+      "Meet the sixteen numbered buttons and put a single note into a pattern with them — then take it out again. One note, done properly, is all this tutorial is for.",
     estimatedMinutes: 10,
     prerequisites: ["N02"],
     learningGoals: [
-      "Say what a step and a measure are on this instrument.",
-      "Move between the measures of a pattern.",
-      "Change how many measures a pattern has.",
-      "Know what a scale setting changes, and why it is left alone here.",
+      "Say what a step is, and why the row shows one measure at a time.",
+      "Enter TR-REC and read which steps are lit.",
+      "Add one step and remove it again, cleanly.",
+      "Name the two ways of entering notes you will use later.",
     ],
     // Source record: docs/tutorials/N03-SOURCE-NOTES.md
-    // N03 records no notes. It changes one thing -- pattern length -- and
-    // does so behind the protect-your-work preflight at N03-S05, because
-    // changing it alters the loaded program's pattern. Scale Setting is
-    // opened and read but deliberately not changed: see the source notes.
+    // N03 establishes the two note-entry methods operationally without
+    // building anything (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 9): the
+    // 01-16 row, TR-REC, lit/unlit steps, add one, erase one. N04 makes the
+    // first real beat.
+    //
+    // It writes into the loaded pattern, so it carries the protect-your-work
+    // preflight at N03-S04, before the first step is lit at N03-S07.
+    //
+    // Deliberately absent: Pattern Length editing (I08 extends patterns),
+    // Scale Setting (excluded from v1 entirely), Realtime Recording
+    // (excluded from v1), and any complete beat.
+    //
+    // The unlit-is-not-erased distinction (OM p.10) is load-bearing and is
+    // taught explicitly at N03-S09 rather than glossed.
     steps: [
       {
         id: "N03-S01",
@@ -2328,10 +2349,11 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["playStopButton", "display"],
         visualMode: "full-plus-inset",
         expectedSound: "If this program has a pattern recorded, you hear it.",
-        checkpoint: "The two numbers are counting, and the second one cycles faster than the first.",
+        checkpoint:
+          "The two numbers are counting, and the second one cycles faster than the first.",
         recoveryHelp:
-          "If nothing counts at all, B08 covers finding a program with a pattern in it, and the one system setting that stops patterns playing.",
-        nextHint: "Now stop, and look at where those beats live.",
+          "If nothing happens at all, this program may have no pattern recorded. Press Play/Stop again to stop, then use Value + to step to another program — but note that doing so discards anything unsaved on this one. B08 covers finding a program with a pattern in it.",
+        nextHint: "Now the row of buttons that pattern is made of.",
       },
       {
         id: "N03-S02",
@@ -2342,149 +2364,142 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["stepButtons"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "This is what makes a drum machine approachable: you are not playing in time, you are deciding in advance what lands where. N04 does exactly that.",
-        checkpoint: "The pattern is stopped and you can point to all sixteen numbered buttons.",
+          "This is what makes a drum machine approachable: you are not playing in time, you are deciding in advance what lands where.",
+        checkpoint:
+          "The pattern is stopped and you can point to all sixteen numbered buttons.",
         recoveryHelp:
-          "The numbered row runs to the right of the Favorite button, above the keys. If pressing Play/Stop did not stop it, press it once more.",
-        nextHint: "Sixteen steps is one measure. A pattern can be longer.",
+          "The row sits to the right of the panel, below the display and above the keys. It is the row with Favorite at its left-hand end.",
+        nextHint: "Sixteen buttons, but a pattern can be longer than that.",
       },
       {
         id: "N03-S03",
-        title: "Up to four measures",
+        title: "The row shows one measure",
         instruction: "Read this before you change anything.",
         detail:
-          "A JD-Xi pattern can be up to four measures long. The sixteen buttons show one measure at a time, so on a longer pattern they are showing you a window onto part of it.",
+          "A JD-Xi pattern can be up to four measures long, and the sixteen buttons show one measure at a time. On a longer pattern the row is a window onto part of it rather than the whole thing.",
         hardwareTargets: ["stepButtons"],
         visualMode: "full",
         whyItMatters:
-          "It explains something that otherwise looks broken: on a four-measure pattern, most of your pattern is not on the buttons in front of you at any moment.",
+          "It explains something that otherwise looks broken: on a four-measure pattern, most of what you can hear is not on the buttons in front of you at any moment. I08 is where you work on longer patterns and need to move between the measures.",
         checkpoint: "You know the buttons show one measure at a time.",
         recoveryHelp:
-          "Nothing to recover from — this step changes nothing. The next step shows you how to move the window.",
-        nextHint: "So there must be a way to move between measures.",
+          "Nothing to do here — this is the one step in the tutorial that only asks you to read. If you would rather see it than read it, come back after N04, when there is a beat on the buttons to look at.",
+        nextHint: "Before you put anything in, one thing is worth checking.",
       },
       {
         id: "N03-S04",
-        title: "Move between measures",
+        title: "Protect any work you want to keep",
         instruction:
-          "Start the pattern, then hold down Shift and press one of the buttons 01 to 04.",
+          "Decide whether the pattern loaded right now is one you have been working on and have not saved.",
         detail:
-          "While a pattern is playing or recording, Shift with one of the first four numbered buttons chooses which measure the row is showing. Holding Shift lights those buttons, and the current measure blinks.",
-        hardwareTargets: ["shiftButton", "stepButtons"],
-        visualMode: "full-plus-inset",
+          "In a moment you will add a note to this pattern and then erase it again. Both change the pattern that is loaded. If there is a pattern or a sound here you have been building and have not saved, stop and save it first.",
+        hardwareTargets: ["stepButtons", "eraseButton"],
+        visualMode: "full",
         whyItMatters:
-          "Without this you can only ever edit the first measure, which is why a longer pattern feels impossible to work on until someone shows you this gesture.",
+          "Roland is explicit that a pattern you create disappears if you select a different program or switch the power off. This tutorial cannot see what state your JD-Xi is in, so it asks rather than assumes.",
         checkpoint:
-          "Holding Shift lights some of the first four buttons, and one of them blinks.",
+          "You have decided: either there is nothing here you need to keep, or you are going to save it first.",
         recoveryHelp:
-          "This one only works while the pattern is playing or recording — if nothing lights, press Play/Stop first. If your JD-Xi's scale is set to 32nd notes, the range is the first eight buttons rather than the first four.",
-        nextHint: "Now change the pattern itself. First, one thing to settle.",
+          "N09 Save your work is the tutorial that teaches saving. Go there first and come back afterwards. If you would rather not touch this program at all, step to another one with Value + before you carry on — that discards anything unsaved on this program, which is the decision you are making here.",
+        nextHint: "Now choose which part you are going to work on.",
       },
       {
         id: "N03-S05",
-        title: "Protect any work you want to keep",
-        instruction:
-          "Stop the pattern, and decide whether this program holds work you have not saved.",
+        title: "Choose the part you will record",
+        instruction: "Press a Part Select button — Digital Synth 1 is a good choice.",
         detail:
-          "The next steps change how many measures this pattern has. That alters the pattern in the loaded program. If there is a pattern or a sound here you have been building and have not saved, stop and save it first.",
-        hardwareTargets: ["playStopButton", "programValueButtons"],
-        visualMode: "full",
+          "The sequencer records into whichever part is selected. Choosing it first is the first move of every recording procedure on this instrument.",
+        hardwareTargets: ["partSelectGroup"],
+        visualMode: "full-plus-inset",
         whyItMatters:
-          "The change is not written to storage, so it is not permanent — but it does replace what is loaded, and the only way back is to select another program, which throws away everything unsaved at once.",
+          "Every note you enter goes into the selected part and no other. Getting into the habit of choosing it deliberately saves a lot of confusion later, when four parts have patterns of their own.",
         checkpoint:
-          "The pattern is stopped, and you have decided: either there is nothing to keep, or you are going to save it first.",
+          "One Part Select button is selected, and pressing a key plays that part's sound.",
         recoveryHelp:
-          "N09 Save your work is the tutorial that teaches saving. If you would rather not risk this program at all, you can stop N03 here — the rest of the Novice path does not depend on having changed a pattern length.",
-        nextHint: "Now open the setting.",
+          "If you are not sure which part is selected, press the one you want again — the last button you press wins.",
+        nextHint: "Now switch the numbered buttons into recording mode.",
       },
       {
         id: "N03-S06",
-        title: "Open Pattern Length",
+        title: "Read the lit and unlit steps",
         instruction:
-          "Press Menu/Write, use Cursor to select Pattern Length, and press Enter.",
+          "Play and hold a key, and look at the row of numbered buttons.",
         detail:
-          "It is one of the later items in the Menu list, after the various Edit screens.",
-        hardwareTargets: ["menuWriteButton", "display"],
+          "With a part selected, the numbered buttons show you the steps on which the note you are holding will sound: lit means it sounds there, unlit means it does not. This is TR-REC, and it is available whether the pattern is playing or stopped.",
+        hardwareTargets: ["stepButtons", "keys"],
         visualMode: "full-plus-inset",
-        checkpoint: "The display is showing the pattern length screen with a number of measures.",
+        whyItMatters:
+          "The row stops being sixteen anonymous buttons the moment you realise it is a picture of when one note happens. Reading it is most of the skill; pressing the buttons is the easy part.",
+        checkpoint:
+          "You can see which of the sixteen buttons are lit and which are dark.",
         recoveryHelp:
-          "If you overshoot in the Menu list, Cursor ◄ walks back. If you opened the wrong item, press Exit once to return to the list. A long press of Menu/Write opens PORTAMENTO instead of the Menu — press Exit and use a short press.",
-        nextHint: "Now change it, and read what the JD-Xi asks you.",
+          "If none are lit, this part has nothing recorded on the note you are holding — which is fine, and makes the next step easier to see. If the Favorite button is lit, the row is in favorite mode instead; press Favorite once to leave it.",
+        nextHint: "Now put a note in.",
       },
       {
         id: "N03-S07",
-        title: "Choose a length, and answer the question",
-        instruction: "Use Value to choose a number of measures, then press Enter.",
+        title: "Add one step",
+        instruction:
+          "Hold the key you want, and press one of the unlit numbered buttons so it lights.",
         detail:
-          "The JD-Xi now asks a question rather than acting straight away. Enter fills the new measures by copying from the pattern you already have; Exit adds blank measures instead. Either one applies the change — this is not a cancel.",
-        hardwareTargets: ["programValueButtons", "enterButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["With Copying ?", "[Exit]:N [Ent]:Y"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated prompt from the Pattern Length procedure, reproduced with its own left-to-right order.",
+          "That is a note entered. On the Drums part you would press a key first to choose which drum you are entering; on a synth part the key you hold is the note.",
+        hardwareTargets: ["stepButtons"],
+        visualMode: "full-plus-inset",
         whyItMatters:
-          "It is worth reading this screen carefully, because Exit here does not mean cancel — it means answer no and carry on. On this instrument the same button does not always do the same thing, which is exactly why N01 spent a whole tutorial on that idea.",
-        checkpoint:
-          "The pattern length has changed to the number you chose.",
+          "This is the whole of TR-REC. Everything N04 and N05 do is this one action, repeated on different steps and different parts.",
+        checkpoint: "A button that was dark is now lit.",
         recoveryHelp:
-          "If you did not want the change, set the length back the same way. Nothing has been written to storage: selecting another program without saving returns this one to its stored length — and discards everything else unsaved along with it.",
-        nextHint: "One more Menu item decides what a step is worth.",
+          "If the button will not light, check that Favorite is not lit — that puts the row into a different mode. If the pattern is running and you cannot tell what changed, press Play/Stop and try again while it is stopped.",
+        nextHint: "Now hear it.",
       },
       {
         id: "N03-S08",
-        title: "Come back out",
-        instruction: "Press Exit once.",
+        title: "Hear what you did",
+        instruction: "Press Play/Stop and listen.",
         detail:
-          "That leaves the pattern length screen and puts you back on the Menu list, ready for the next item.",
-        hardwareTargets: ["exitButton"],
+          "Your note now sounds once each time the pattern comes round to that step.",
+        hardwareTargets: ["playStopButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "The display is showing a menu item again rather than the length screen.",
+        expectedSound:
+          "The pattern as it was, plus your single note landing in the same place each time round.",
+        checkpoint:
+          "You can hear your note repeating in time with everything else.",
         recoveryHelp:
-          "If you pressed Exit more than once you may be back at the top screen — that is fine, press Menu/Write once to open the Menu again.",
-        nextHint: "One more Menu item decides what a step is worth.",
+          "If you cannot pick your note out, mute the other parts for a moment — hold Shift and press their Part Select buttons, as B08 showed. If you hear nothing new at all, the step you lit may be on a part you are not listening to; check which part is selected.",
+        nextHint: "Now take it out again, properly.",
       },
       {
         id: "N03-S09",
-        title: "Look at the scale setting",
-        instruction: "Use Cursor to select Scale Setting, and press Enter.",
+        title: "Erase that step",
+        instruction:
+          "Press Play/Stop to stop, then hold down Erase and press the numbered button you lit.",
         detail:
-          "This decides how much time one step represents. Roland offers eighth-note triplets, sixteenth notes, or thirty-second notes. Read the value your JD-Xi is on — and this time, leave the Value buttons alone.",
-        hardwareTargets: ["menuWriteButton", "display"],
+          "This is worth doing exactly this way. Pressing the button on its own turns it dark, which stops the note sounding — but Roland is explicit that this only mutes it and does not delete it, and turning the button back on brings the note back. Holding Erase and pressing the step is what actually removes it.",
+        hardwareTargets: ["eraseButton", "stepButtons"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "Sixteen steps always means sixteen steps, but how long those sixteen steps last depends entirely on this setting. It is the difference between the row covering one measure and covering half of one.",
-        checkpoint: "You can see which of the three scale values your JD-Xi is currently using.",
+          "The difference matters later. If you try to enter a new note on a step that still holds an old one, TR-REC will not let you until the old one is genuinely erased — so a step that looks empty but is only muted becomes a problem you cannot see.",
+        checkpoint: "The button is dark, and the note is gone rather than muted.",
         recoveryHelp:
-          "If you have already changed it, set it back to the value you read before you go on. If you did not read it first, the practical answer is to note what you have now and carry on — the setting affects timing rather than damaging anything.",
-        nextHint: "Now come out.",
+          "The pattern must be stopped for this. If nothing happened, check that you held Erase down first and kept it held while pressing the numbered button. Erase is in the PATTERN SEQUENCER section, with Rest printed under it.",
+        nextHint: "One last thing: the other way notes get in.",
       },
       {
         id: "N03-S10",
-        title: "Back to the top",
-        instruction: "Press Exit until you reach the top screen.",
-        hardwareTargets: ["exitButton", "display"],
-        visualMode: "full-plus-inset",
-        checkpoint: "The two-line top screen is back.",
-        recoveryHelp: "Keep pressing Exit — it always takes you outward.",
-        nextHint: "Last thing: how notes get into those steps.",
-      },
-      {
-        id: "N03-S11",
-        title: "How notes get in",
-        instruction: "Look once more at the numbered row.",
+        title: "Two ways in",
+        instruction: "Find the Step Rec button in the PATTERN SEQUENCER section.",
         detail:
-          "There are several ways to record on a JD-Xi, and the one the next tutorials use is the simplest: choose a sound, then press the numbered buttons to light the steps where you want it to happen. Roland calls it TR-REC.",
-        hardwareTargets: ["stepButtons", "patternSequencerSection"],
+          "Look, do not press. You have just used TR-REC: pick a note, then light the steps where it should happen. Step Recording works the other way round — it holds a position in the pattern and advances one step each time you play a note. Both build the same kind of pattern.",
+        hardwareTargets: ["patternSequencerSection"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "You do not have to play in time to make a pattern on this instrument. You decide where things land, press play, and listen — which is why a complete beginner can build a working beat in a few minutes.",
+          "TR-REC is easier when you know the rhythm you want, which is why N04 and N05 use it. Step Recording is easier when you want to enter a run of notes one after another, and N05 shows it briefly.",
         checkpoint:
-          "You can describe a pattern as steps and measures, and you know what the numbered buttons are for.",
+          "You can point to both the numbered row and the Step Rec button, and say what each method is for.",
         recoveryHelp:
-          "Nothing to recover from — this step changes nothing. If your pattern length or scale ended up somewhere you did not want, selecting another program without saving restores this program's stored version, and discards anything unsaved with it.",
+          "If you did press Step Rec, the [01] button will be blinking and the display will show a Step Rec screen. Press Step Rec again to stop recording, and nothing will have been added as long as you played no key.",
         nextHint:
-          "You know how a pattern is built. Next, build one.",
+          "You can put a note in and take it out. Next, use that to build a real drum beat.",
       },
     ],
   },
@@ -2496,7 +2511,7 @@ window.JDXI_TUTORIALS = {
     shortTitle: "Drum beat",
     summary:
       "Build a beat one step at a time. Choose a drum sound, light the steps where you want it, and listen. This is the first thing you will make yourself.",
-    estimatedMinutes: 12,
+    estimatedMinutes: 14,
     prerequisites: ["N03"],
     learningGoals: [
       "Put a drum sound on the steps you choose.",
@@ -2541,10 +2556,29 @@ window.JDXI_TUTORIALS = {
         checkpoint: "Drums is selected, and pressing keys gives you drum sounds.",
         recoveryHelp:
           "If the keys still play a synth sound, press Drums again. If some keys are silent, play lower down the keyboard — the Drums part has no instruments assigned high up.",
-        nextHint: "Now pick which drum you are placing.",
+        nextHint: "Now pick a kit you like the sound of.",
       },
       {
         id: "N04-S03",
+        title: "Choose a drum kit",
+        instruction:
+          "Press Tone + a few times, playing a low key after each press, until you find a kit you like.",
+        detail:
+          "On the Drums part the Tone buttons step through whole kits rather than single sounds. Every kit has a bass drum, a snare and hi-hats — they just sound different from kit to kit.",
+        hardwareTargets: ["toneButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The same key giving you a different bass drum each time — deeper, tighter, more electronic, depending on the kit.",
+        whyItMatters:
+          "The kit decides what your beat will sound like before you have placed a single hit. Choosing one you actually like now is much easier than trying to rescue a beat you have already built on a kit you do not.",
+        checkpoint:
+          "You have stepped through several kits and settled on one whose bass drum you like.",
+        recoveryHelp:
+          "Use Tone − to step back if you have gone past one you liked. If the sounds are not changing, check that Drums is still the selected part, and that you are pressing the pair marked Tone rather than the pair marked Value.",
+        nextHint: "Now pick which drum you are placing.",
+      },
+      {
+        id: "N04-S04",
         title: "Choose a drum sound",
         instruction: "Press a key low on the keyboard, and listen for a bass drum.",
         detail:
@@ -2561,7 +2595,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now decide where it happens.",
       },
       {
-        id: "N04-S04",
+        id: "N04-S05",
         title: "Light your first steps",
         instruction: "Press buttons 01, 05, 09 and 13.",
         detail:
@@ -2576,7 +2610,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now hear it.",
       },
       {
-        id: "N04-S05",
+        id: "N04-S06",
         title: "Listen to your beat",
         instruction: "Press Play/Stop.",
         hardwareTargets: ["playStopButton"],
@@ -2591,7 +2625,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Leave it running and add a second sound.",
       },
       {
-        id: "N04-S06",
+        id: "N04-S07",
         title: "Choose a second drum sound",
         instruction: "With the pattern still playing, press a different key.",
         detail:
@@ -2608,7 +2642,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now place the second sound.",
       },
       {
-        id: "N04-S07",
+        id: "N04-S08",
         title: "Add the second sound",
         instruction: "Press buttons 05 and 13.",
         detail: "You can do this while the pattern plays and hear each one arrive.",
@@ -2621,10 +2655,47 @@ window.JDXI_TUTORIALS = {
         checkpoint: "You can hear two different drum sounds in a repeating pattern.",
         recoveryHelp:
           "If it sounds wrong rather than different, press 05 and 13 again to remove them, and try other steps. There is no correct answer here — move things until you like it.",
+        nextHint: "One more drum, and it goes everywhere.",
+      },
+      {
+        id: "N04-S09",
+        title: "Add a closed hi-hat",
+        instruction:
+          "Press a key higher up until you find a short, tight metallic sound, then light buttons 03, 07, 11 and 15.",
+        detail:
+          "That short metallic sound is a closed hi-hat. Putting it between everything else is what turns two drums into a beat that moves.",
+        hardwareTargets: ["keys", "stepButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "A light tick running between your bass drum and snare, filling the gaps and pushing the pattern along.",
+        whyItMatters:
+          "Bass drum, snare and closed hi-hat are the three sounds nearly every drum pattern is built from. With those three placed you have made a real beat, not an exercise.",
+        checkpoint:
+          "Three different drum sounds are playing in one repeating pattern.",
+        recoveryHelp:
+          "Hi-hats usually sit above the snare on the keyboard, and there are often two of them — a short closed one and a longer open one. If yours rings on rather than stopping, try the next key along. The names are printed above the keys on your JD-Xi.",
+        nextHint: "Now change how the whole kit sounds.",
+      },
+      {
+        id: "N04-S10",
+        title: "Change the sound of the kit",
+        instruction: "With the pattern playing, turn the Cutoff knob slowly to the left and back.",
+        detail:
+          "Cutoff works on the Drums part just as it did on a synth in B06. It adjusts the kit loaded into this part, so the whole beat changes together.",
+        hardwareTargets: ["cutoffKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The whole kit going duller and more muffled as you turn left, and opening back up as you return.",
+        whyItMatters:
+          "A drum kit is not fixed. The same pattern on the same kit can sound sharp and modern or soft and distant, and one knob gets you a long way toward either.",
+        checkpoint:
+          "You can hear the whole beat get darker and brighter as you turn the knob.",
+        recoveryHelp:
+          "Turn Cutoff back toward the right to undo it by ear. If nothing changes, check that Drums is still the selected part — the knob works on whichever part is selected, so it may be editing a synth part instead. There is no undo for this, but nothing is saved until you save the program.",
         nextHint: "Now the difference between quiet and gone.",
       },
       {
-        id: "N04-S08",
+        id: "N04-S11",
         title: "Silencing a step is not erasing it",
         instruction: "Press one of your lit buttons to turn it dark, then press it again.",
         detail:
@@ -2640,7 +2711,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "There is a separate gesture for actually erasing.",
       },
       {
-        id: "N04-S09",
+        id: "N04-S12",
         title: "Actually erasing a step",
         instruction:
           "Press Play/Stop to stop, then hold down Erase and press one of your lit buttons.",
@@ -2656,7 +2727,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step, and it is the one that matters most.",
       },
       {
-        id: "N04-S10",
+        id: "N04-S13",
         title: "Your beat is not saved yet",
         instruction: "Do not switch the JD-Xi off yet.",
         detail:
@@ -2681,21 +2752,26 @@ window.JDXI_TUTORIALS = {
     title: "Make a simple bass line",
     shortTitle: "Bass line",
     summary:
-      "Put pitched notes into a pattern, two different ways: lighting steps as you did for drums, and entering notes one at a time with the JD-Xi advancing for you.",
+      "Put a bass line under your beat: pick a low sound, place one note on the steps you want, then bring in a second note nearby so the line moves.",
     estimatedMinutes: 12,
     prerequisites: ["N04"],
     learningGoals: [
       "Record a note onto chosen steps of a pitched part.",
-      "Use step recording to enter notes one after another.",
-      "Enter a rest and a tie.",
-      "Know which recording methods overwrite what is already there.",
+      "Use a second, nearby key so the line is not all one note.",
+      "Remove a note you did not want.",
+      "Recognise step recording as a second way in, and know which method overwrites.",
     ],
     // Source record: docs/tutorials/N05-SOURCE-NOTES.md
-    // Teaches TR-REC on a pitched part and then step recording. The
-    // difference between them is a safety fact, not a stylistic one: TR-REC
-    // will not overwrite a step that already holds a note, while step and
-    // realtime recording delete and replace automatically (OM p.11, PG p.3).
-    // N05-S11 states that plainly rather than leaving the learner to find it.
+    // TR-REC is the main method here (PRODUCT-CURRICULUM-MASTER-PLAN.md
+    // sec 9); step recording appears only as a brief alternate.
+    //
+    // The difference between them is a safety fact, not a stylistic one:
+    // TR-REC will not overwrite a step that already holds a note, while step
+    // recording deletes and replaces automatically (OM p.11).
+    //
+    // Realtime Recording is excluded from v1 and is not named anywhere, not
+    // even as later guided content. Rests, ties, Velocity and Gate Time are
+    // likewise out: they are step-recording detail the master plan trims.
     steps: [
       {
         id: "N05-S01",
@@ -2787,97 +2863,94 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "N05-S07",
-        title: "Start step recording",
-        instruction: "Press Play/Stop to stop, then press Step Rec.",
+        title: "Bring in a second note",
+        instruction:
+          "Play a key a little way from your first one, then light two steps that are still dark — try 05 and 13.",
         detail:
-          "The 01 button blinks, and the display changes to a recording screen that stays until you stop. Instead of choosing steps, you now play notes and the JD-Xi advances one step for each.",
+          "Pick a key near the one you used, not at the other end of the keyboard. Use steps that are dark: TR-REC will not record over a step that already holds a note.",
+        hardwareTargets: ["keys", "stepButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "A line that moves between two notes instead of repeating the same one.",
+        whyItMatters:
+          "One note repeating is a pulse. Two notes is a bass line. You do not need to know what either note is called — you only need to like how they sound one after the other.",
+        checkpoint:
+          "Four steps are lit in total, and you can hear the line move between two different notes.",
+        recoveryHelp:
+          "If the new key sounds wrong against the beat, erase those two steps and try a different one — hold Erase and press the step, with the pattern stopped. Keys close together usually sit together more easily than keys far apart.",
+        nextHint: "Now take one back out.",
+      },
+      {
+        id: "N05-S08",
+        title: "Remove a note you did not want",
+        instruction:
+          "Press Play/Stop to stop, then hold down Erase and press one of your lit steps.",
+        detail:
+          "Same gesture as the drums, and for the same reason: this erases the note rather than just silencing it, so that step is genuinely free again.",
+        hardwareTargets: ["eraseButton", "stepButtons"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Getting a line right is mostly taking things out. A bass line with too many notes in it is the commonest way a first attempt sounds cluttered.",
+        checkpoint: "The step is dark, and the note is gone rather than muted.",
+        recoveryHelp:
+          "The pattern has to be stopped for this. If nothing happened, check that Erase was held down before and during the press. If you erased one you wanted, play the key again and light that step once more — it is free now.",
+        nextHint: "There is a second way to get notes in.",
+      },
+      {
+        id: "N05-S09",
+        title: "The other way in: step recording",
+        instruction:
+          "Press Step Rec, play three or four keys one after another, then press Step Rec again to stop.",
+        detail:
+          "The 01 button blinks to show which step you are on. Each key you play is recorded there, and the blink moves along by itself. You are not playing in time — take as long as you like between notes.",
         hardwareTargets: ["stepRecButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["Step Rec", "Velocity:Real"],
         syntheticDisplay: false,
         displayNote:
-          "Roland's illustrated step-recording screen. The value shown is the current velocity setting, which you can change on this screen.",
+          "Roland's illustrated step-recording screen. Your JD-Xi shows its own current setting on the lower line.",
+        expectedSound: "Each note as you enter it, one at a time.",
         whyItMatters:
-          "Lighting steps is a good way to place a rhythm. Playing notes in order is a better way to enter a tune, because you can hear each note as you commit it.",
-        checkpoint: "The 01 button is blinking and the display is showing the recording screen.",
-        recoveryHelp:
-          "If nothing blinks, press Step Rec again. Make sure the pattern is stopped first. To leave without recording anything, press Step Rec once more.",
-        nextHint: "Now play, one note at a time.",
-      },
-      {
-        id: "N05-S08",
-        title: "Enter notes one at a time",
-        instruction: "Play a key. Then play another.",
-        detail:
-          "Each key you press is recorded at the blinking step, and the blink moves on to the next one. You are not playing in time — take as long as you like between notes.",
-        hardwareTargets: ["keys"],
-        visualMode: "full",
-        expectedSound: "Each note as you enter it.",
-        whyItMatters:
-          "This is why step recording suits a beginner: there is no timing to get wrong. The rhythm comes from which steps you fill, not from how fast you play.",
+          "TR-REC is easier when you already know the rhythm you want. Step recording is easier when you know the run of notes and not the timing. Neither is better; they suit different moments.",
         checkpoint:
-          "The blinking button has moved along as you played, and several steps now hold notes.",
+          "The blinking button moved along as you played, and pressing Step Rec again returned the JD-Xi to normal.",
         recoveryHelp:
-          "To go back to a particular step, press its numbered button — the blink moves there and the next note you play lands on it. Be aware that step recording replaces whatever was already on a step, unlike lighting steps by hand.",
-        nextHint: "Two things you will want that are not notes.",
-      },
-      {
-        id: "N05-S09",
-        title: "Rests and ties",
-        instruction: "Press Erase to leave a gap, then press Key Hold to hold a note longer.",
-        detail:
-          "During step recording, Erase enters a rest — a step with nothing on it — and the ARPEGGIO Key Hold button enters a tie, which extends the note before it across another step.",
-        hardwareTargets: ["eraseButton", "keyHoldButton"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "Without these, every note is the same length and there is no silence anywhere. Gaps and long notes are most of what makes a bass line sound like music rather than a list.",
-        checkpoint:
-          "The blinking step advanced when you pressed each of them, without a new note being added.",
-        recoveryHelp:
-          "Both simply move to the next step, so if you press one by mistake you can press that step's numbered button to go back and play a note over it.",
-        nextHint: "Now stop recording and hear the result.",
+          "If you are stuck in the recording screen, press Step Rec once to leave it. If you entered notes you did not want, stop the pattern and erase those steps with Erase — the blinking button told you which ones you were writing to.",
+        nextHint: "One difference between the two methods matters.",
       },
       {
         id: "N05-S10",
-        title: "Stop and listen",
-        instruction: "Press Step Rec to stop recording, then press Play/Stop.",
-        hardwareTargets: ["stepRecButton", "playStopButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "Your line playing in time, with the rests and held notes you entered.",
-        checkpoint: "The pattern plays back what you entered.",
-        recoveryHelp:
-          "If it plays back faster or slower than you expected, that is the tempo and the scale setting rather than anything you did wrong — B09 covers tempo and N03 covers the scale setting.",
-        nextHint: "One difference between the two methods is worth knowing.",
-      },
-      {
-        id: "N05-S11",
         title: "Which method overwrites",
-        instruction: "Read this before you record over anything again.",
+        instruction: "Press Play/Stop and listen to what you have.",
         detail:
-          "The two methods behave differently, and Roland is explicit about it. Lighting steps by hand will not record over a step that already holds a note — you have to erase it first. Step recording and realtime recording delete what was there and replace it automatically.",
+          "The two methods treat an occupied step differently, and Roland is explicit about it. Lighting steps by hand will not record over a step that already holds a note — you have to erase it first. Step recording replaces what was there automatically.",
         hardwareTargets: ["stepRecButton", "stepButtons"],
         visualMode: "full-plus-inset",
+        expectedSound: "Your bass line, with whatever else the pattern holds.",
         whyItMatters:
-          "It decides which method is safe on a pattern you care about. Lighting steps refuses to destroy anything. Step recording will quietly replace a note you spent time on, and there is no undo.",
+          "This is why a step can seem to ignore you. It is not a fault: TR-REC is refusing to write over something, and the fix is to erase that step first.",
         checkpoint:
           "You can say which of the two methods will overwrite an existing note.",
         recoveryHelp:
-          "If you have already recorded over something, it is gone — the JD-Xi has no undo. Nothing is written to storage, so selecting another program without saving restores this program's stored pattern, at the cost of discarding everything else you have done to it.",
-        nextHint: "Last step: the usual reminder, and it matters more now.",
+          "If a step will not take a new note however hard you press, that step still holds one. Stop the pattern, hold Erase, press that step, and try again.",
+        nextHint: "Last thing, and it is the same warning as last time.",
       },
       {
-        id: "N05-S12",
+        id: "N05-S11",
         title: "Still not saved",
         instruction: "Leave the JD-Xi on if you want to keep this.",
         detail:
           "Your beat and your bass line are both in the same pattern, in the same loaded program. One save keeps both. Switching off, or changing program, loses both.",
         hardwareTargets: ["display"],
         visualMode: "full-plus-inset",
-        checkpoint: "You have a beat and a line, and you know neither is stored yet.",
+        whyItMatters:
+          "Two tutorials of work now live in one place that forgets. N09 is the tutorial that fixes that, and it is four tutorials away — so if this is something you want to keep, it is worth going there next rather than in order.",
+        checkpoint:
+          "You have a beat and a line, and you know neither is stored yet.",
         recoveryHelp:
-          "Go to N09 Save your work with this still loaded. Do not change programs on the way there.",
+          "Nothing here to recover from — this step asks you to do nothing. If you want to keep what you have made, go to N09 Save your work now and come back afterwards.",
         nextHint:
-          "You can build rhythm and melody. Next, make several parts work together.",
+          "You can put drums and a line into a pattern. Next, get more parts playing together.",
       },
     ],
   },
@@ -2888,23 +2961,27 @@ window.JDXI_TUTORIALS = {
     title: "Combine parts in a pattern",
     shortTitle: "Combine parts",
     summary:
-      "The keys play one part at a time, but a pattern can play all four at once. Add a third part, then balance them so they sit together instead of fighting.",
+      "The keys play one part at a time, but a pattern can play all four at once. Get three parts going together, then use mute to decide what the loop actually needs.",
     estimatedMinutes: 11,
     prerequisites: ["N05"],
     learningGoals: [
-      "Add a part to a pattern without disturbing the others.",
+      "Get three parts playing together in one pattern.",
       "Hear what each part is contributing, on its own.",
-      "Balance the parts against each other.",
-      "Place a part left or right in the stereo field.",
+      "Use muting to decide what a loop needs and what it does not.",
+      "Finish with a simple loop you made.",
     ],
     // Source record: docs/tutorials/N06-SOURCE-NOTES.md
-    // Architecturally this used to be called "Layer sounds", which
-    // overpromised: only one part is playable from the keys at a time
-    // (OM p.5, source-map Q9). N06 is about arranging parts THROUGH the
-    // pattern, which is Roland's own documented answer to that constraint.
-    // The recording gesture taught here is the hold-a-step-and-play method,
-    // chosen deliberately because it is the only one Roland documents as
-    // ADDING notes without deleting what is already there (OM p.12, PG p.3).
+    // N06 is the first multi-Part groove (PRODUCT-CURRICULUM-MASTER-PLAN.md
+    // sec 9): minimum three parts with pattern content, a fourth optional,
+    // and Part Mute used as an arranging tool rather than just a listening
+    // one.
+    //
+    // It does NOT assume N04/N05 state survives. Prerequisites are advisory,
+    // so N06-S03 has the learner establish a drum-and-bass foundation from
+    // whatever is in front of them, and says how to do it quickly.
+    //
+    // Level, Pan and Program Edit are deliberately NOT the lesson. Balancing
+    // parts is I07's, where four parts are assembled on purpose.
     steps: [
       {
         id: "N06-S01",
@@ -2915,167 +2992,168 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["partSelectGroup"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "Roland states both halves of this: you cannot select and perform on multiple parts at the same time, and you can make multiple parts be heard together by recording them to a pattern. This tutorial is the second half.",
+          "Roland's own answer to the one-part limit is to record parts into a pattern, which is exactly what this tutorial does. Everything here follows from that.",
         checkpoint: "You can hear that the keys play one part at a time.",
         recoveryHelp:
-          "The last button you press wins. If you are unsure which part is selected, press the one you want again.",
-        nextHint: "Before adding anything, settle the usual question.",
+          "If you are not sure which part is selected, press the one you want again — the last button you press wins.",
+        nextHint: "Before you record anything, one thing is worth checking.",
       },
       {
         id: "N06-S02",
         title: "Protect any work you want to keep",
         instruction: "Decide whether this program holds work you have not saved.",
         detail:
-          "This tutorial records another part into the pattern and changes the levels of the parts already in it. Both change the loaded program. If you want what is here, save it first.",
-        hardwareTargets: ["programValueButtons"],
+          "This tutorial records into the pattern of whatever program is loaded. If there is a pattern or a sound here you want, save it first — or step to a program you do not mind changing.",
+        hardwareTargets: ["programValueButtons", "stepButtons"],
         visualMode: "full",
+        whyItMatters:
+          "A pattern lives in its program and disappears when you select another one. That is true of your work and of anything already here, so the decision is worth making before you start rather than after.",
         checkpoint:
           "You have decided: either there is nothing to keep, or you have saved it, or you are deliberately building on this program.",
         recoveryHelp:
-          "N09 Save your work teaches saving. If you have been following N04 and N05, stay on this program — everything you have made is in its pattern, and one save keeps all of it.",
-        nextHint: "Now start the pattern and add to it.",
+          "N09 Save your work teaches saving. If you would rather start somewhere disposable, press Value + to move to another program — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now get a foundation going, however you like.",
       },
       {
         id: "N06-S03",
-        title: "Choose a part that is not in use",
-        instruction: "Press Play/Stop to start the pattern, then press Digital Synth 1.",
+        title: "Get drums and a bass line going",
+        instruction:
+          "Put a few drum hits on the Drums part and a couple of low notes on a synth part, the way N04 and N05 showed.",
         detail:
-          "If you followed N04 and N05 your beat is on the Drums part and your line is on the Analog Synth, so this one is free. If it already has something in this pattern, use Digital Synth 2 instead.",
-        hardwareTargets: ["digitalSynth1Button", "playStopButton"],
+          "If the beat you made in N04 and N05 is still loaded, use it — nothing here needs you to start again. If it is not, this takes a minute: select Drums, play a key, light a few steps; then select Analog Synth, play a low key, light a couple more.",
+        hardwareTargets: ["drumsButton", "stepButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "The pattern playing, with the keys now giving you a third sound.",
-        checkpoint: "The pattern is running and the keys play a part that is not already busy.",
+        expectedSound: "A simple beat with a low note or two underneath it.",
+        whyItMatters:
+          "This tutorial is about what happens when parts play together, so it needs two of them before it can start. Being able to throw a foundation down in a minute is a real skill in itself — you will do it every time you start something new.",
+        checkpoint: "Two parts have something in the pattern, and you can hear both.",
         recoveryHelp:
-          "To hear whether a part already has something in the pattern, hold Shift and press its button to mute it and listen for what disappears — the same combination brings it back.",
-        nextHint: "Now add notes without disturbing anything.",
+          "Nothing here has to be good. Four bass-drum hits and two low notes are enough to work with. N04 and N05 have the step-by-step if you want it.",
+        nextHint: "Now add a third part on top.",
       },
       {
         id: "N06-S04",
-        title: "Add a note without deleting anything",
+        title: "Choose a part that is not in use",
         instruction:
-          "Hold down one of the numbered buttons, play a key while holding it, then let go.",
+          "Press Play/Stop to start the pattern, then press Digital Synth 1.",
         detail:
-          "This is a third way to record, and it is the gentle one: the notes you enter are added, and whatever was already there is kept.",
-        hardwareTargets: ["stepButtons", "keys"],
+          "You want a part with nothing in this pattern yet. If Digital Synth 1 already has something, use Digital Synth 2 instead.",
+        hardwareTargets: ["digitalSynth1Button", "playStopButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "Your new note joins the pattern at that step.",
+        expectedSound: "The pattern playing, with the keys now giving you a third sound.",
         whyItMatters:
-          "The other methods either refuse to overwrite or overwrite silently. This one adds. On a pattern you have already spent time on, that difference is the whole game.",
-        checkpoint: "The pattern now has your new note in it, and everything that was there still is.",
+          "Recording into a part that is already busy means dealing with what is there first. Starting on an empty one keeps this simple.",
+        checkpoint:
+          "The pattern is running and the keys play a part that is not already busy.",
         recoveryHelp:
-          "If nothing was added, make sure you kept the numbered button held down while you played the key, and released it afterwards. To remove a note you added, stop the pattern, hold Erase and press that step.",
-        nextHint: "Add two or three more, then listen to the whole thing.",
+          "To find out whether a part is busy, select it and hold a key — the numbered buttons show that note's steps. If several are lit, try the other digital part.",
+        nextHint: "Now put something on it.",
       },
       {
         id: "N06-S05",
-        title: "Build it up and listen",
-        instruction: "Add a few more notes the same way, then listen to the whole pattern.",
-        detail: "Three or four notes is plenty. You are listening for whether it sits with the rest.",
+        title: "Add the third part",
+        instruction:
+          "Play a key you like against the pattern, then light three or four steps for it.",
+        detail:
+          "Same TR-REC gesture as before: hold or play the note, then press the numbered buttons where you want it. Long, sparse notes sit over a beat more easily than busy ones.",
         hardwareTargets: ["stepButtons", "keys"],
-        visualMode: "full",
-        expectedSound: "Three parts playing together: rhythm, a low line, and your new one.",
-        checkpoint: "You can hear more than one part playing at the same time.",
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "Three parts playing together: a rhythm, a low line, and your new one over the top.",
+        whyItMatters:
+          "This is the first time the JD-Xi is playing something you built that it could not play from the keys at all. Three parts at once is beyond what your hands can select.",
+        checkpoint:
+          "Three parts have content in the pattern and you can hear all of them.",
         recoveryHelp:
-          "If the new part is drowning everything else, leave it — the next steps are about exactly that. If a note sounds wrong, stop the pattern, hold Erase and press its step to remove it.",
-        nextHint: "Now hear each part on its own.",
+          "If a step will not take your note, that step already holds one — stop the pattern, hold Erase and press it, then try again. If your new part is drowning everything, use fewer steps rather than more.",
+        nextHint: "A fourth is optional, and worth trying.",
       },
       {
         id: "N06-S06",
+        title: "A fourth part, if you want one",
+        instruction:
+          "If you would like a fourth, select the part you have not used and add a couple of notes. Otherwise move on.",
+        detail:
+          "Three parts is a complete loop and this tutorial is finished either way. A fourth is worth trying so you have heard what a full JD-Xi program sounds like.",
+        hardwareTargets: ["partSelectGroup", "stepButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "If you added one: all four parts of the program playing at once.",
+        whyItMatters:
+          "Four parts is the most this instrument has. Hearing it now means the four-part program you build in I07 is something you have already experienced rather than a new idea.",
+        checkpoint:
+          "You have either three or four parts playing, and you chose which.",
+        recoveryHelp:
+          "If the fourth part makes it worse, erase its steps or simply mute it in the next step — deciding a part is not needed is a real answer, not a failure.",
+        nextHint: "Now use mute to decide what the loop actually needs.",
+      },
+      {
+        id: "N06-S07",
         title: "Listen to one part at a time",
         instruction:
           "Hold Shift and press a Part Select button to mute that part; do it again to bring it back.",
         detail:
-          "You can mute more than one at a time. Nothing is changed by this — it is a listening tool.",
+          "Work through them one at a time. You can mute more than one at once. Nothing is changed by this — muting is a listening tool, not an edit.",
         hardwareTargets: ["shiftButton", "partSelectGroup"],
         visualMode: "full-plus-inset",
         expectedSound: "Each part disappearing and returning as you mute and unmute it.",
         whyItMatters:
-          "Muting is how you find out what is actually wrong when a pattern sounds muddy. Take one thing away at a time and the problem usually names itself.",
+          "It is genuinely hard to hear what one part is doing inside a loop until the others stop. Muting is how you find out, and it costs nothing.",
         checkpoint: "You have heard at least two parts on their own.",
         recoveryHelp:
-          "If something is still missing at the end, hold Shift and press each of the four in turn until everything you expect is back.",
-        nextHint: "Now fix the balance properly.",
-      },
-      {
-        id: "N06-S07",
-        title: "Open Program Edit",
-        instruction:
-          "Press Menu/Write, use Cursor to select Program Edit, and press Enter.",
-        detail: "This is the screen N02 toured.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "full-plus-inset",
-        checkpoint: "The display is showing a Program Edit screen.",
-        recoveryHelp:
-          "A long press of Menu/Write opens PORTAMENTO instead of the Menu — press Exit and try a short press. If you opened the wrong item, press Exit once to get back to the list.",
-        nextHint: "The part settings are in the other group.",
+          "If a part will not come back, hold Shift and press its Part Select button once more — the same combination works both ways, and it is easy to press one time too many.",
+        nextHint: "Now use the same trick to make a decision.",
       },
       {
         id: "N06-S08",
-        title: "Move to the part settings",
-        instruction: "Hold down Shift and press Cursor ►.",
+        title: "Decide what the loop needs",
+        instruction:
+          "Mute each part in turn and ask whether you miss it. Leave anything you do not miss muted.",
         detail:
-          "This moves to the MAIN group, where each part has its own settings. The two letters at the right of the upper line tell you which part you are about to change.",
-        hardwareTargets: ["shiftButton", "cursorRightButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["PROG: MAIN D1", "Level 127"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Program Edit MAIN screen. The two letters show the part, and the value is your own program's.",
+          "If the loop sounds better without a part, that is worth knowing. Leave it muted and listen to the rest for a while.",
+        hardwareTargets: ["shiftButton", "partSelectGroup"],
+        visualMode: "full-plus-inset",
+        expectedSound: "The loop with fewer parts in it, and more room in what remains.",
+        whyItMatters:
+          "This is arranging, and it is the same move whether you have three parts or thirty: take something away, and find out whether the thing was helping. Muting makes that question free to ask.",
         checkpoint:
-          "The upper line reads PROG: MAIN with two letters at the right, and the lower line shows Level and a number.",
+          "You have made a decision about at least one part on the basis of hearing the loop without it.",
         recoveryHelp:
-          "If the upper line still reads PROG: COMMON, hold Shift down and press Cursor ► again. If you are somewhere else entirely, press Exit until you reach the top screen and start from Menu/Write.",
-        nextHint: "Now balance the parts.",
+          "Nothing here is permanent — unmute anything you want back. If you decide a part really is not wanted, you can erase its steps, but muting is enough for now.",
+        nextHint: "Last step: hear the whole thing.",
       },
       {
         id: "N06-S09",
-        title: "Set each part's level",
-        instruction:
-          "Use Part Select to choose a part, then use Value to change its Level.",
+        title: "Listen to what you made",
+        instruction: "Unmute anything you want back, and let the loop run.",
         detail:
-          "Do this while the pattern plays so you can hear the balance change. Pull back whatever is too loud rather than pushing everything else up.",
-        hardwareTargets: ["partSelectGroup", "programValueButtons"],
-        visualMode: "full-plus-inset",
-        expectedSound: "One part moving forward or back in the mix while the others stay put.",
+          "This is a multi-part pattern you built: several parts, playing together, repeating. It is the thing the whole Novice path has been heading toward.",
+        hardwareTargets: ["playStopButton", "partSelectGroup"],
+        visualMode: "full",
+        expectedSound: "Several parts, playing together as one loop.",
         whyItMatters:
-          "This is a different control from the AMP/ENV Level knob you met in B06 and from Master Volume. This one is the part's place in the program, which is what you want when several parts are playing at once.",
-        checkpoint: "You can make one part quieter and hear the others come forward.",
+          "Everything from here is a bigger version of this. I07 and I08 build a four-part program and a longer pattern, but the thing you are listening to now is the same idea at a smaller size.",
+        checkpoint: "You have a loop of your own with at least three parts in it.",
         recoveryHelp:
-          "Note the number before you change it and you can always put it back. If you have lost track, 127 is the maximum and is what an untouched part is usually set to — but check rather than assume, because this program may have been set up differently.",
-        nextHint: "One more setting makes a real difference.",
+          "If a part is missing, it is probably still muted — hold Shift and press its Part Select button. Nothing you did in this tutorial deleted a part's content except an explicit Erase.",
+        nextHint:
+          "You can build a loop from several parts. Next, let the JD-Xi play a part for you.",
       },
       {
         id: "N06-S10",
-        title: "Give each part its own space",
-        instruction: "Press Cursor ► to reach Pan, and use Value to move a part left or right.",
+        title: "None of it is saved",
+        instruction: "Leave the JD-Xi on if you want to keep this.",
         detail:
-          "Pan places a part in the stereo picture: fully left, centre, or fully right, and everywhere in between. Headphones show this far more clearly than speakers.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "The whole loop lives in the loaded program. Selecting another program, or switching the power off, loses all of it — every part at once.",
+        hardwareTargets: ["display"],
         visualMode: "full-plus-inset",
-        expectedSound: "The part you chose moves to one side, leaving the middle clearer.",
         whyItMatters:
-          "Two sounds competing in the same place sound like a mess. Move one of them aside and both become audible without either getting louder.",
-        checkpoint: "You can hear one part sitting to one side of the others.",
+          "There is more to lose now than there was after N04. If this loop is one you would be sorry to lose, N09 is three tutorials away and there is nothing stopping you going there first.",
+        checkpoint: "You know the loop is not stored yet.",
         recoveryHelp:
-          "Centre is the middle of the range. If a part has vanished, you may have moved it fully to one side while listening on one speaker — bring it back toward the centre.",
-        nextHint: "Now come out and hear what you have.",
-      },
-      {
-        id: "N06-S11",
-        title: "Come out and listen",
-        instruction: "Press Exit until you reach the top screen, and listen to the whole pattern.",
-        detail:
-          "Nothing you did in Program Edit was written to storage. It is all in the loaded program, along with the pattern itself.",
-        hardwareTargets: ["exitButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "Several parts, balanced, playing together as one thing.",
-        whyItMatters:
-          "You have now done the thing the keys cannot do: several JD-Xi parts sounding at once, arranged deliberately. That is what the pattern sequencer is for.",
-        checkpoint: "You are back at the top screen with a multi-part pattern playing.",
-        recoveryHelp:
-          "If the balance is worse than when you started, go back into Program Edit MAIN and set the levels by ear until it sits right. There is no undo, but nothing here is written until you save.",
+          "Nothing to recover from — this step asks you to do nothing. N09 Save your work is where keeping it is taught.",
         nextHint:
-          "Next, let the JD-Xi play notes you did not enter.",
+          "You can build a loop from several parts. Next, let the JD-Xi play a part for you.",
       },
     ],
   },
@@ -3086,20 +3164,24 @@ window.JDXI_TUTORIALS = {
     title: "Try the arpeggiator",
     shortTitle: "Arpeggiator",
     summary:
-      "Hold a few keys down and let the JD-Xi turn them into a moving part. Then change the pattern it plays and the speed it plays at.",
-    estimatedMinutes: 9,
+      "Hold a few keys down and let the JD-Xi turn them into a moving part. Change what it plays, how far it travels and how fast, then use it over a pattern and switch it off cleanly.",
+    estimatedMinutes: 12,
     prerequisites: ["N06"],
     learningGoals: [
       "Turn the arpeggiator on and hear it work.",
-      "Use Key Hold, and know why it can look like a fault.",
-      "Open Arpeggio Edit and change the style.",
-      "Know that arpeggio settings belong to the program.",
+      "Change the style, the range and the speed.",
+      "Use it as a layer over a running pattern.",
+      "Turn it off and confirm the keys play normally again.",
     ],
     // Source record: docs/tutorials/N07-SOURCE-NOTES.md
-    // N07-S05 exists because Roland's own troubleshooting table lists Key
-    // Hold being on as the cause of "notes do not stop" (OM p.17). Teaching
-    // the button without teaching that symptom would leave a learner
-    // stranded by the very feature this tutorial introduces.
+    // N07 teaches the arpeggiator well enough to use deliberately later
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 9): on, hold 2-3 keys, change
+    // keys, style, range, tempo, over a pattern, then off cleanly.
+    //
+    // Grid is deliberately NOT taught. Roland's own values are note-value
+    // and shuffle names (PG p.29), which is exactly the vocabulary sec 3.3
+    // forbids in learner text. Oct Range gives the same "change the feel of
+    // it" outcome with no theory at all.
     steps: [
       {
         id: "N07-S01",
@@ -3109,25 +3191,44 @@ window.JDXI_TUTORIALS = {
           "Arpeggio settings are saved within each program, so changing them changes the loaded program. Turning the arpeggiator on and editing its style are both changes of that kind.",
         hardwareTargets: ["arpeggioSection"],
         visualMode: "full-plus-inset",
+        whyItMatters:
+          "Roland states plainly that arpeggio settings belong to the program. That puts them in the same category as a knob move: not written anywhere, but replacing what is loaded until you save or switch away.",
         checkpoint:
           "You have decided: either there is nothing to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Nothing in this tutorial is written to storage, but it does change what is loaded, and there is no undo.",
-        nextHint: "Now switch it on.",
+          "N09 Save your work teaches saving. If you would rather not change this program, press Value + to move to another one first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now choose a part worth arpeggiating.",
       },
       {
         id: "N07-S02",
+        title: "Choose a synth part",
+        instruction: "Press Digital Synth 1, and play a key to hear it.",
+        detail:
+          "Any of the three pitched parts will do. The arpeggiator works on the selected part, and a synth sound shows what it is doing far more clearly than a drum kit would.",
+        hardwareTargets: ["digitalSynth1Button"],
+        visualMode: "full-plus-inset",
+        expectedSound: "A pitched sound that changes as you move along the keys.",
+        whyItMatters:
+          "On the Drums part each key is a different instrument, so an arpeggio there jumps between drums rather than climbing through notes. It works, but it teaches you nothing about what an arpeggio is.",
+        checkpoint: "A pitched part is selected and you can hear it from the keys.",
+        recoveryHelp:
+          "If you hear drums, press Digital Synth 1 again. If you hear nothing, check Master Volume and your listening connection — B02 covers that.",
+        nextHint: "Now switch it on.",
+      },
+      {
+        id: "N07-S03",
         title: "Turn the arpeggiator on",
         instruction: "Press the ARPEGGIO On button so it lights.",
+        detail: "Nothing happens yet — it needs notes to work with.",
         hardwareTargets: ["arpeggioOnButton"],
         visualMode: "full-plus-inset",
         checkpoint: "The ARPEGGIO On button is lit.",
         recoveryHelp:
-          "If it does not light, press it once more. Nothing happens to the sound until you hold some keys down.",
+          "If pressing it does nothing visible, press again and watch the button rather than the display — this control lights rather than showing a screen.",
         nextHint: "Now give it something to work with.",
       },
       {
-        id: "N07-S03",
+        id: "N07-S04",
         title: "Hold some notes down",
         instruction: "Hold down two or three keys at once and keep holding.",
         detail:
@@ -3137,45 +3238,48 @@ window.JDXI_TUTORIALS = {
         expectedSound:
           "The notes you are holding, played in turn, over and over, in a steady rhythm.",
         whyItMatters:
-          "This is the fastest way on the whole instrument to make something that sounds deliberate. You hold; it performs.",
-        checkpoint: "You can hear your held notes being played one at a time, repeatedly.",
+          "This is the whole idea. You supply which notes; the instrument supplies the timing, so you get a moving part without having to play one.",
+        checkpoint:
+          "You can hear your held notes being played one at a time, repeatedly.",
         recoveryHelp:
-          "If you hear only a chord, check the ARPEGGIO On button is lit. If you hear nothing, check which part is selected and that you can hear it when you play a single key.",
-        nextHint: "Try changing which notes you hold.",
+          "Nothing happening? Check the ARPEGGIO On button is lit, and hold the keys down rather than tapping them — it plays only while notes are held. Keys near each other tend to sound better together than keys far apart.",
+        nextHint: "Now move your hands.",
       },
       {
-        id: "N07-S04",
+        id: "N07-S05",
         title: "Change the notes underneath it",
         instruction: "While it is running, move to a different group of keys.",
+        detail: "Try two or three keys somewhere else and hold them the same way.",
         hardwareTargets: ["keys"],
         visualMode: "full",
         expectedSound: "The same rhythm, now built from the new notes you are holding.",
         whyItMatters:
-          "The arpeggiator keeps the movement and lets you change what it is made of. That split is what makes it useful rather than a novelty.",
+          "The style stays put and the notes change. That split — the JD-Xi keeps the pattern, you choose the pitches — is what makes the arpeggiator usable while you are playing.",
         checkpoint: "The arpeggio followed your hands to the new notes.",
         recoveryHelp:
-          "Let go completely and start again with a fresh set of keys if it gets confusing.",
-        nextHint: "Now the button that stops you needing to hold on.",
+          "If it stopped instead of changing, you let go of every key for a moment. Hold the new group down before releasing the old one, or simply hold the new group and wait.",
+        nextHint: "There is a way to keep it going with your hands free.",
       },
       {
-        id: "N07-S05",
+        id: "N07-S06",
         title: "Key Hold, and the trap in it",
-        instruction: "Press the ARPEGGIO Key Hold button, then take your hands off the keys.",
+        instruction:
+          "Press the ARPEGGIO Key Hold button, then take your hands off the keys.",
         detail:
           "The arpeggio keeps going without you. Play a different group of keys and it changes to those. Press Key Hold again to turn it off.",
         hardwareTargets: ["keyHoldButton"],
         visualMode: "full-plus-inset",
         expectedSound: "The arpeggio continuing with nothing held down.",
         whyItMatters:
-          "This is worth meeting deliberately, because Roland lists it as a cause of a problem people report: if notes will not stop when you take your hands off the keys, Key Hold is on. Knowing that turns a frightening moment into a single button press.",
+          "This is worth recognising because it is a documented cause of notes that will not stop. If your JD-Xi ever keeps playing after you let go, Key Hold is the first thing to check.",
         checkpoint:
           "The arpeggio continued with your hands off the keys, and stopped when you pressed Key Hold again.",
         recoveryHelp:
-          "If notes will not stop, press Key Hold to turn it off. Note that this button also works when the arpeggiator is off, where it sustains notes as if you were holding a damper pedal — so it can cause the same surprise with no arpeggio running at all.",
+          "If the sound will not stop, press ARPEGGIO Key Hold once. If it still will not, press ARPEGGIO On to switch the arpeggiator off entirely.",
         nextHint: "Now change what it plays.",
       },
       {
-        id: "N07-S06",
+        id: "N07-S07",
         title: "Open Arpeggio Edit",
         instruction: "Hold down Shift and press the ARPEGGIO On button.",
         detail:
@@ -3189,11 +3293,11 @@ window.JDXI_TUTORIALS = {
         checkpoint:
           "The upper line reads ARPEGGIO with a number, and the lower line names a style.",
         recoveryHelp:
-          "Make sure Shift is held down before you press the button — pressing it alone just switches the arpeggiator off. Press Exit to leave the screen at any point.",
-        nextHint: "Now try some of the styles.",
+          "Hold Shift down first, then press ARPEGGIO On. If you end up somewhere else, press Exit until you reach the top screen and try again, or use Menu/Write and pick Arpeggio Edit from the list.",
+        nextHint: "Now hear how different the styles are.",
       },
       {
-        id: "N07-S07",
+        id: "N07-S08",
         title: "Try different styles",
         instruction: "Hold some keys down and use Value to step through the styles.",
         detail:
@@ -3202,44 +3306,86 @@ window.JDXI_TUTORIALS = {
         visualMode: "full-plus-inset",
         expectedSound:
           "The rhythm and shape of the arpeggio changing completely from one style to the next.",
+        whyItMatters:
+          "The style is the biggest single decision here. Stepping through a dozen tells you more about what the arpeggiator can do than any description would.",
         checkpoint: "You have heard several styles and found one you like.",
         recoveryHelp:
-          "The style number is on the upper line — note it before you wander so you can come back. If you cannot find your way back to one you liked, pick a new favourite; nothing is lost.",
-        nextHint: "One more setting is worth knowing about.",
-      },
-      {
-        id: "N07-S08",
-        title: "Change how the notes are spaced",
-        instruction: "Press Cursor ► to reach Grid, and use Value to change it.",
-        detail:
-          "Grid decides the note value each step of the arpeggio represents, and whether it swings. The other parameters along this screen set how long each note lasts, how loud, and how far it climbs.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
-        visualMode: "full-plus-inset",
-        expectedSound:
-          "The arpeggio getting faster or slower in relation to the beat, and sometimes lopsided rather than even.",
-        whyItMatters:
-          "Grid changes the feel without changing the tempo, which is a different lever from the tempo knob in B09 and often the one you actually want.",
-        checkpoint: "You can hear the spacing of the notes change.",
-        recoveryHelp:
-          "Cursor ◄ walks back along the parameters if you want to return to the style. Nothing here is written to storage.",
-        nextHint: "Now come out.",
+          "Use Value − to go back if you have passed one you liked. If nothing is changing, make sure you are still holding keys down — the style only shows itself while notes are sounding.",
+        nextHint: "Now change how far it travels.",
       },
       {
         id: "N07-S09",
-        title: "Leave, and what you are leaving with",
-        instruction: "Press Exit until you reach the top screen.",
+        title: "Change how far it travels",
+        instruction:
+          "Press Cursor ► until the lower line names Oct Range, then change it with Value while holding keys.",
         detail:
-          "The arpeggio settings, and whether the arpeggiator is on at all, belong to the program. They are part of what a save keeps — and part of what switching program throws away.",
-        hardwareTargets: ["exitButton"],
+          "This shifts the arpeggio up or down by whole octaves as it repeats, up to three either way. At zero it stays where your hands are; higher and it climbs away from them each time round.",
+        hardwareTargets: ["cursorRightButton", "programValueButtons"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "The arpeggio spreading out over a wider range — climbing up past your hands, or dropping below them — instead of circling the same few notes.",
         whyItMatters:
-          "It also means a program you load may arrive with the arpeggiator already on. If holding keys suddenly produces a rhythm you did not ask for, that is why.",
+          "This is the difference between an arpeggio that sits politely under everything and one that sweeps across the whole instrument. It is the one arpeggio setting that changes the size of the part rather than its rhythm.",
         checkpoint:
-          "You are back at the top screen and you know whether your arpeggiator is still on.",
+          "You can hear the arpeggio covering more ground than it did at the start.",
         recoveryHelp:
-          "Press the ARPEGGIO On button to turn it off if you would rather it were. Check Key Hold is off too, or notes will keep sounding after you let go.",
+          "Set it back to 0 with Value to return to where you were. If you cannot find Oct Range, keep pressing Cursor ► — it is one of several parameters along this screen, and Cursor ◄ walks back.",
+        nextHint: "Now change how fast it goes.",
+      },
+      {
+        id: "N07-S10",
+        title: "Change the speed",
+        instruction: "Keep some keys held and turn the tempo knob.",
+        detail:
+          "The arpeggiator runs at the program's tempo, the same one you set in B09. There is no separate arpeggio speed.",
+        hardwareTargets: ["tempoKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound: "The arpeggio speeding up and slowing down as you turn.",
+        whyItMatters:
+          "Because it shares the tempo with everything else, an arpeggio always stays in step with a pattern. That is what makes it usable as a layer rather than something running alongside.",
+        checkpoint:
+          "The arpeggio changed speed, and the tempo number on the display changed with it.",
+        recoveryHelp:
+          "Turn the knob back, or use Tap at the speed you want. Remember the tempo belongs to the program, so this is another unsaved change to it.",
+        nextHint: "Now put it over a pattern.",
+      },
+      {
+        id: "N07-S11",
+        title: "Use it over a pattern",
+        instruction:
+          "Press Exit to leave the edit screen, press Play/Stop to start the pattern, and hold some keys.",
+        detail:
+          "The arpeggio plays along with the pattern rather than instead of it. Try holding a group of keys, changing them every few times round, and listening to how it sits.",
+        hardwareTargets: ["playStopButton", "keys"],
+        visualMode: "full",
+        expectedSound:
+          "Your pattern running, with an arpeggiated part moving over the top of it in the same tempo.",
+        whyItMatters:
+          "This is what the arpeggiator is actually for. It gives you a moving part to play over a loop without needing the hands to play it, which is exactly what the performance challenge in I10 asks for.",
+        checkpoint:
+          "A pattern is playing and your arpeggio is running over it, in time.",
+        recoveryHelp:
+          "If the arpeggio is fighting the pattern, try fewer keys, or a lower Oct Range. If you cannot hear it, the part it is on may be quiet in this program — mute the other parts for a moment with Shift and Part Select to find it.",
+        nextHint: "Last step: put things back.",
+      },
+      {
+        id: "N07-S12",
+        title: "Turn it off cleanly",
+        instruction:
+          "Press ARPEGGIO On so it goes dark, then play a key and check that Key Hold is off too.",
+        detail:
+          "With both off, the keys play normally again: one note per key, for as long as you hold it.",
+        hardwareTargets: ["arpeggioOnButton", "keyHoldButton"],
+        visualMode: "full-plus-inset",
+        expectedSound: "An ordinary note when you press a key, and silence when you let go.",
+        whyItMatters:
+          "Leaving the arpeggiator on is the commonest way a later tutorial goes strangely, because every key press turns into a run of notes. Switching it off deliberately is part of finishing.",
+        checkpoint:
+          "Neither ARPEGGIO button is lit, and one key gives you one note.",
+        recoveryHelp:
+          "If notes keep repeating, ARPEGGIO On is still lit. If a note carries on after you let go, Key Hold is still on — press it once. Both settings belong to the program, so switching program also clears them, at the cost of everything else unsaved.",
         nextHint:
-          "Next, take proper control of a sound rather than a rhythm.",
+          "You can add a moving part. Next, change a sound on purpose rather than by accident.",
       },
     ],
   },
@@ -3248,191 +3394,194 @@ window.JDXI_TUTORIALS = {
     level: "novice",
     order: 8,
     title: "Edit a sound more deliberately",
-    shortTitle: "Edit a sound",
+    shortTitle: "Deliberate editing",
     summary:
-      "The panel knobs move several things at once. Go into Tone Edit and change them one at a time, including the four separate stages of the envelope B06 could only move together.",
+      "Stop turning knobs to see what happens. Decide what you want the sound to be — darker, longer, more spacious — and then reach for the control that does that one thing.",
     estimatedMinutes: 11,
     prerequisites: ["N07"],
     learningGoals: [
-      "Open Tone Edit and move between its groups.",
-      "Change one parameter at a time instead of several at once.",
-      "Set attack, decay, sustain and release separately.",
+      "Say what you want a sound to do before you touch anything.",
+      "Change brightness, length, edge, movement and space on purpose.",
+      "Compare what you made against where you started.",
       "Get back to the original sound when an experiment goes wrong.",
     ],
     // Source record: docs/tutorials/N08-SOURCE-NOTES.md
-    // The payoff B06 promised: OM p.8 states that the [Envelope] knob adjusts
-    // A/D/S/R in a single operation and that editing them separately means
-    // entering Tone Edit. N08 is that tutorial. [Shift] + [Enter] is offered
-    // as the recovery here for the same reason it is offered in B06 and
-    // withheld in B07 -- these are sound edits, which is the case Roland
-    // scopes that shortcut to (OM p.5).
+    // N08 is the BRIDGE from random tweaking to intent
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 9), not a synthesis lesson. It
+    // uses controls the learner already has from B06 and B07 and adds one
+    // new idea: decide the goal first, then pick the control.
+    //
+    // Deliberately absent: Tone Edit menu diving, oscillator architecture,
+    // and any formal A/D/S/R curriculum. The four envelope stages are I04's
+    // comparative lab, not this tutorial's.
+    //
+    // The before/after comparison and the revert are the SAME action --
+    // [Shift] + [Enter] returns the original sound and discards the edit --
+    // so N08-S09 presents them together and says plainly what it costs.
     steps: [
       {
         id: "N08-S01",
         title: "Protect any work you want to keep",
-        instruction: "Decide whether the sound loaded right now is one you want to keep.",
+        instruction:
+          "Decide whether the sound loaded right now is one you want to keep.",
         detail:
-          "This tutorial edits the sound on the selected part, parameter by parameter. If it is one you have built and not saved, save it first — or accept that you are about to change it.",
-        hardwareTargets: ["display"],
-        visualMode: "full-plus-inset",
+          "This tutorial changes the sound on the selected part. If it is one you have built and not saved, save it first — or accept that you are about to change it.",
+        hardwareTargets: ["filterSection", "ampEnvSection"],
+        visualMode: "full",
         whyItMatters:
-          "A missing tone number on the lower line of the display is Roland's signal that the loaded sound has already been edited and is not the stored one.",
+          "Roland is explicit that a sound you create changes when you move the knobs. This tutorial cannot see what state your JD-Xi is in, so it asks rather than assumes.",
         checkpoint:
           "You have decided: either there is nothing to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Unlike most of this tutorial, that decision cannot be taken back later.",
-        nextHint: "Now choose which sound you are working on.",
+          "N09 Save your work teaches saving. If you would rather work on something disposable, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now pick something to work on.",
       },
       {
         id: "N08-S02",
-        title: "Choose the part to edit",
-        instruction: "Press Digital Synth 1, and hold a key to hear it.",
+        title: "Choose a sound worth changing",
+        instruction:
+          "Press Digital Synth 1 and use Tone + until you find a sound you can hold on a key.",
         detail:
-          "Tone Edit always edits the sound on the selected part, so this is the step that decides what you are changing.",
-        hardwareTargets: ["digitalSynth1Button"],
+          "You want something that keeps sounding while you hold, rather than a short stab. Every change in this tutorial is easier to hear on a sound that lasts.",
+        hardwareTargets: ["digitalSynth1Button", "toneButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A sound you can hold on a key.",
+        expectedSound: "A note that keeps going for as long as you hold the key.",
         checkpoint: "You have a sustained sound you can hear clearly.",
         recoveryHelp:
-          "If the sound stops the moment you let go, press Tone + to step to another — a sustained sound makes every change in this tutorial far easier to hear.",
-        nextHint: "Now go in.",
+          "If everything you find stops immediately, step on with Tone + — sustained sounds are common, and pads and strings are the easiest to hold.",
+        nextHint: "Now the step that makes this different from B06.",
       },
       {
         id: "N08-S03",
-        title: "Open Tone Edit",
+        title: "Decide what you want first",
         instruction:
-          "Press Menu/Write, use Cursor to select Tone Edit, and press Enter.",
-        detail: "It is the third item in the Menu, after SYSTEM and Program Edit.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "full-plus-inset",
+          "Listen to your sound and finish this sentence out loud: I want it to be more ______.",
+        detail:
+          "Darker. Brighter. Longer. Shorter. Sharper. Smoother. Stiller. More moving. More spacious. Pick one, and remember it — everything after this is you trying to get there.",
+        hardwareTargets: ["filterSection", "ampEnvSection", "lfoSection", "effectsSection"],
+        visualMode: "full",
         whyItMatters:
-          "Everything the FILTER, AMP/ENV and LFO knobs touch is in here, broken out into its individual parts. The knobs are the quick way; this is the precise way.",
-        checkpoint: "The display is showing a Tone Edit screen, with a group name on the upper line.",
+          "This is the whole difference between B06 and this tutorial. In B06 you turned a knob to find out what it did. Here you know what you want, and the question is which knob gets you there. That is what sound design actually is.",
+        checkpoint: "You have said out loud what you want this sound to become.",
         recoveryHelp:
-          "A long press of Menu/Write opens PORTAMENTO instead of the Menu — press Exit and try a short press. If you opened the wrong item, press Exit once to get back to the list.",
-        nextHint: "Move between the groups the same way you did in SYSTEM.",
+          "If nothing suggests itself, use the sound's worst feature: is it too bright, too dull, too short, too flat, too dry? Fixing something you dislike is as good a goal as any.",
+        nextHint: "Brightness first.",
       },
       {
         id: "N08-S04",
-        title: "Move between the groups",
-        instruction: "Hold down Shift and press Cursor ► a few times.",
+        title: "Brighter or darker",
+        instruction:
+          "Hold a key and move Cutoff a small amount in the direction you want.",
         detail:
-          "The groups cover the parts a sound is built from: its common settings, its oscillator, its pitch, its filter, its amp and its LFO. The upper line names the one you are in.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "Small. In B06 you swept it end to end to hear what it did; now you are aiming. Move it a little, let go, listen, and move it again if you need to.",
+        hardwareTargets: ["cutoffKnob"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "The same sound, a little duller or a little brighter — not transformed.",
         whyItMatters:
-          "The names match the panel sections you already know. FILTER on the panel and the FILTER group in here are the same thing — one is three knobs, the other is every parameter behind them.",
-        checkpoint: "The group name on the upper line changes as you press.",
+          "Most real sound design happens in small moves. The big sweeps are for finding out what a control does; once you know, you use it in inches.",
+        checkpoint:
+          "The sound has moved toward what you wanted without becoming something else.",
         recoveryHelp:
-          "If it does not change, you may be at the last group — keep Shift held and press Cursor ◄ instead. Check Shift is held down before you press.",
-        nextHint: "Stop at the one that controls loudness over time.",
+          "Gone too far? Move it back by ear. There is no numeric readout for this knob, so the only guide is whether you prefer what you hear.",
+        nextHint: "Now how long it lasts.",
       },
       {
         id: "N08-S05",
-        title: "Find the AMP group",
-        instruction: "Use Shift and Cursor until the upper line reads TONE: AMP.",
-        hardwareTargets: ["shiftButton", "cursorRightButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["TONE: AMP", "AMP Level 127"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Tone Edit AMP screen. The parameter shown and its value depend on where you are in the group and on your own sound.",
-        checkpoint: "The upper line reads TONE: AMP.",
+        title: "Shorter or longer",
+        instruction:
+          "Turn the AMP/ENV Envelope knob a little, then play a key and let go.",
+        detail:
+          "Left gives you a shorter sound with a stronger attack; right makes the attack softer and the release longer. One knob, two ends.",
+        hardwareTargets: ["envelopeKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "To the left, notes that snap and stop. To the right, notes that swell in and hang on after you let go.",
+        whyItMatters:
+          "How long a sound lasts changes its job more than what it is made of does. The same tone, made short, becomes something you play rhythmically; made long, it becomes something you hold underneath.",
+        checkpoint: "You can hear the note starting or ending differently than it did.",
         recoveryHelp:
-          "Keep holding Shift and pressing Cursor in either direction until you reach it. If you have left the screen entirely, press Exit to the top and start again from Menu/Write.",
-        nextHint: "Now the four settings B06 could only move together.",
+          "Turn the knob back toward the middle. If a long release is making everything blur together, that is the setting doing its job — shorten it if you do not want it.",
+        nextHint: "Now the edge of it.",
       },
       {
         id: "N08-S06",
-        title: "Set the attack on its own",
+        title: "Smoother or sharper",
         instruction:
-          "Press Cursor ► until the lower line names Attack, then use Value to raise it, and play a key.",
+          "Hold a key, turn Resonance up a little, and move Cutoff again.",
         detail:
-          "Attack is the time from pressing the key until the sound reaches full volume. Raise it and the sound fades in instead of arriving.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Resonance emphasises the sound right where the filter is working. A little adds an edge; a lot adds a whistle that follows Cutoff around.",
+        hardwareTargets: ["resonanceKnob", "cutoffKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "The note swells in gradually rather than starting immediately.",
+          "A sharper, more focused character, with a peak that moves when you move Cutoff.",
         whyItMatters:
-          "In B06 the Envelope knob moved all four of these together, so you could not have a slow start and a short ending. In here you can set each one independently.",
-        checkpoint: "The note now takes a moment to arrive when you press a key.",
+          "Brightness and edge are different things, and they are the two halves of the filter. Knowing which one you actually want stops you from turning Cutoff up when what you meant was sharper.",
+        checkpoint:
+          "You can hear the difference between moving Cutoff and moving Resonance.",
         recoveryHelp:
-          "Use Value in the other direction to bring it back down. If you have lost track of the original value, that is exactly what the last step of this tutorial is for.",
-        nextHint: "Now the one that decides how long it lasts.",
+          "Turn Resonance back down if it has become a whistle you do not want. High resonance can also get loud — turn Master Volume down before you explore the top of its range.",
+        nextHint: "Now whether it sits still.",
       },
       {
         id: "N08-S07",
-        title: "Set the release on its own",
+        title: "Still or moving",
         instruction:
-          "Press Cursor ► until the lower line names Release, raise it with Value, then play a key and let go.",
+          "Hold a key and turn LFO Depth up just far enough to notice it, then stop.",
         detail:
-          "Release is the time from letting go of the key until the sound disappears.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Just far enough. In B06 you turned it up until it was obvious; here the target is the smallest amount that makes the sound feel alive rather than the largest amount you can stand.",
+        hardwareTargets: ["lfoDepthKnob", "lfoRateKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The sound carries on after you take your finger off, then fades away.",
+        expectedSound:
+          "A sound that breathes slightly rather than sitting perfectly still — or wobbles obviously, if you went too far.",
         whyItMatters:
-          "Attack and release are the two that change the character of a sound most, and they are at opposite ends of a note. Setting them independently is most of what makes a pad a pad and a stab a stab.",
-        checkpoint: "The sound continues after you release the key.",
+          "A little movement makes a sound feel real. A lot makes it sound like an effect. The difference is entirely in how far you turn this knob, which is why deciding first matters.",
+        checkpoint:
+          "There is movement in the sound that you chose the amount of.",
         recoveryHelp:
-          "Lower it again with Value. A very long release can make it sound as though notes are not stopping — if that happens here, this is the cause rather than Key Hold.",
-        nextHint: "Two more stages sit between those.",
+          "Turn Depth back to zero to remove it completely. If the movement is too fast or too slow to be pleasant, use LFO Rate to change its speed rather than turning Depth further.",
+        nextHint: "Last one: how much room it is in.",
       },
       {
         id: "N08-S08",
-        title: "The two in the middle",
+        title: "Dry or spacious",
         instruction:
-          "Use Cursor to find Decay and Sustain, and try changing each while playing a key.",
+          "Turn Reverb up to where you like it, then press Effects On/Off to hear the sound without it.",
         detail:
-          "Decay is how the sound falls from its loudest point down to a held level. Sustain is the level it holds at while your finger stays down.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "The On/Off button gives you the comparison for free. Ask whether you miss the reverb when it goes — if you do not, you had too much.",
+        hardwareTargets: ["reverbKnob", "effectsOnOffButton"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With sustain low, the note drops away while you hold it. With sustain high, it stays put until you let go.",
+          "Your sound in a space, then bare, then in a space again.",
         whyItMatters:
-          "Attack, decay, sustain and release together describe the whole life of a note. Every sound you have liked so far was some combination of these four.",
+          "Reverb is the easiest thing on this instrument to overdo, because more of it always sounds better on a single sound played alone. Switching it out is the only honest test.",
         checkpoint:
-          "You have changed at least one of them and heard the difference while holding a key.",
+          "You have set an amount of reverb you chose, having heard the sound without it.",
         recoveryHelp:
-          "If the sound has become inaudible, raise Sustain and AMP Level. If it has become unpleasant, the last step of this tutorial puts everything back at once.",
-        nextHint: "The same idea works on the filter.",
+          "Keep pressing Effects On/Off to step on through the combinations until the effects you want are back. Turning the Reverb knob down is the other way to get less.",
+        nextHint: "Now hear how far you have come — and what it costs to find out.",
       },
       {
         id: "N08-S09",
-        title: "The filter has its own envelope",
+        title: "Compare with where you started",
         instruction:
-          "Hold Shift and press Cursor to reach the FILTER group, then walk its parameters with Cursor.",
+          "Read this before you press anything. Then, if you want to, hold Shift and press Enter.",
         detail:
-          "Alongside the cutoff and resonance you already know, the filter has its own attack, decay, sustain and release, and a depth setting that decides how far it moves.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "Roland documents that combination as the way back to the original sound after you have edited it. That makes it your before-and-after — and your undo, which is the same thing. Pressing it plays you exactly what you started from, and throws away everything you just did.",
+        hardwareTargets: ["shiftButton", "enterButton"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With depth up and a slow attack, the sound opens up over time instead of being bright from the start.",
+          "If you press it: the sound as it was before you started, with your version gone.",
         whyItMatters:
-          "This is where the classic sweeping synthesizer sound comes from: not a hand on a knob, but the filter moving itself every time you press a key.",
-        checkpoint: "You have found the filter's own envelope parameters.",
+          "There is no way to hold both versions at once on this instrument, and no redo. So the comparison and the undo are one button, and choosing to press it is choosing to start again. That is the strongest argument there is for learning to save, which is the next tutorial.",
+        checkpoint:
+          "You either kept your version, or you heard the original and know your version is gone.",
         recoveryHelp:
-          "If nothing you change makes any difference, check the filter's depth setting — with depth at zero the filter envelope has nothing to move.",
-        nextHint: "Now the way back.",
+          "If you pressed it and wanted your version back, it cannot be recovered — but you know exactly which controls you moved, so making it again takes a minute rather than a discovery. Next time, save before you compare.",
+        nextHint: "Last thing: how to keep one of these.",
       },
       {
         id: "N08-S10",
-        title: "Undo the whole experiment",
-        instruction: "Press Exit to leave, then hold down Shift and press Enter.",
-        detail:
-          "Roland documents this as the way to return to the original sound after you have switched or edited it. It undoes the sound edits you have just made — not everything you have ever done, and not effects or pattern work.",
-        hardwareTargets: ["shiftButton", "enterButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The sound as it was before you opened Tone Edit.",
-        whyItMatters:
-          "This is what makes Tone Edit safe to explore. You can change six things, dislike all of them, and get back in one gesture — and the tone number reappearing on the display tells you it worked.",
-        checkpoint:
-          "The sound is back to how it started, and the display shows a tone number again.",
-        recoveryHelp:
-          "Make sure Shift is held down before you press Enter. Remember this is not a general undo — the JD-Xi does not have one — and it does not reach effects, patterns or program settings.",
-        nextHint: "Last step: keeping an edit instead of undoing it.",
-      },
-      {
-        id: "N08-S11",
         title: "Keeping an edit instead",
         instruction: "Decide whether you want to build a sound you keep.",
         detail:
@@ -3440,13 +3589,13 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["display"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "It is worth knowing before you spend an hour on a sound: the JD-Xi cannot store one on its own. A sound is kept by saving the whole program it lives in.",
+          "You now have a method: name what you want, then move one control at a time toward it. What you do not have yet is anywhere to put the result. That is the whole of N09.",
         checkpoint:
           "You can edit a sound deliberately, and you know it stays only if you save the program.",
         recoveryHelp:
-          "N09 Save your work is next, and it is the tutorial that keeps everything you have made in this level.",
+          "Nothing to recover from — this step asks you to do nothing. If you have a sound here you want to keep, go to N09 Save your work now rather than switching off.",
         nextHint:
-          "You can build a sound on purpose now. Next, stop losing your work.",
+          "You can shape a sound on purpose. Next, learn how to keep one.",
       },
     ],
   },
@@ -3457,14 +3606,14 @@ window.JDXI_TUTORIALS = {
     title: "Save your work",
     shortTitle: "Save your work",
     summary:
-      "Write what you have made into the JD-Xi so it survives being switched off. This is the one operation in the Novice path that can destroy something, so it is worth doing slowly.",
-    estimatedMinutes: 12,
+      "Write what you have made into the JD-Xi so it survives being switched off — then prove it is really there. This is the one operation in the Novice path that can destroy something, so it is worth doing slowly.",
+    estimatedMinutes: 15,
     prerequisites: ["N08"],
     learningGoals: [
       "Say what a save keeps and what it cannot keep.",
       "Name a program and choose where it goes.",
       "Understand exactly what saving over a slot costs you.",
-      "Complete a save, and know it cannot be undone.",
+      "Complete a save, and check that it really persisted.",
     ],
     // Source record: docs/tutorials/N09-SOURCE-NOTES.md
     //
@@ -3487,6 +3636,25 @@ window.JDXI_TUTORIALS = {
     steps: [
       {
         id: "N09-S01",
+        title: "Make a small change you will not miss",
+        instruction:
+          "Hold a key and turn the Cutoff knob a little, so the sound is audibly different from how it started.",
+        detail:
+          "This tutorial needs something to save, and it is much safer to practise on a change you invented thirty seconds ago than on work you care about. If you already have something you want to keep, skip this step and save that instead.",
+        hardwareTargets: ["cutoffKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The loaded sound, duller or brighter than it was — a change you would recognise if it came back.",
+        whyItMatters:
+          "Saving is the one operation in the Novice path that can destroy something, so the first time you do it should not be the time it matters. A deliberately disposable edit means every step after this is practice rather than risk.",
+        checkpoint:
+          "The sound has changed in a way you could recognise, and you do not mind whether it survives.",
+        recoveryHelp:
+          "Turn Cutoff back by ear if you would rather start from the untouched sound — or hold Shift and press Enter to return to the original, which also works. Neither matters much here: the point of this step is to have something to save, not to have something good.",
+        nextHint: "Now make sure it is what gets saved.",
+      },
+      {
+        id: "N09-S02",
         title: "Make sure the right thing is loaded",
         instruction: "Check that the sound or pattern you want to keep is the one playing now.",
         detail:
@@ -3502,7 +3670,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now, what a save actually keeps.",
       },
       {
-        id: "N09-S02",
+        id: "N09-S03",
         title: "What a save keeps",
         instruction: "Read this before you start.",
         detail:
@@ -3518,7 +3686,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now open the save screen.",
       },
       {
-        id: "N09-S03",
+        id: "N09-S04",
         title: "Open the WRITE screen",
         instruction: "Hold down Shift and press Menu/Write.",
         detail:
@@ -3537,7 +3705,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Give it a name you will recognize.",
       },
       {
-        id: "N09-S04",
+        id: "N09-S05",
         title: "Name it",
         instruction: "Use Cursor to move along the name and Value to choose each character.",
         detail:
@@ -3552,7 +3720,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now accept the name.",
       },
       {
-        id: "N09-S05",
+        id: "N09-S06",
         title: "Accept the name",
         instruction: "Press Enter.",
         detail:
@@ -3565,7 +3733,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Stop here and read the next step in full before pressing anything.",
       },
       {
-        id: "N09-S06",
+        id: "N09-S07",
         title: "What choosing a destination costs",
         instruction: "Read this before you choose where to save.",
         detail:
@@ -3581,7 +3749,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now choose, carefully.",
       },
       {
-        id: "N09-S07",
+        id: "N09-S08",
         title: "Choose where it goes",
         instruction:
           "Use the Value buttons to choose a destination, watching the lower line as you go.",
@@ -3598,7 +3766,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One more press before the point of no return.",
       },
       {
-        id: "N09-S08",
+        id: "N09-S09",
         title: "Enter, and the last chance to stop",
         instruction: "Press Enter.",
         detail:
@@ -3614,7 +3782,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "If you are sure, go ahead.",
       },
       {
-        id: "N09-S09",
+        id: "N09-S10",
         title: "Write it",
         instruction: "Press Enter, and do not touch the power switch.",
         detail:
@@ -3629,7 +3797,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "It is done. Here is what that means.",
       },
       {
-        id: "N09-S10",
+        id: "N09-S11",
         title: "It is saved, and it cannot be undone",
         instruction: "Press Exit until you reach the top screen, and read the display.",
         detail:
@@ -3645,7 +3813,43 @@ window.JDXI_TUTORIALS = {
         nextHint: "One last thing, about what a save does not cover.",
       },
       {
-        id: "N09-S11",
+        id: "N09-S12",
+        title: "Prove it is really there",
+        instruction:
+          "Press Value + to step to another program, then Value − to come back to yours.",
+        detail:
+          "Selecting a program loads it from storage, so coming back gives you the saved version rather than what was in front of you a moment ago. If your change is still there, it is genuinely written.",
+        hardwareTargets: ["programValueButtons", "display"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "Your program, with the change you made at the start of this tutorial still in it.",
+        whyItMatters:
+          "Until you have done this once, you are taking the word Complete on trust. Stepping away and back is the only check that distinguishes a program that was written from one that merely looks right because it never left the screen.",
+        checkpoint:
+          "You left your program, came back to it, and the change you saved is still there.",
+        recoveryHelp:
+          "This move is safe now, and only now — the thing that made it dangerous throughout this course is unsaved work, and you have just saved yours. If your change is missing, the save did not take: go back to N09-S04 and work through it again, watching for the Complete message.",
+        nextHint: "One optional extra, now that it is safe to do.",
+      },
+      {
+        id: "N09-S13",
+        title: "Put it on a Favorite button, if you want to",
+        instruction:
+          "Press Favorite so it lights, press numbered buttons until one says “Not Registered!”, then hold Favorite and press that button.",
+        detail:
+          "This is optional. Registering puts your saved program on a numbered button so one press recalls it. Roland asks you to save the program first, which you have just done — that is why this step is here rather than earlier.",
+        hardwareTargets: ["favoriteButton", "stepButtons"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Registering replaces whatever was on that button, and the JD-Xi does not ask first. The “Not Registered!” message is the only signal it gives that a slot is free, which is why this step has you go looking for one rather than picking a number.",
+        checkpoint:
+          "Either you found a free button and registered your program to it, or you decided to skip this step.",
+        recoveryHelp:
+          "If pressing a numbered button loaded a different program instead of reporting “Not Registered!”, that button was already in use — and you have just switched away from your program. Step back to it with Value, and try a different number. Press Favorite once more when you are done, to give the numbered buttons their normal job back.",
+        nextHint: "Last thing: what a save leaves behind.",
+      },
+      {
+        id: "N09-S14",
         title: "What a save does not cover",
         instruction: "Read this last part.",
         detail:
@@ -3671,7 +3875,7 @@ window.JDXI_TUTORIALS = {
     shortTitle: "Getting unstuck",
     summary:
       "What to do when the JD-Xi does something you did not expect. There is no undo button, so this is about knowing which move fits which problem — and recognizing the screens you should back out of.",
-    estimatedMinutes: 11,
+    estimatedMinutes: 13,
     prerequisites: ["N09"],
     learningGoals: [
       "Back out of any screen you did not mean to open.",
@@ -3881,13 +4085,50 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["exitButton"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "Knowing there is no universal undo is what makes you save. Almost everything that goes badly wrong on this instrument is something unsaved being replaced by something else — and that is a habit problem rather than a knowledge problem.",
+          "Knowing there is no general undo is more useful than hoping there is one. It turns every risky moment into a question with an answer — what exactly do I want back, and which of these five moves returns it?",
         checkpoint:
           "You can name which move fits which kind of problem, and you know none of them is a general undo.",
         recoveryHelp:
-          "When something goes wrong and none of these fits, press Exit to get to the top screen and take stock from there. Nothing on this instrument is lost by pressing Exit.",
+          "Keep pressing Exit. This is the last step you have to do — the two that follow are optional practice, and you can stop here.",
         nextHint:
-          "That is the Novice path complete. Next comes designing sounds on purpose.",
+          "The toolkit is complete. What follows is optional practice, and it changes a sound.",
+      },
+      {
+        id: "N10-S13",
+        title: "Optional practice: decide whether to try it",
+        instruction:
+          "Decide whether the sound loaded right now contains edits you want to keep.",
+        detail:
+          "The last two steps are an optional exercise: make a small change to a sound, then use Shift and Enter to put it back. It is the one move in this toolkit that is worth having actually done rather than only read about. But it edits whatever is loaded, and the revert throws that edit away — so if there is anything here you want, skip these two steps. N10 is complete either way.",
+        hardwareTargets: ["cutoffKnob"],
+        visualMode: "full",
+        whyItMatters:
+          "You may well have opened this tutorial because something went wrong, with unsaved work still in front of you. That is exactly the situation in which a practice exercise must not be forced on you, which is why this step asks before the next one acts.",
+        checkpoint:
+          "You have decided: either you are going to try the exercise, or you are skipping it and finishing here.",
+        recoveryHelp:
+          "If you are not sure, skip it. Nothing else depends on this exercise, and you can come back to N10 at any time on a sound you do not mind losing. If you want to keep what is loaded, N09 Save your work is the tutorial that keeps it.",
+        nextHint: "If you are trying it, one small change is enough.",
+      },
+      {
+        id: "N10-S14",
+        title: "Optional practice: change it, then put it back",
+        instruction:
+          "If you decided to try it: hold a key, turn Cutoff a little, then hold Shift and press Enter. If you decided to skip, read this and finish.",
+        detail:
+          "Turning the knob edits the loaded sound, and the tone number disappears from the lower line to tell you so. Holding Shift and pressing Enter returns the original sound, and the tone number comes back. That pair of signals — number gone, number back — is what you were reading about at the start of this tutorial, now happening in front of you.",
+        hardwareTargets: ["shiftButton", "enterButton", "display"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The sound changing when you turn the knob, then returning exactly to what it was.",
+        whyItMatters:
+          "Having done it once, you will reach for it without hesitating the next time an experiment goes somewhere you did not want. Reading about a recovery move and using one are different kinds of knowing.",
+        checkpoint:
+          "Either you changed a sound and put it back, watching the tone number leave and return — or you skipped the exercise, which is equally a finish.",
+        recoveryHelp:
+          "If the sound did not return, check that Shift was held down before Enter was pressed. Remember this move reaches the sound only: it does not undo effect settings, pattern edits or anything saved. If it did not work and you want the stored program back, selecting another program and returning gives you that — but be clear that doing so discards every other unsaved change on this program, and they are gone for good.",
+        nextHint:
+          "That is the Novice path complete. Next, start building sounds of your own.",
       },
     ],
   },

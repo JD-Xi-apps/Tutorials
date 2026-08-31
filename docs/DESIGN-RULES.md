@@ -117,8 +117,13 @@ Two cases qualify:
 
 A tutorial that only *selects a part*, *plays the keys*, *navigates a menu without
 pressing Value*, or performs an action the same gesture reverses does not qualify, and
-does not carry one. `B01`, `B02`, `B04`, `B05`, `N01`, `N02` and `N10` deliberately have
-none.
+does not carry one. `B01`, `B02`, `B04`, `B05`, `N01` and `N10` deliberately have none.
+
+> **Updated by the master-plan reconciliation.** `N02` was on that list and no longer is.
+> The reconciliation made it the practical Program lesson — it now selects programs, jumps
+> banks and recalls a hardware Favorite, all of which discard — so it carries a preflight at
+> `N02-S04`. `N03` likewise gained one, at `N03-S04`, when it started writing notes into the
+> loaded pattern. Both are changes of what the tutorial *does*, not of this rule.
 
 The rule matters in both directions. Omitting a preflight where work can be lost strands
 a learner. Adding one everywhere turns it into wallpaper that stops being read, which

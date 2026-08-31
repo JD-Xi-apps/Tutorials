@@ -5,11 +5,41 @@ Source reconciliation record for N05. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **N05 — Make a simple bass line** (novice, order 5, 12 steps, ~12 min) |
+| Tutorial | **N05 — Make a simple bass line** (novice, order 5, 11 steps, ~12 min) |
 | Short title | Bass line |
 | Prerequisites | `["N04"]` — advisory, not a gate |
 | Kind | **Authoring.** TR-REC on a pitched part, then step recording. |
 | Authored | 2026-08-31 |
+
+## Master-plan reconciliation (2026-08-31)
+
+The master plan (§9) makes **TR-REC the main method** in N05 and demotes step recording to a
+*brief alternate one-note-at-a-time method*. The brief adds two instructions: trim the
+rests, ties and long step-recording detail, and do not teach or advertise Realtime Recording,
+which is outside v1.
+
+The previous N05 had it the other way round. Four of its twelve steps were step recording,
+including a whole step on rests and ties, and its closing explanation named realtime
+recording as a method that overwrites — advertising, to a learner who would never be taught
+it, a capability the course does not cover.
+
+| Change | Why |
+|---|---|
+| Step recording compressed from four steps to one (`N05-S09`) | master plan: "brief alternate" |
+| Rests and ties removed | brief: "trim rests/ties/long Step Recording detail" |
+| Realtime Recording no longer named anywhere | brief: "do not teach or advertise it as later guided content" |
+| **Added** `N05-S07`, a second nearby note | master plan lists "alternate nearby key on selected steps"; the old tutorial recorded one note and never moved off it |
+| **Added** `N05-S08`, erasing a note | master plan lists "correct/remove note"; the old tutorial had no way to take anything out |
+
+The two additions matter musically as well as for compliance. A bass line of one repeated
+note is a pulse, and the old tutorial never got past it; and a first attempt at a line is
+almost always improved by removing something, which the learner previously had no way to do.
+
+<!-- removed-steps:begin -->
+
+Ids that no longer exist in N05: `N05-S12`.
+
+<!-- removed-steps:end -->
 
 ## Sources consulted
 
@@ -29,12 +59,11 @@ Source reconciliation record for N05. Content lives in `js/tutorials.js`
 | **N05-S04** Play the note you want to record | `keys` | `full` | On a pitched part the numbered buttons record whichever note you played last. | OM p.11 / PG p.3, TR-REC for a digital or analog part, step 1: "Play the key that you want to record using TR-REC." Roland introduces this as working "in the same way as for a drum part", which is what licenses the parallel N05 draws. |
 | **N05-S05** Light the steps for that note | `stepButton01`, `stepButton09` | `full-plus-inset` | Light the steps where you want the note; a step that already holds a note must be erased first. | OM p.11 / PG p.3 step 2, and the re-input note: "you must first delete the existing notes. With pattern playback stopped, hold down the [Erase] button and press the button of the step number that you want to erase." |
 | **N05-S06** Listen to it in place | `playStopButton` | `full-plus-inset` | Play/Stop plays it back; `[Shift]` + Part Select mutes a part and the same combination unmutes. | OM p.11 step 3; OM p.10 *Muting a specific part*. |
-| **N05-S07** Start step recording | `stepRecButton`, `display` | `display-focus` | Press [Step Rec]; the [01] button blinks; a recording screen is shown until you stop. | OM p.12 *Step Recording* steps 1–2, quoted closely: "Press the [Step Rec] button. The [01] button blinks. The following screen is shown until you stop recording." Screen from OM p.12 — see *Display provenance*. |
-| **N05-S08** Enter notes one at a time | `keys` | `full` | Each key is recorded at the blinking step and the position advances; you are not playing in time; pressing a numbered button moves to that step; step recording replaces what was on a step. | OM p.12 steps 3–4: "That note is recorded at step 1. The position automatically advances to step 2, and the [02] button blinks." MEMO: "To change the step that you're recording, press one of the [01]–[16] buttons." The overwrite behaviour is OM p.11 / PG p.3. |
-| **N05-S09** Rests and ties | `eraseButton`, `keyHoldButton` | `full-plus-inset` | During step recording, [Erase] enters a rest and ARPEGGIO [Key Hold] enters a tie. | OM p.12 MEMO, both bullets: "To erase the data at a step (or to enter a rest), press the [Erase] button. To enter a tie, press the ARPEGGIO [Key Hold] button." |
-| **N05-S10** Stop and listen | `stepRecButton`, `playStopButton` | `full-plus-inset` | Press [Step Rec] again to stop recording. | OM p.12 step 5. The tempo/scale note in `recoveryHelp` points at `B09` and `N03` rather than repeating their claims. |
-| **N05-S11** Which method overwrites | `stepRecButton`, `stepButtons` | `full-plus-inset` | TR-REC will not record over an existing note; step and realtime recording delete and replace automatically. | OM p.11 and PG p.3, the same sentence: "When you use step recording or realtime recording, the original notes are automatically deleted and replaced (overwritten) by the newly entered notes." |
-| **N05-S12** Still not saved | `display` | `full-plus-inset` | Both parts are in one pattern in one program; one save keeps both. | OM p.12 *Saving a Pattern*. |
+| **N05-S07** Bring in a second note | `keys`, `stepButtons` | `full-plus-inset` | Playing a different key and lighting dark steps records that second note. TR-REC will not record over a step that already holds a note. | OM p.11 *Digital Synth part/Analog Synth part*: "Play the key that you want to record using TR-REC. Use the [01]–[16] buttons to illuminate each step at which you want a note to sound." The occupied-step constraint is Roland's own: "If you want to use TR-REC to re-input notes at a step in which you previously input a note… you must first delete the existing notes" (OM p.11), which is why the step directs the learner to dark buttons. **"A key a little way from your first one" carries no interval claim** — no note name, scale or interval appears, per master plan §3.3. |
+| **N05-S08** Remove a note you did not want | `eraseButton`, `stepButtons` | `full-plus-inset` | Holding `[Erase]` and pressing a step, with the pattern stopped, erases that step's notes and frees it. | OM p.10 *Deleting All Notes at a Specific Step*: "If you want to completely erase the notes of a step, stop the pattern, hold down the [Erase] button, and press the button of the step that you want to erase." The stopped-pattern precondition is Roland's. |
+| **N05-S09** The other way in: step recording | `stepRecButton`, `display` | `display-focus` | `[Step Rec]` starts step recording; the [01] button blinks; each key played is recorded at the blinking step and the position advances; `[Step Rec]` again stops. | OM p.12 *Step Recording* steps 2–5: "Press the [Step Rec] button. The [01] button blinks… Play one note on the keyboard. That note is recorded at step 1. The position automatically advances to step 2, and the [02] button blinks… Press the [Step Rec] button to stop recording." Screen reproduced verbatim — see *Display provenance*. **Velocity and Gate Time are visible on that screen but are not taught** — see *Deliberate omissions*. |
+| **N05-S10** Which method overwrites | `stepRecButton`, `stepButtons` | `full-plus-inset` | TR-REC will not write over a step that already holds a note; step recording deletes and replaces automatically. | OM p.11, one sentence covering both: "If you want to use TR-REC to re-input notes at a step in which you previously input a note, or which contains notes of a preset pattern, you must first delete the existing notes… When you use step recording or realtime recording, the original notes are automatically deleted and replaced (overwritten) by the newly entered notes." **The clause naming realtime recording is deliberately not carried into learner text** — see *Deliberate omissions*. |
+| **N05-S11** Still not saved | `display` | `full-plus-inset` | Both parts are in one pattern in one program; one save keeps both. | OM p.12 *Saving a Pattern*. |
 
 ## Display provenance
 
@@ -82,15 +111,25 @@ is loaded (it chooses one by ear), whether any steps already hold notes (N05-S05
 
 ## Deliberate omissions
 
-- **Velocity and Gate Time are named but not prescribed.** OM p.12 documents both on the
-  step-recording screen, and N05-S07's `displayNote` says the value can be changed there,
-  but no target value is given — there is no correct one.
-- **TR-REC's fixed 80% gate time** (PG p.3) is not stated to the learner. It is true and
-  it explains why TR-REC notes all sound the same length, but it is a detail a first
-  bass line does not need; `I08` is the place for it.
-- **Realtime recording** is named only in N05-S11, as the other method that overwrites.
-  It is taught in `I08`.
-- **Chord entry** (OM p.12: "You can record a chord by selecting multiple notes") is
-  omitted, as chord vocabulary is not assumed anywhere in this curriculum.
-- **Auto Note** (PG p.4, which fixes Pitch Bend Range at 24 when recording) is out of
-  scope; no canonical tutorial covers Auto Note.
+- **Rests and ties.** OM p.12 documents both — `[Erase]` enters a rest, ARPEGGIO
+  `[Key Hold]` enters a tie — and the previous N05 taught them in a step of their own. The
+  brief directs that this detail be trimmed, and it is the right call: they are only usable
+  once step recording is the method you are working in, and here it is a one-step aside.
+- **Velocity and Gate Time.** Both are visible on the step-recording screen (OM p.12) and
+  the reproduced display shows `Velocity:Real`. Neither is explained or prescribed:
+  velocity/accent instruction is excluded from v1 (master plan §13), and `displayNote` says
+  only what the screen shows, not what to do with it.
+- **TR-REC's fixed 80% gate time** (OM p.11) is not stated. It is true, and it explains why
+  TR-REC notes all sound the same length — but it is note-duration detail a first bass line
+  does not need.
+- **Realtime Recording is not named anywhere in N05**, including in `N05-S10`, which is the
+  step that discusses overwriting. Roland's sentence there covers step *and* realtime
+  recording in one breath (OM p.11); the learner-facing text quotes only the half that
+  applies to a method this course teaches. Realtime Recording is excluded from v1 entirely,
+  and mentioning it would promise a lesson that never arrives.
+- **Chord entry** (OM p.11: "By pressing the [01]–[16] buttons while you hold down a chord
+  on the keyboard, you can enter chords") is omitted, as chord vocabulary is not assumed
+  anywhere in this curriculum.
+- **The fourth recording method** — holding a step button while playing the keyboard (OM
+  p.12) — is not mentioned. v1's sequencer scope names two entry methods, and `N03`
+  establishes exactly those two; a third would contradict it.

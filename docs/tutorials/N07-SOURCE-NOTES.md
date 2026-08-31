@@ -5,11 +5,44 @@ Source reconciliation record for N07. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **N07 — Try the arpeggiator** (novice, order 7, 9 steps, ~9 min) |
+| Tutorial | **N07 — Try the arpeggiator** (novice, order 7, 12 steps, ~12 min) |
 | Short title | Arpeggiator |
 | Prerequisites | `["N06"]` — advisory, not a gate |
 | Kind | **Operating procedure.** Turns the arpeggiator on and edits its settings. |
 | Authored | 2026-08-31 |
+
+## Master-plan reconciliation (2026-08-31)
+
+The master plan (§9) asks N07 for enough of the arpeggiator to **use it deliberately later**,
+and lists what that means. Five items were missing, and one present item was out of scope.
+
+| Master-plan requirement | Before | Now |
+|---|---|---|
+| choose a synth Part | **absent** | `N07-S02` |
+| change **range** | **absent** | `N07-S09` (`Oct Range`) |
+| change **tempo** | **absent** | `N07-S10` |
+| **use it over a pattern** | **absent** | `N07-S11` |
+| finish with a usable arpeggiated layer | **absent** | `N07-S11` |
+| turn it off and confirm normal playing | implied only | `N07-S12` |
+
+**The Grid step was removed** (old position 8, *Change how the notes are spaced*). The brief
+is explicit — *do not spend the lesson on note-value/Grid taxonomy* — and Grid could not have
+been taught here in any case. Roland's own values are `1/4`, `1/8`, `1/8L`, `1/16`, `1/24`
+and so on, explained as note values and shuffle depths (PG p.29), which is precisely the
+vocabulary master plan §3.3 forbids in learner text. `Oct Range` replaces it and is strictly
+better for this tutorial: it is a single number, it needs no theory, and it changes something
+a beginner can hear immediately.
+
+The three additions around it — tempo, over a pattern, off cleanly — turn N07 from a
+demonstration into something the learner leaves able to use. `I10`'s performance challenge
+asks for the arpeggiator over a running groove, and before this reconciliation N07 never had
+the learner do that once.
+
+<!-- removed-steps:begin -->
+
+No id vanished — N07 grew from 9 steps to 12 — but old position 8's content has no successor.
+
+<!-- removed-steps:end -->
 
 ## Sources consulted
 
@@ -17,6 +50,7 @@ Source reconciliation record for N07. Content lives in `js/tutorials.js`
 |---|---|
 | Owner's Manual `eng07` | **p.2** item 10 (ARPEGGIO [ON], [Key Hold]); **p.4** arpeggio settings saved within each program; **p.6** *Playing an Arpeggio*, *Selecting an Arpeggio Style*, *Using the Hold function* and its MEMO, *Editing the Arpeggio* and its illustrated screen; **p.16** the `[Shift]` + ARPEGGIO [ON] shortcut; **p.17** Troubleshooting, "When I play the keyboard, notes do not stop" |
 | Parameter Guide `e01` | **p.29** *ARPEGGIO* — Style 001–128, Grid and its shuffle values, Duration, Motif, Velocity, Oct Range, Accent |
+| Parameter Guide `e01` | **p.6** arpeggio settings saved within each program; **p.29** the ARPEGGIO parameter table — `Oct Range`, and the absence of any arpeggio-specific tempo |
 | `docs/ROLAND-SOURCE-MAP.md` | §6.2 the `[Shift]` + ARPEGGIO [ON] shortcut and its documented scope; §7 row 31 (arpeggiator); §9 the N07 row |
 
 ## Per-step reconciliation
@@ -24,14 +58,17 @@ Source reconciliation record for N07. Content lives in `js/tutorials.js`
 | Step | Targets | Mode | Learner-facing factual claims | Support |
 |---|---|---|---|---|
 | **N07-S01** Protect any work you want to keep | `arpeggioSection` | `full-plus-inset` | Arpeggio settings are saved within each program, so changing them changes the loaded program. | OM p.4 *Arpeggio*: "Arpeggio settings are saved within each program (p. 6)"; PG p.6 repeats it. |
-| **N07-S02** Turn the arpeggiator on | `arpeggioOnButton` | `full-plus-inset` | Pressing ARPEGGIO [ON] so it lights turns the function on. | OM p.6: "Press the ARPEGGIO [ON] button to make it light; the arpeggio function turns on", and step 1 "Press the ARPEGGIO [ON] button so it's lit." |
-| **N07-S03** Hold some notes down | `keys` | `full` | Holding notes plays an arpeggio — the held notes sounded at different times rather than together. | OM p.6 step 2: "Hold down some notes. An arpeggio plays", and the definition: "An 'arpeggio' is a performance technique in which the notes of a chord are played at different times." |
-| **N07-S04** Change the notes underneath it | `keys` | `full` | Playing a different group of keys changes what the arpeggio is built from. | OM p.6, *Using the Hold function* MEMO: "If you play a different chord while hold is turned on, the arpeggio also changes" — the behaviour is stated for the hold case and is the same gesture; N07 presents it as changing which notes are held, which is what the learner is doing either way. |
-| **N07-S05** Key Hold, and the trap in it | `keyHoldButton` | `full-plus-inset` | [Key Hold] keeps the arpeggio running with your hands off the keys; pressing it again turns it off; with the arpeggiator off it sustains notes like a damper pedal; it is Roland's documented cause of notes that will not stop. | OM p.6: "Press the ARPEGGIO [Key Hold] button. The hold function turns on", and the MEMO: "When the arpeggio is off, pressing the ARPEGGIO [Key Hold] button turns Key Hold on. This lets you sustain the notes as if you were pressing the damper pedal." OM p.17: "Could the [Key Hold] button be on? If Key Hold is on, notes you play on the keyboard are sustained. Press the [Key Hold] button to turn it off." |
-| **N07-S06** Open Arpeggio Edit | `shiftButton`, `arpeggioOnButton`, `display` | `display-focus` | `[Shift]` + ARPEGGIO [ON] opens Arpeggio Edit; the Menu reaches the same screen. | OM p.6 *Editing the Arpeggio* step 1 and its MEMO: "This screen also appears if you press the [Menu/Write] button and select 'Arpeggio Edit.'" OM p.16 lists the shortcut. Screen from OM p.6 — see *Display provenance*. |
-| **N07-S07** Try different styles | `programValueButtons` | `full-plus-inset` | Value selects the arpeggio style. | OM p.6 *Selecting an Arpeggio Style* step 2: "Use the Value [-] [+] buttons to select an arpeggio style." PG p.29 gives the range as 001–128, which is why "a great many" is a fair description; the number itself is not asserted to the learner. |
-| **N07-S08** Change how the notes are spaced | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Cursor moves between parameters and Value changes them; Grid sets the note value each step represents and whether it swings; other parameters set duration, loudness and octave range. | OM p.6 steps 2–3 of *Editing the Arpeggio*; PG p.29: "Grid — Specifies the time signature and 'swing' of the arpeggio style", plus Duration, Velocity and Oct Range. |
-| **N07-S09** Leave, and what you are leaving with | `exitButton` | `full-plus-inset` | Exit returns to the top screen; the settings and the on/off state belong to the program; a loaded program may arrive with the arpeggiator already on. | OM p.6 step 4; OM p.4 (settings saved within the program). That a program can arrive with it on is the consequence of the setting being saved in the program — stated as a consequence, which it is. |
+| **N07-S02** Choose a synth part | `digitalSynth1Button` | `full-plus-inset` | The arpeggiator works on the selected part; on the Drums part each key is a different instrument. | OM p.5 *Choosing a Part to Play*; OM p.5 *Choosing a Tone — Drums part*: "The Drums part lets you play a different instrument on each key." Read together, an arpeggio on the Drums part steps between instruments rather than through pitches, which is what the step says. |
+| **N07-S03** Turn the arpeggiator on | `arpeggioOnButton` | `full-plus-inset` | Pressing ARPEGGIO [ON] so it lights turns the function on. | OM p.6: "Press the ARPEGGIO [ON] button to make it light; the arpeggio function turns on", and step 1 "Press the ARPEGGIO [ON] button so it's lit." |
+| **N07-S04** Hold some notes down | `keys` | `full` | Holding notes plays an arpeggio — the held notes sounded at different times rather than together. | OM p.6 step 2: "Hold down some notes. An arpeggio plays", and the definition: "An 'arpeggio' is a performance technique in which the notes of a chord are played at different times." |
+| **N07-S05** Change the notes underneath it | `keys` | `full` | Playing a different group of keys changes what the arpeggio is built from. | OM p.6, *Using the Hold function* MEMO: "If you play a different chord while hold is turned on, the arpeggio also changes" — the behaviour is stated for the hold case and is the same gesture; N07 presents it as changing which notes are held, which is what the learner is doing either way. |
+| **N07-S06** Key Hold, and the trap in it | `keyHoldButton` | `full-plus-inset` | [Key Hold] keeps the arpeggio running with your hands off the keys; pressing it again turns it off; with the arpeggiator off it sustains notes like a damper pedal; it is Roland's documented cause of notes that will not stop. | OM p.6: "Press the ARPEGGIO [Key Hold] button. The hold function turns on", and the MEMO: "When the arpeggio is off, pressing the ARPEGGIO [Key Hold] button turns Key Hold on. This lets you sustain the notes as if you were pressing the damper pedal." OM p.17: "Could the [Key Hold] button be on? If Key Hold is on, notes you play on the keyboard are sustained. Press the [Key Hold] button to turn it off." |
+| **N07-S07** Open Arpeggio Edit | `shiftButton`, `arpeggioOnButton`, `display` | `display-focus` | `[Shift]` + ARPEGGIO [ON] opens Arpeggio Edit; the Menu reaches the same screen. | OM p.6 *Editing the Arpeggio* step 1 and its MEMO: "This screen also appears if you press the [Menu/Write] button and select 'Arpeggio Edit.'" OM p.16 lists the shortcut. Screen from OM p.6 — see *Display provenance*. |
+| **N07-S08** Try different styles | `programValueButtons` | `full-plus-inset` | Value selects the arpeggio style. | OM p.6 *Selecting an Arpeggio Style* step 2: "Use the Value [-] [+] buttons to select an arpeggio style." PG p.29 gives the range as 001–128, which is why "a great many" is a fair description; the number itself is not asserted to the learner. |
+| **N07-S09** Change how far it travels | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | `Oct Range` shifts the arpeggio in octave units, up to three octaves up or down; 0 leaves it where the hands are. | PG p.29 ARPEGGIO: "Oct Range -3–+3. Specifies the range by which the arpeggio is shifted. This adds an effect that shifts arpeggios one cycle at a time in octave units (octave range). You can set the shift range upwards or downwards (up to three octaves up or down)." The parameter is reached with Cursor on the same screen, per PG p.29's `Cursor [◄] [►]` / `Value [-] [+]` column headers. |
+| **N07-S10** Change the speed | `tempoKnob` | `full-plus-inset` | The arpeggiator runs at the program's tempo; there is no separate arpeggio speed. | OM p.6 *Changing the Tempo* ("Turn the tempo knob") and its MEMO ("The tempo is saved for each individual program. The tempo setting is shared with the pattern"). That there is no separate arpeggio tempo is the absence of any such parameter from PG p.29's ARPEGGIO table, which lists Style, Grid, Duration, Motif, Velocity, Oct Range and Accent and no tempo. |
+| **N07-S11** Use it over a pattern | `playStopButton`, `keys` | `full` | The arpeggio plays alongside a running pattern, in the same tempo. | OM p.10 for the transport; the shared tempo is OM p.6's MEMO as above, which is what makes "in the same tempo" a documented consequence rather than an observation. No claim is made about how the arpeggio interacts with recorded pattern data — the learner plays live over it. |
+| **N07-S12** Turn it off cleanly | `arpeggioOnButton`, `keyHoldButton` | `full-plus-inset` | Pressing ARPEGGIO [ON] turns the function off; Key Hold must be off too for keys to behave normally; both settings belong to the program. | OM p.6: "ARPEGGIO [ON] button — Turns the arpeggio function on/off"; "ARPEGGIO [Key Hold] button — Turns the hold function on/off", with its MEMO that Key Hold sustains notes even when the arpeggio is off. That the settings belong to the program is PG p.6: "Arpeggio settings are saved within each program." |
 
 ## Display provenance
 

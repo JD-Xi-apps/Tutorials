@@ -15,8 +15,8 @@ Learning goals as authored:
 
 1. Start and stop a pattern.
 2. Tell from the display that a pattern is running.
-3. Hear what one part is contributing by muting it.
-4. Know why a pattern might not play.
+3. Move between the parts of a pattern while it plays.
+4. Hear what one part is contributing by muting it.
 
 ## Master-plan reconciliation (2026-08-31)
 
@@ -37,8 +37,14 @@ documented Sync Mode cause: with the system setting at SLAVE the JD-Xi waits for
 from another device and patterns do not start (OM p.17, setting at OM p.13). The fact is
 correct and worth knowing. It is also MIDI-shaped troubleshooting, reached through the
 system settings, sitting in the eighth tutorial of a beginner course — and the brief names
-it specifically. It moves to **Quick Reference**, entry 7 *Play/stop a Pattern*, which is
-the recall-shaped home the brief nominates.
+it specifically.
+
+It is not homeless. **`N10-S10` already teaches exactly this**, from the same page, under the
+heading *A pattern that will not play* — so the Beginner step was a duplicate of Novice
+content two levels early, which is a fair description of why it felt out of place. It is also
+added to **Quick Reference** entry 7, *Play/stop a Pattern*, the recall-shaped home the brief
+nominates. The fact is now in the two places the master plan would put it and in neither
+place too soon.
 
 The closing step was rewritten in its place. It now does what the old one only did
 incidentally — stop cleanly, confirm every part is audible again, and say plainly that
