@@ -421,13 +421,13 @@ be justified by a specific legibility problem — dense controls, small legends,
 display states that cannot be read at full-instrument scale.
 
 > **Implemented — and worth reading the numbers honestly.** All four modes are rendered
-> by `js/lesson-renderer.js`. Across the finished library of **318 steps**:
+> by `js/lesson-renderer.js`. Across the finished library of **320 steps**:
 >
 > | Mode | Steps | Share |
 > |---|---|---|
-> | `full-plus-inset` | 243 | 76.4% |
-> | `full` | 50 | 15.7% |
-> | `display-focus` | 25 | 7.9% |
+> | `full-plus-inset` | 244 | 76.3% |
+> | `full` | 51 | 15.9% |
+> | `display-focus` | 25 | 7.8% |
 > | `control-closeup` | 0 | — |
 >
 > The rule above says `full` "should remain the common case", and it is not: an inset
