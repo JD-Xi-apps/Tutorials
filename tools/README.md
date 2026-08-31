@@ -81,6 +81,23 @@ learner state, and an empty collection rendering a placeholder page. The first o
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
 the favourite control visible on a fixture.
 
+## `qa-accessibility.js`
+
+```
+node tools/qa-accessibility.js [chromium|firefox]
+```
+
+Needs Playwright. Not a broad audit and not trying to be — it asserts the specific
+properties this app has to hold, on every route the catalog generates: every control is
+a real `<button>` with an accessible name, icon-only controls carry explicit labels,
+decorative glyphs are hidden so they do not pollute a control's spoken name, each surface
+has exactly one `h1`, the favourite toggle exposes `aria-pressed`, and the destructive
+reset states its consequence before it acts.
+
+The focus check tabs to a control rather than calling `.focus()`, because `:focus-visible`
+is exactly the distinction between a keyboard user, who must see the ring, and a mouse
+user, who should not — calling `.focus()` tests the wrong state.
+
 ## `frozen-surfaces.js`
 
 ```
