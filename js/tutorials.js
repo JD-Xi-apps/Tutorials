@@ -1542,6 +1542,23 @@ window.JDXI_TUTORIALS = {
     steps: [
       {
         id: "B09-S01",
+        title: "Protect any work you want to keep",
+        instruction:
+          "Decide whether this program holds a tempo or a feel you have set and not saved.",
+        detail:
+          "The tempo belongs to the program, and so does the shuffle setting. Changing them here replaces whatever this program is currently set to. If you have been building something and have not saved it, save it first.",
+        hardwareTargets: ["tempoSection"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "It is a smaller loss than a sound or a pattern, but it is the same kind of loss, and it happens the moment you turn the knob rather than at some later point you could stop at.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
+        recoveryHelp:
+          "N09 Save your work teaches saving. If you only want to hear what the controls do without changing this program, step to a program you do not mind altering first — remembering that changing program discards anything unsaved on the one you leave.",
+        nextHint: "Now get something playing to hear the changes against.",
+      },
+      {
+        id: "B09-S02",
         title: "Get a pattern running",
         instruction: "Press Play/Stop to start a pattern.",
         detail:
@@ -1555,7 +1572,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now change how fast it goes.",
       },
       {
-        id: "B09-S02",
+        id: "B09-S03",
         title: "Speed it up and slow it down",
         instruction: "Turn the tempo knob while the pattern plays.",
         detail: "It is in the TEMPO section, at the left of the panel.",
@@ -1569,7 +1586,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "There is another way to set it, and it is often the better one.",
       },
       {
-        id: "B09-S03",
+        id: "B09-S04",
         title: "Tap the tempo you want",
         instruction: "Press the Tap button three or more times, evenly, at the speed you want.",
         detail:
@@ -1585,7 +1602,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Worth knowing where that tempo setting actually lives.",
       },
       {
-        id: "B09-S04",
+        id: "B09-S05",
         title: "Whose tempo is it",
         instruction: "Look at the tempo number on the display.",
         detail:
@@ -1602,7 +1619,7 @@ window.JDXI_TUTORIALS = {
           "One more way to change the feel, and whether you have it depends on your JD-Xi.",
       },
       {
-        id: "B09-S05",
+        id: "B09-S06",
         title: "About shuffle (version 1.50 or later)",
         instruction: "Keep the pattern playing and read this before the next two steps.",
         detail:
@@ -1617,7 +1634,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "First choose which part gets the shuffle.",
       },
       {
-        id: "B09-S06",
+        id: "B09-S07",
         title: "Choose the shuffle part",
         instruction: "With the pattern playing, hold down Enter and press a Part Select button.",
         detail:
@@ -1632,7 +1649,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now set how much shuffle.",
       },
       {
-        id: "B09-S07",
+        id: "B09-S08",
         title: "Set the shuffle amount",
         instruction: "Hold down Enter and turn the LFO Depth knob.",
         detail:
@@ -1652,7 +1669,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step: stop, and know what you are leaving behind.",
       },
       {
-        id: "B09-S08",
+        id: "B09-S09",
         title: "Stop, and what is kept",
         instruction: "Press Play/Stop to stop the pattern.",
         detail:
@@ -5438,6 +5455,23 @@ window.JDXI_TUTORIALS = {
     steps: [
       {
         id: "I09-S01",
+        title: "Save anything you came here to save",
+        instruction:
+          "Decide whether the program loaded right now holds work you have not saved.",
+        detail:
+          "The very next step steps through programs to show you what is in the user banks — and selecting another program throws away anything unsaved on the one you leave. If you have arrived here with work still loaded, save it before you go any further.",
+        hardwareTargets: ["programValueButtons"],
+        visualMode: "full",
+        whyItMatters:
+          "This tutorial is about keeping and organizing what you have made, so losing something in its first minute would be a poor start. It is also the one place where the risk arrives immediately rather than several steps in.",
+        checkpoint:
+          "You have decided: either there is nothing loaded that you need, or you have saved it.",
+        recoveryHelp:
+          "N09 Save your work has the full save sequence. If you are not sure whether the loaded program has been edited, look at the lower line of the display — a sound with no tone number showing has been changed and not saved.",
+        nextHint: "Now go and look at what you already have.",
+      },
+      {
+        id: "I09-S02",
         title: "Where your work lives",
         instruction: "Hold Shift and press a Value button to look through the banks.",
         detail:
@@ -5448,11 +5482,11 @@ window.JDXI_TUTORIALS = {
           "Two hundred and fifty-six slots sounds like plenty until they are full of programs called Init Program. How you organize them now decides whether you can find anything later.",
         checkpoint: "You can move between banks and see what is in the user banks.",
         recoveryHelp:
-          "Changing program discards anything unsaved on the one you are leaving — save first if you have work loaded. If you would rather not browse, skip to the next step.",
+          "Changing program discards anything unsaved on the one you are leaving, which the previous step asked you to settle. If you would rather not browse at all, skip to the next step — nothing later depends on having looked.",
         nextHint: "Now a faster way back to the ones you use.",
       },
       {
-        id: "I09-S02",
+        id: "I09-S03",
         title: "Find a free favourite slot",
         instruction: "Press Favorite, then press one of the numbered buttons.",
         detail:
@@ -5468,7 +5502,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now put something in it.",
       },
       {
-        id: "I09-S03",
+        id: "I09-S04",
         title: "Register a favourite",
         instruction:
           "Select the program you want, then hold Favorite and press that free button.",
@@ -5484,7 +5518,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Sixteen is not the limit.",
       },
       {
-        id: "I09-S04",
+        id: "I09-S05",
         title: "More than sixteen favourites",
         instruction:
           "With Favorite lit, press and hold Shift until one of the numbered buttons blinks, then press a different one.",
@@ -5500,7 +5534,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now decide what the JD-Xi wakes up on.",
       },
       {
-        id: "I09-S05",
+        id: "I09-S06",
         title: "Open the system settings (version 1.50 or later)",
         instruction: "Open the Menu, select SYSTEM, and press Enter.",
         detail:
@@ -5515,7 +5549,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now find the one parameter this tutorial wants.",
       },
       {
-        id: "I09-S06",
+        id: "I09-S07",
         title: "Find Start Prog",
         instruction: "Hold Shift and press Cursor until the upper line reads GENERAL, then use Cursor to find Start Prog.",
         detail:
@@ -5529,7 +5563,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Read the current value before you change it.",
       },
       {
-        id: "I09-S07",
+        id: "I09-S08",
         title: "Change it deliberately",
         instruction:
           "Note the value shown, then use Value to choose one of your own programs.",
@@ -5546,7 +5580,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now get a copy of everything off the instrument.",
       },
       {
-        id: "I09-S08",
+        id: "I09-S09",
         title: "Connect a computer",
         instruction: "Connect the JD-Xi to a computer with a USB cable.",
         detail:
@@ -5559,7 +5593,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now take a copy.",
       },
       {
-        id: "I09-S09",
+        id: "I09-S10",
         title: "Back up your data",
         instruction:
           "Open the Menu, select UTILITY, press Enter, then select Backup and press Enter.",
@@ -5579,7 +5613,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "The opposite operation is not one to try casually.",
       },
       {
-        id: "I09-S10",
+        id: "I09-S11",
         title: "Restore replaces everything",
         instruction: "Read this, and do not perform it now.",
         detail:
@@ -5594,7 +5628,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One more way to move programs about.",
       },
       {
-        id: "I09-S11",
+        id: "I09-S12",
         title: "Sharing single banks (version 1.10 or later)",
         instruction: "Read this if you want to move programs between instruments.",
         detail:
@@ -5610,7 +5644,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step: a habit worth having.",
       },
       {
-        id: "I09-S12",
+        id: "I09-S13",
         title: "Name things so you can find them",
         instruction: "Look through your user banks and rename anything called Init Program.",
         detail:

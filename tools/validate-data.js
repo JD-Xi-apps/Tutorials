@@ -306,6 +306,78 @@ ids.forEach((id) => {
   });
 });
 
+/* -------------------------------------------- protect-your-work preflight */
+
+/*
+ * DESIGN-RULES.md §7a: a tutorial carries the protect-your-work preflight when
+ * it can lose the learner's unsaved work - by DISCARDING it (selecting another
+ * Program or Tone) or by OVERWRITING it (a knob that edits the loaded program).
+ * The preflight must come BEFORE the first such step.
+ *
+ * This is checked rather than reviewed because two tutorials were shipped
+ * without one and both were found by hand: B09 turned the tempo knob, which
+ * overwrites a program setting, and I09 browsed the banks in its second step,
+ * which discards. Neither was caught by any other check, because a missing
+ * warning renders perfectly.
+ *
+ * The one exemption is listed here rather than inferred, so that a tutorial
+ * skipping the preflight has to be argued for in this file.
+ */
+const PREFLIGHT_EXEMPT = {
+  /* N09 selects no other program or tone - its Value presses name the program
+     and choose the save destination inside the WRITE screen. It cannot discard
+     the learner's loaded work; it is the tutorial that rescues it, and its
+     first step tells the learner not to change program from here on. The risk
+     it does carry runs the other way, to whatever occupies the destination
+     slot, and N09-S06 is a whole step devoted to it. */
+  N09: 'selects no other program or tone; its destination risk has its own step',
+};
+
+/* Targets whose use replaces the loaded program or the sound in it. */
+const DISCARDING = /programValue|toneButtons|toneMinusButton|tonePlusButton|favoriteButton/;
+const OVERWRITING =
+  /cutoffKnob|resonanceKnob|filterTypeButton|envelopeKnob|levelKnob|lfo\w*Knob|lfoWaveformControl|effect\d|reverbKnob|delayKnob|tempoKnob|tempoSection|oscillatorButton|subOscButton|pulseWidthKnob/;
+/* An instruction that actually operates a control, rather than one that tells
+   the learner to look at it, read about it or decide something. */
+const OPERATES = /^(press|hold|use|select|turn|set|choose|with|start|add|light|play|give|make|note|raise|move|adjust|tap)\b/i;
+const CONTEMPLATES = /^(decide|read|find|look|learn|leave|check|do not)\b/i;
+
+ids.forEach((id) => {
+  const t = tutorials[id];
+  const steps = t.steps || [];
+  const preflightAt = steps.findIndex((s) =>
+    /protect|afford to lose|save anything you came here/i.test(s.title || '')
+  );
+
+  let riskAt = -1;
+  steps.forEach((s, i) => {
+    if (riskAt >= 0) return;
+    const targets = (s.hardwareTargets || []).join(' ');
+    const instr = String(s.instruction || '');
+    if (!OPERATES.test(instr) || CONTEMPLATES.test(instr)) return;
+    if (DISCARDING.test(targets) || OVERWRITING.test(targets)) riskAt = i;
+  });
+
+  if (riskAt < 0) return;
+  if (PREFLIGHT_EXEMPT[id]) {
+    warn(true, '');  // counts the check without reporting
+    return;
+  }
+  check(
+    preflightAt >= 0,
+    `tutorial ${id}: reaches a step that can lose unsaved work (${steps[riskAt].id}) with no protect-your-work preflight`
+  );
+  if (preflightAt >= 0) {
+    /* At or before the risk. Equal is legitimate: I10's preflight IS the step
+       that has the learner choose a program they are willing to build over, so
+       the warning and the choice are the same act. Later is not. */
+    check(
+      preflightAt <= riskAt,
+      `tutorial ${id}: the preflight (${steps[preflightAt].id}) comes after the first step that can lose unsaved work (${steps[riskAt].id})`
+    );
+  }
+});
+
 /* ----------------------------------------------------- recovery house rules */
 
 /*

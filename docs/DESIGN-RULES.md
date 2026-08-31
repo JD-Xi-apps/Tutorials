@@ -106,11 +106,10 @@ Two cases qualify:
    settings, which Roland lists alongside program selection as a way a created sound is
    lost.
 
-A tutorial that only *selects a part*, *plays the keys*, or performs an action the same
-gesture reverses does not qualify, and does not carry one. `B04` and `B05` deliberately
-have no preflight for exactly that reason; `B03`, `B06`, `B07`, `B08`, `B09` and `B10`
-each carry one, placed at the step before the risk rather than at the top of the
-tutorial.
+A tutorial that only *selects a part*, *plays the keys*, *navigates a menu without
+pressing Value*, or performs an action the same gesture reverses does not qualify, and
+does not carry one. `B01`, `B02`, `B04`, `B05`, `N01`, `N02` and `N10` deliberately have
+none.
 
 The rule matters in both directions. Omitting a preflight where work can be lost strands
 a learner. Adding one everywhere turns it into wallpaper that stops being read, which
@@ -118,6 +117,32 @@ strands them just the same.
 
 Where a tutorial creates an unsaved edit but cannot lose one, the honest handling is a
 step that says what happened to the change and what will lose it — not a preflight.
+
+### It is enforced, not reviewed
+
+`tools/validate-data.js` checks that any tutorial reaching a step which can lose unsaved
+work carries a preflight, at or before that step. This is a check rather than a review
+item because a missing warning renders perfectly: nothing else in the QA suite can see it.
+
+Two tutorials were written without one and both were found by hand during the clean-room
+review, which is the argument for the check existing:
+
+- **`B09`** turns the tempo knob, which overwrites a setting saved with the program. It
+  was omitted by arguing that B09 had no *discarding* transition — true of the first half
+  of the rule, and ignoring the second, while `B06` and `B07` carried one for exactly the
+  same class of change. **This section already claimed B09 had one**, so the document and
+  the content had quietly disagreed.
+- **`I09`** browsed the program banks in its second step, which discards. The warning
+  existed only in that step's `recoveryHelp`, which the lesson screen discloses behind the
+  *I'm lost* button rather than showing by default — so a learner who arrived precisely
+  because they had something to keep would not have seen it before acting.
+
+**One tutorial is exempt, and the exemption is named in the checking code rather than
+inferred**: `N09` selects no other program or tone — its Value presses name the program
+and choose the save destination inside the WRITE screen — so it cannot discard the
+learner's loaded work. It is the tutorial that rescues it. The risk it does carry runs the
+other way, toward whatever occupies the destination slot, and it has a whole step of its
+own.
 
 ### Recovery is context-specific
 
