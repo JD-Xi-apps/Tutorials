@@ -1,6 +1,15 @@
 # JD-Xi Tutorial Hub — Design Rules
 
-This file records the current owner-approved product and layout decisions. Treat these as the baseline unless a later owner decision explicitly changes them.
+This file records the current owner-approved **presentation** decisions — visual baseline,
+screen contract, and the interaction rules that protect the learner. Treat these as the
+baseline unless a later owner decision explicitly changes them.
+
+> **Product and curriculum scope now live elsewhere.**
+> [`PRODUCT-CURRICULUM-MASTER-PLAN.md`](PRODUCT-CURRICULUM-MASTER-PLAN.md) is the
+> owner-approved v1 baseline for what the product contains and what each tutorial teaches,
+> and it outranks this file on those questions. This file keeps presentation, and it keeps
+> §7a — the protect-your-work preflight — which the master plan restates as a requirement
+> (§7) rather than replaces.
 
 ## 1. Audience and teaching approach
 

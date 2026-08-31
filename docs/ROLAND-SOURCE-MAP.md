@@ -6,9 +6,29 @@ any technical tutorial content can be authored.
 
 Companion documents:
 
+- [`PRODUCT-CURRICULUM-MASTER-PLAN.md`](PRODUCT-CURRICULUM-MASTER-PLAN.md) — the
+  owner-approved v1 product and curriculum baseline.
 - [`TUTORIAL-ARCHITECTURE.md`](TUTORIAL-ARCHITECTURE.md) — content structure. Its §13
   *Content-authority rule* is what this document discharges.
 - [`DESIGN-RULES.md`](DESIGN-RULES.md) — visual and interaction baseline.
+
+> **Where this document sits in the authority order.** The master plan decides **what is
+> taught** — which tutorial owns which ground, what v1 excludes, which surfaces ship. This
+> document, and the Roland pages behind it, decide **what is true**. Neither overrides the
+> other, because they answer different questions, and the master plan says so itself (§31,
+> §37): *Roland still wins on technical facts.*
+>
+> The practical consequence runs one way and is worth stating plainly: a procedure being
+> correct is **not** an argument for including it. If a technically valid step would push a
+> tutorial past its assigned scope, it goes to Quick Reference, Specialty, the Hardware
+> Explorer, a later tutorial, or nowhere — never silently into the lesson. What this
+> document can still veto is the reverse: no curriculum decision authorises a claim the
+> sources do not support.
+>
+> §9's tutorial-to-source map was written against the pre-reconciliation allocation. Where
+> it disagrees with the master plan about *which tutorial* covers a topic, the master plan
+> governs and the row is stale; the **page citations remain valid** for whichever tutorial
+> now owns the material.
 
 ## 1. Status and scope
 

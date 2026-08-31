@@ -1,14 +1,30 @@
 # JD-Xi Tutorial Hub — Tutorial Architecture
 
-This document is the authoritative design for the tutorial/lesson system. It defines
-structure, models, and rules. It is **not** an implementation, and it deliberately
-contains **no JD-Xi operating procedures**.
+This document is the authoritative design for the tutorial/lesson **structure** — models
+and rules. It is **not** an implementation, and it deliberately contains **no JD-Xi
+operating procedures**.
 
-Companion documents:
+> **It is no longer the authority on what a tutorial is *about*.**
+> [`PRODUCT-CURRICULUM-MASTER-PLAN.md`](PRODUCT-CURRICULUM-MASTER-PLAN.md) is the
+> owner-approved v1 product and curriculum baseline, and it outranks this file on
+> product scope, per-tutorial instructional ownership, exclusions, and which supporting
+> surfaces v1 ships. Where this document's prose disagrees with it — §4's path sketch and
+> §5's collection notes both predate it — **the master plan wins**. This file continues to
+> govern the models those tutorials are expressed in.
 
-- [`DESIGN-RULES.md`](DESIGN-RULES.md) — owner-approved visual and interaction baseline.
-  Where the two overlap, DESIGN-RULES governs presentation and this file governs
-  content structure.
+Companion documents, in authority order:
+
+1. [`PRODUCT-CURRICULUM-MASTER-PLAN.md`](PRODUCT-CURRICULUM-MASTER-PLAN.md) — v1 product
+   scope, curriculum ownership, exclusions, supporting surfaces.
+2. Official Roland documentation — factual behaviour and procedure. Nothing in the master
+   plan overrides a Roland fact; the plan decides *what is taught*, Roland decides *what is
+   true*.
+3. [`ROLAND-SOURCE-MAP.md`](ROLAND-SOURCE-MAP.md) — which Roland page governs which
+   procedure.
+4. This file — architecture, where consistent with the master plan.
+5. [`DESIGN-RULES.md`](DESIGN-RULES.md) — owner-approved visual and interaction baseline.
+   Where it and this file overlap, DESIGN-RULES governs presentation and this file governs
+   content structure.
 
 ## 1. Status and scope
 
@@ -647,3 +663,11 @@ Recorded so later phases do not mistake silence for a decision:
 > and the Vocoder content gap were both **decided by the PM to stay as they are**: N10
 > remains the end of the Novice guided path, and no Vocoder tutorial is added. Both are
 > recorded here as settled rather than open.
+>
+> **Master-plan reconciliation postscript.** One half of that is now superseded. N10 does
+> remain the end of the Novice guided path. But the master plan (§21) **requires a Vocoder
+> lesson**, together with AutoPitch and Auto Note, as *Specialty* content: a separate data
+> model outside `window.JDXI_TUTORIALS`, optional, excluded from course completion, and
+> never counted in the x/30. That is not a reversal of the decision recorded above — the
+> decision was that no Vocoder tutorial joins the **canonical thirty**, and it does not.
+> The canonical count stays exactly 30.

@@ -4,6 +4,17 @@ A desktop-first visual tutorial app for complete beginners learning the Roland J
 
 The product goal is not to reproduce a conventional manual. The app should keep the physical JD-Xi visible as the learner's visual anchor, explain one action at a time in plain language, highlight the exact hardware controls involved, and use close-up views when menu navigation or dense controls require them.
 
+## What decides what
+
+[`docs/PRODUCT-CURRICULUM-MASTER-PLAN.md`](docs/PRODUCT-CURRICULUM-MASTER-PLAN.md) is the
+owner-approved v1 product and curriculum baseline. It defines the thirty canonical
+tutorials, what each one owns, what v1 deliberately leaves out, and which supporting
+surfaces ship. Read it before changing what a tutorial teaches.
+
+Official Roland documentation remains the only authority for JD-Xi *procedure*; the master
+plan decides what is taught, Roland decides what is true. See
+[`docs/ROLAND-SOURCE-MAP.md`](docs/ROLAND-SOURCE-MAP.md).
+
 ## Current baseline
 
 The home-screen visual baseline is complete and frozen.
