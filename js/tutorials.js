@@ -5256,13 +5256,25 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "I08-S03",
+        title: "Arm the recording",
+        instruction: "Select the part you want to record on, then press Real Time Rec.",
+        detail:
+          "Recording always goes to the selected part, so choose it before you arm anything.",
+        hardwareTargets: ["partSelectGroup", "realTimeRecButton"],
+        visualMode: "full-plus-inset",
+        checkpoint: "The part you want is selected and Real Time Rec is armed.",
+        recoveryHelp:
+          "Press Real Time Rec again to disarm without recording anything. Nothing has been changed yet.",
+        nextHint: "Now start it and play.",
+      },
+      {
+        id: "I08-S04",
         title: "Record in real time",
-        instruction:
-          "Select a part, press Real Time Rec, then press Play/Stop and play along.",
+        instruction: "Press Play/Stop, and play along.",
         detail:
           "Your performance is layered onto the pattern as it runs. Knob and wheel movements are recorded as well as notes.",
-        hardwareTargets: ["realTimeRecButton", "playStopButton"],
-        visualMode: "full-plus-inset",
+        hardwareTargets: ["playStopButton", "keys"],
+        visualMode: "full",
         expectedSound: "What you play appearing in the pattern as it comes round again.",
         whyItMatters:
           "This is the first method where timing is yours rather than the grid's, which is what makes a part sound played rather than placed.",
@@ -5272,7 +5284,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One behaviour of this method surprises people.",
       },
       {
-        id: "I08-S04",
+        id: "I08-S05",
         title: "It stops at the end of the pattern",
         instruction: "Keep recording and let the pattern come round to its start.",
         detail:
@@ -5287,7 +5299,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now use more than one measure.",
       },
       {
-        id: "I08-S05",
+        id: "I08-S06",
         title: "Give yourself more room",
         instruction: "Set the pattern to more measures from the Menu.",
         detail:
@@ -5306,7 +5318,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now move around the measures you have.",
       },
       {
-        id: "I08-S06",
+        id: "I08-S07",
         title: "Work on a later measure",
         instruction:
           "With the pattern playing, hold Shift and press one of the first four numbered buttons.",
@@ -5320,7 +5332,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now add movement that is not notes.",
       },
       {
-        id: "I08-S07",
+        id: "I08-S08",
         title: "Record a knob movement",
         instruction:
           "Start realtime recording again and sweep the Cutoff knob while the pattern runs.",
@@ -5337,7 +5349,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Taking movement back out is not like taking notes out.",
       },
       {
-        id: "I08-S08",
+        id: "I08-S09",
         title: "Removing recorded movement",
         instruction:
           "While the pattern plays, hold Enter and press Erase to clear the selected part's knob and wheel movements.",
@@ -5351,7 +5363,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One kind of movement cannot be removed at all.",
       },
       {
-        id: "I08-S09",
+        id: "I08-S10",
         title: "Effect knob movements are different",
         instruction: "Read this before you record an effect sweep.",
         detail:
@@ -5366,7 +5378,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One more tool, and it overwrites.",
       },
       {
-        id: "I08-S10",
+        id: "I08-S11",
         title: "Copying a pattern from elsewhere",
         instruction: "Read this before using it.",
         detail:
@@ -5381,7 +5393,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step: keep the pattern.",
       },
       {
-        id: "I08-S11",
+        id: "I08-S12",
         title: "Save the pattern with its program",
         instruction: "Save the program.",
         detail:
@@ -5441,22 +5453,38 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "I09-S02",
+        title: "Find a free favourite slot",
+        instruction: "Press Favorite, then press one of the numbered buttons.",
+        detail:
+          "With Favorite lit, the numbered buttons become favourite slots. A button with nothing stored reports Not Registered, which is the JD-Xi telling you it is free. If a sound loads instead, that slot is in use — try another.",
+        hardwareTargets: ["favoriteButton", "stepButtons"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "Registering replaces whatever was on a button and the JD-Xi does not ask first. Checking for Not Registered is the only way it will tell you a slot is free beforehand.",
+        checkpoint:
+          "You have found a numbered button that reports Not Registered, and noted which one it is.",
+        recoveryHelp:
+          "If pressing a button loaded a different sound, that slot was already registered and the program you were on has been replaced — anything unsaved on it is gone. Try a different button. B03 covers this in full.",
+        nextHint: "Now put something in it.",
+      },
+      {
+        id: "I09-S03",
         title: "Register a favourite",
         instruction:
-          "Press Favorite, find a free numbered button, then select a program you want and hold Favorite while pressing that button.",
+          "Select the program you want, then hold Favorite and press that free button.",
         detail:
-          "A button with nothing on it reports Not Registered when you press it, which is how you find a free one. B03 covers the detail.",
+          "The program selected right now is the one that gets registered. Use the free button you just found, not one that already held something.",
         hardwareTargets: ["favoriteButton", "stepButtons"],
         visualMode: "full-plus-inset",
         whyItMatters:
           "A favourite also remembers which part was selected when you registered it, so recalling one brings back the part you were playing as well as the program.",
         checkpoint: "Pressing that numbered button while Favorite is lit recalls your program.",
         recoveryHelp:
-          "Registering replaces whatever was on that button and the JD-Xi does not ask first — check for Not Registered before you use a slot. To clear one, hold Erase and press it while Favorite is lit. If the program you want to register is edited and unsaved, save it first.",
+          "To clear a registration, hold Erase and press that button while Favorite is lit. If the program you are registering has been edited and not saved, save it first — a favourite recalls the stored program, not your unsaved edits.",
         nextHint: "Sixteen is not the limit.",
       },
       {
-        id: "I09-S03",
+        id: "I09-S04",
         title: "More than sixteen favourites",
         instruction:
           "With Favorite lit, press and hold Shift until one of the numbered buttons blinks, then press a different one.",
@@ -5472,24 +5500,36 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now decide what the JD-Xi wakes up on.",
       },
       {
-        id: "I09-S04",
-        title: "Choose the startup program (version 1.50 or later)",
-        instruction:
-          "Open the Menu, select SYSTEM, press Enter, and find Start Prog in the GENERAL group.",
+        id: "I09-S05",
+        title: "Open the system settings (version 1.50 or later)",
+        instruction: "Open the Menu, select SYSTEM, and press Enter.",
         detail:
           "This sets which program is selected when the JD-Xi powers on. It was added in system version 1.50; if your instrument is older it will not be there, and you can skip this step.",
         hardwareTargets: ["menuWriteButton", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
           "It means the instrument can start on your own work rather than on whatever it happened to be showing.",
+        checkpoint: "You are inside the system settings.",
+        recoveryHelp:
+          "Anything you change in here is written as you leave, so touch nothing on the way. Press Exit to come straight back out if you would rather not continue.",
+        nextHint: "Now find the one parameter this tutorial wants.",
+      },
+      {
+        id: "I09-S06",
+        title: "Find Start Prog",
+        instruction: "Hold Shift and press Cursor until the upper line reads GENERAL, then use Cursor to find Start Prog.",
+        detail:
+          "Shift with Cursor moves between the SYSTEM groups; Cursor on its own walks the parameters inside one.",
+        hardwareTargets: ["shiftButton", "cursorRightButton"],
+        visualMode: "full-plus-inset",
         checkpoint:
           "Either you have found Start Prog, or you have established your JD-Xi does not have it.",
         recoveryHelp:
-          "Hold Shift and press Cursor to move between the SYSTEM groups if you are not in GENERAL. If Start Prog is not there at all, your JD-Xi is very likely running a system version earlier than 1.50 — N01 shows you where to read your version.",
+          "If Start Prog is not in the GENERAL group at all, your JD-Xi is very likely running a system version earlier than 1.50 — N01 shows you where to read your version. Cursor cannot change a value, so walking the list alters nothing.",
         nextHint: "Read the current value before you change it.",
       },
       {
-        id: "I09-S05",
+        id: "I09-S07",
         title: "Change it deliberately",
         instruction:
           "Note the value shown, then use Value to choose one of your own programs.",
@@ -5506,7 +5546,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now get a copy of everything off the instrument.",
       },
       {
-        id: "I09-S06",
+        id: "I09-S08",
         title: "Connect a computer",
         instruction: "Connect the JD-Xi to a computer with a USB cable.",
         detail:
@@ -5519,7 +5559,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now take a copy.",
       },
       {
-        id: "I09-S07",
+        id: "I09-S09",
         title: "Back up your data",
         instruction:
           "Open the Menu, select UTILITY, press Enter, then select Backup and press Enter.",
@@ -5539,7 +5579,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "The opposite operation is not one to try casually.",
       },
       {
-        id: "I09-S08",
+        id: "I09-S10",
         title: "Restore replaces everything",
         instruction: "Read this, and do not perform it now.",
         detail:
@@ -5554,7 +5594,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One more way to move programs about.",
       },
       {
-        id: "I09-S09",
+        id: "I09-S11",
         title: "Sharing single banks (version 1.10 or later)",
         instruction: "Read this if you want to move programs between instruments.",
         detail:
@@ -5570,7 +5610,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step: a habit worth having.",
       },
       {
-        id: "I09-S10",
+        id: "I09-S12",
         title: "Name things so you can find them",
         instruction: "Look through your user banks and rename anything called Init Program.",
         detail:

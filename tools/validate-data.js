@@ -306,6 +306,27 @@ ids.forEach((id) => {
   });
 });
 
+/* --------------------------------------------- source-note step references */
+
+/*
+ * A tutorial's source notes cite its steps by id, and those citations are the
+ * audit trail for every technical claim. Splitting or reordering a step
+ * renumbers everything after it, and a stale citation silently points the
+ * reader at the wrong evidence - which is worse than no citation, and which
+ * nothing else here would catch because the notes are prose.
+ */
+ids.forEach((id) => {
+  const notes = path.join(ROOT, 'docs', 'tutorials', `${id}-SOURCE-NOTES.md`);
+  if (!fs.existsSync(notes)) return;
+  const text = fs.readFileSync(notes, 'utf8');
+  const stepIds = new Set((tutorials[id].steps || []).map((s) => s.id));
+  const cited = new Set(text.match(new RegExp(id + '-S\\d+', 'g')) || []);
+  cited.forEach((ref) => {
+    check(stepIds.has(ref),
+      `tutorial ${id}: source notes cite step "${ref}", which does not exist`);
+  });
+});
+
 /* ------------------------------------------------------- firmware caveats */
 
 /*
