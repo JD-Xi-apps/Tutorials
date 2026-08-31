@@ -306,6 +306,39 @@ ids.forEach((id) => {
   });
 });
 
+/* ------------------------------------------------------- firmware caveats */
+
+/*
+ * A step that carries a version caveat must name ONE version. Firmware-gated
+ * content is written so an older instrument can skip it, and the whole
+ * mechanism depends on the learner being told the right number - a step that
+ * says 1.50 in its detail and 1.10 in its recovery tells them to check for the
+ * wrong thing, and no render or route check would ever see it.
+ *
+ * Only versions Roland documents as changing behaviour are valid: 1.10 and
+ * 1.50. 1.51 is a bug fix and 1.52 an administrative renumber, so neither
+ * gates a feature (ROLAND-SOURCE-MAP §11.1) - but 1.51 is allowed in prose
+ * because it is the owner-observed installed version, and N01 reproduces a
+ * screen showing it.
+ */
+const GATING_VERSIONS = new Set(['1.10', '1.50']);
+const MENTIONABLE_VERSIONS = new Set(['1.10', '1.50', '1.51']);
+
+ids.forEach((id) => {
+  const t = tutorials[id];
+  (t.steps || []).forEach((s) => {
+    const text = PROSE_FIELDS.map((f) => s[f] || '').join(' ');
+    const seen = new Set((text.match(/\b1\.\d\d\b/g) || []));
+    seen.forEach((v) => {
+      check(MENTIONABLE_VERSIONS.has(v),
+        `${id} step ${s.id}: names system version "${v}", which Roland does not document as changing behaviour`);
+    });
+    const gating = Array.from(seen).filter((v) => GATING_VERSIONS.has(v));
+    check(gating.length <= 1,
+      `${id} step ${s.id}: names more than one gating version (${gating.join(', ')}) - a version caveat must be consistent within a step`);
+  });
+});
+
 /* -------------------------------------------------------------- collections */
 
 if (collections) {

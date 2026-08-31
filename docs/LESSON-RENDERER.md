@@ -357,9 +357,10 @@ and no router change. Authoring B03–B10 did exactly that: B02's last step chan
 resolved, with no change to `app.js`, to this renderer, or to any earlier tutorial's
 data. It was the single intended difference the frozen-surface comparison reported.
 
-B10's and N10's last steps offer **Return home**, because each is order 10 with no
-successor. N01's changed to **Next tutorial ›** when N02 was authored, by the same
-generic rule and with no edit to N01.
+B10's, N10's and I10's last steps offer **Return home**, because each is order 10 with
+no successor. N01's changed to **Next tutorial ›** when N02 was authored, by the same
+generic rule and with no edit to N01. With the catalog complete, twenty-seven of the
+thirty tutorials resolve a successor and three end their level.
 
 The renderer performs no catalog lookup of its own. It is told what follows; it does
 not go and find out. That keeps the "adding a tutorial must not mean editing the
@@ -373,9 +374,9 @@ in `index.html`.
 
 ## Deferred
 
-- further tutorial content (I01 onward) — requires Roland-source verification first.
-  **The Beginner and Novice paths are complete**: B01–B10 and N01–N10 are authored,
-  each with source notes in `docs/tutorials/`;
+- **(no longer deferred)** tutorial content: all thirty canonical tutorials are
+  authored — B01–B10, N01–N10 and I01–I10 — each with source notes in
+  `docs/tutorials/`;
 - the rest of the production route catalog (levels, topics, favorites, progress);
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
