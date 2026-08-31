@@ -135,8 +135,9 @@ recovery.
 - Home screen, and a reusable lesson screen that renders every tutorial from data.
 - Hash routing for tutorials and their steps, working from `file://`.
 - **All thirty canonical tutorials are authored: B01–B10, N01–N10 and I01–I10.**
-- Level, topic, Favorites, My Progress and Settings routes are not implemented yet, and
-  those controls remain placeholders.
-- No persistence, accounts, audio or MIDI.
+- Level, topic, Favorites, My Progress and Settings all route and render. **No
+  placeholder controls remain on the home screen.**
+- Local progress, resume and favourites persist in this browser. No accounts, no
+  cloud, no audio, no MIDI.
 - The baseline remains plain HTML/CSS/JavaScript with no build system, no modules and
   no runtime `fetch`; it opens by double-clicking `index.html`.

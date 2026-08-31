@@ -280,3 +280,119 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .lsn-nav.next:hover { background:#2c2c2c; }
 .lsn-nav.next.finish { background:var(--green); border-color:var(--green); }
 .lsn-nav.back { color:var(--muted); border-color:var(--line); }
+
+/* ============================================================================
+   CATALOG VIEW (Phase 6D) — levels, topics, Favorites, Progress, Settings
+   Appended only. No rule above this banner is modified, so the frozen home and
+   lesson views render exactly as before. Everything here is scoped to the
+   catalog view's own classes, plus the lesson-screen favourite toggle.
+   All three views live inside the SAME 1440x900 stage.
+   ========================================================================= */
+
+#view-catalog[hidden] { display:none; }
+
+/* 864 = 16 top pad + head + 12 + 1fr body + 12 + 52 foot + 14 bottom pad */
+.catalog { height:864px; padding:16px 34px 14px; display:grid; grid-template-rows:auto 1fr 52px; gap:12px; }
+
+.cat-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; min-width:0; }
+.cat-ident { min-width:0; }
+.cat-eyebrow { font-size:11.5px; font-weight:800; color:var(--red); letter-spacing:.4px; text-transform:uppercase; }
+/* The heading is focused on every route change so keyboard and screen-reader
+   users land on the new surface rather than staying where the old one was. It
+   carries no outline: it is an announcement target, not an actionable control,
+   and a ring here would appear for everyone who arrived by clicking while
+   communicating nothing they can act on. Every real control keeps its own
+   :focus-visible ring. */
+.cat-title { margin:2px 0 0; font-size:30px; letter-spacing:-1px; line-height:1.05; }
+.cat-title:focus, .cat-title:focus-visible { outline:none; }
+.cat-desc { margin:6px 0 0; font-size:13px; line-height:1.4; color:var(--muted); max-width:760px; }
+.cat-actions { display:flex; gap:9px; align-items:center; flex:none; }
+
+/* Content is centred in the body rather than stacked at the top: the stage is
+   a fixed height that never scrolls, so a short list would otherwise leave a
+   large dead area under it. */
+.cat-body { min-height:0; display:flex; flex-direction:column; justify-content:center; gap:12px; overflow:hidden; }
+.cat-foot { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+
+.cat-btn { border:1px solid #292929; background:var(--ink); color:#fff; border-radius:10px; padding:10px 18px; font-size:13px; font-weight:780; cursor:pointer; transition:.12s ease; flex:none; }
+.cat-btn:hover { transform:translateY(-1px); background:#2c2c2c; }
+.cat-btn:active { transform:translateY(0); }
+.cat-btn.quiet { background:#fff; color:var(--ink); }
+.cat-btn.quiet:hover { background:#fcfcfb; }
+.cat-btn.danger { background:#fff; color:var(--red); border-color:#f3cdcb; }
+.cat-btn.danger:hover { background:var(--redsoft); }
+.cat-btn.danger.armed { background:var(--red); color:#fff; border-color:var(--red); }
+
+/* ---- rich tutorial cards: bounded lists (a level, a topic) ---- */
+.tut-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; align-content:start; min-height:0; }
+.tut-grid.cols-4 { grid-template-columns:repeat(4,1fr); }
+.tut-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
+.tut-card { min-height:164px; position:relative; text-align:left; border:1px solid var(--line); background:#fff; border-radius:13px; padding:11px 12px 10px; cursor:pointer; transition:.12s ease; display:flex; flex-direction:column; gap:5px; min-height:0; box-shadow:0 3px 10px rgba(0,0,0,.035); }
+.tut-card:hover { transform:translateY(-1px); border-color:#bebebb; background:#fcfcfb; }
+.tut-card:active { transform:translateY(0); }
+.tut-card .tc-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.tut-card .tc-id { font-size:10.5px; font-weight:850; letter-spacing:.5px; color:var(--muted); }
+.tut-card .tc-name { font-size:13px; font-weight:750; line-height:1.25; }
+.tut-card .tc-sum { font-size:11px; line-height:1.4; color:var(--muted); overflow:hidden;
+  display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+.tut-card .tc-meta { margin-top:auto; padding-top:4px; font-size:10.5px; color:var(--muted); display:flex; gap:8px; align-items:center; }
+.tut-card.done { border-color:#bfe0c9; background:#f7fbf8; }
+.tut-card.here { border-color:var(--ink); box-shadow:0 0 0 2px rgba(0,0,0,.06); }
+
+.tc-tick { width:17px; height:17px; border-radius:50%; display:inline-grid; place-items:center; font-size:10px; font-weight:900; flex:none; background:#ececeb; color:#a9a9a6; }
+.tc-tick.done { background:var(--green); color:#fff; }
+.tc-star { font-size:13px; line-height:1; color:var(--orange); flex:none; }
+
+/* ---- compact rows: unbounded lists (Favorites, Progress) ---- */
+.cat-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; min-height:0; align-content:start; }
+.cat-col { min-width:0; display:flex; flex-direction:column; gap:5px; }
+.cat-col h2 { margin:0 0 2px; font-size:13px; letter-spacing:-.2px; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.cat-col h2 span { font-size:11px; font-weight:700; color:var(--muted); }
+.tut-row { display:flex; align-items:center; gap:8px; text-align:left; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 10px; cursor:pointer; transition:.12s ease; min-width:0; }
+.tut-row:hover { border-color:#bebebb; background:#fcfcfb; }
+.tut-row .tr-id { font-size:10.5px; font-weight:850; color:var(--muted); flex:none; width:26px; }
+.tut-row .tr-name { font-size:12px; font-weight:650; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0; }
+.tut-row.done { border-color:#bfe0c9; background:#f7fbf8; }
+.tut-row.here { border-color:var(--ink); }
+
+/* ---- meters ---- */
+.meter { height:6px; border-radius:4px; background:#e6e6e3; overflow:hidden; flex:1; min-width:60px; }
+.meter i { display:block; height:100%; background:var(--green); border-radius:4px; }
+.cat-summary { display:flex; align-items:center; gap:12px; font-size:12px; color:var(--muted); }
+.cat-summary b { color:var(--ink); font-size:13px; }
+
+/* ---- panels: Settings, empty states, notices ---- */
+.cat-panel { border:1px solid var(--line); background:#fff; border-radius:14px; padding:14px 16px; box-shadow:var(--shadow); }
+.cat-panel h2 { margin:0 0 6px; font-size:15px; }
+.cat-panel p { margin:0 0 8px; font-size:12.5px; line-height:1.5; color:var(--muted); max-width:820px; }
+.cat-panel p:last-child { margin-bottom:0; }
+.cat-panel .row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.cat-panel.warn { background:#fff4e5; border-color:#f0c98a; }
+.cat-panel.warn p { color:#7a4400; }
+.cat-empty { flex:1; display:grid; place-items:center; text-align:center; }
+.cat-empty .inner { max-width:520px; }
+.cat-empty h2 { margin:0 0 8px; font-size:19px; }
+.cat-empty p { margin:0 0 14px; font-size:13px; line-height:1.5; color:var(--muted); }
+
+/* ---- sibling topic strip ---- */
+.topic-strip { flex:none; border-top:1px solid var(--line); padding-top:10px; }
+.topic-strip .ts-cap { font-size:10px; font-weight:850; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.topic-strip .ts-list { display:flex; flex-wrap:wrap; gap:6px; }
+.ts-chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 11px; font-size:11.5px; font-weight:680; cursor:pointer; transition:.12s ease; }
+.ts-chip:hover { border-color:#bebebb; background:#fcfcfb; }
+
+/* ---- lesson-screen favourite toggle ---- */
+.lesson-titlerow { display:flex; align-items:center; gap:10px; min-width:0; }
+/* Keeps the frozen title's ellipsis working now that it shares a flex row. */
+.lesson-titlerow .lesson-title { min-width:0; }
+/* An author class rule beats the UA [hidden] rule, so any element hidden via
+   the hidden property AND given a display by a class needs an explicit rule -
+   the same trap already documented for the view containers above. Without
+   this, the favourite control stays visible on a development fixture, which
+   is the one lesson that must never offer it. */
+.favstar[hidden], .cat-btn[hidden] { display:none; }
+.favstar { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:#fff; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:750; color:var(--muted); cursor:pointer; transition:.12s ease; flex:none; }
+.favstar:hover { border-color:#bebebb; background:#fcfcfb; }
+.favstar[aria-pressed="true"] { background:#fff7ec; border-color:#f0c98a; color:#8a5a00; }
+.favstar[aria-pressed="true"] .favstar-ico { color:var(--orange); }
+.favstar-ico { font-size:13px; line-height:1; }

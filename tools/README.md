@@ -51,6 +51,36 @@ step) and browser Back/Forward.
 once a surface is implemented; without it an unimplemented route passes silently
 because falling back *is* its correct behaviour.
 
+## `test-progress.js`
+
+```
+node tools/test-progress.js
+```
+
+No dependencies, no browser. Loads `js/progress.js` against a fake `localStorage` so
+every failure mode can be provoked deliberately: malformed JSON, wrong stored types,
+missing fields, stale tutorial and step ids, a record written by a newer build, and
+storage that throws on read or on write.
+
+The contract under test is that the app stays fully navigable when storage misbehaves —
+only persistence may degrade.
+
+## `test-behaviour.js`
+
+```
+node tools/test-behaviour.js [chromium|firefox]
+```
+
+Needs Playwright. Drives the real app from a real `file://` URL and asserts what the
+learner experiences: favouriting from a lesson and finding it on Favorites, persistence
+across a reload, the resume point, completion counting, the two-press Settings reset and
+its cancel path, and browser Back/Forward across the new surfaces.
+
+It also asserts two things that must **not** happen: a development fixture touching
+learner state, and an empty collection rendering a placeholder page. The first of those
+caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
+the favourite control visible on a fixture.
+
 ## `frozen-surfaces.js`
 
 ```

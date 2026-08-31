@@ -20,9 +20,9 @@
           <span class="iconline" aria-hidden="true">⌂</span><span>Home</span>
         </button>
         <nav class="nav" aria-label="Application navigation">
-          <button class="navbtn" type="button" title="Placeholder only"><span class="iconline" aria-hidden="true">▢</span><span>My Progress</span></button>
-          <button class="navbtn" type="button" title="Placeholder only"><span class="iconline" aria-hidden="true">☆</span><span>Favorites</span></button>
-          <button class="navbtn settings" type="button" title="Settings (placeholder only)" aria-label="Settings"><span class="iconline" aria-hidden="true">⚙</span></button>
+          <button class="navbtn" type="button" title="My Progress" data-route="#progress"><span class="iconline" aria-hidden="true">▢</span><span>My Progress</span></button>
+          <button class="navbtn" type="button" title="Favorites" data-route="#favorites"><span class="iconline" aria-hidden="true">☆</span><span>Favorites</span></button>
+          <button class="navbtn settings" type="button" title="Settings" aria-label="Settings" data-route="#settings"><span class="iconline" aria-hidden="true">⚙</span></button>
         </nav>
       </header>
 
@@ -65,25 +65,25 @@
           <div class="card">
             <div class="card-head"><div><h2>1. Guided learning path</h2><div class="eyebrow">Recommended order</div></div><span class="chev">›</span></div>
             <div class="level-grid">
-              <button class="tile" type="button" title="Start the Beginner path" data-route="#tutorial/B01"><div class="ico green">♧</div><b>Beginner</b><p>First sounds,<br>keys, knobs</p></button>
-              <button class="tile" type="button" title="Start the Novice path" data-route="#tutorial/N01"><div class="ico purple">❖</div><b>Novice</b><p>Menus, patterns,<br>editing basics</p></button>
-              <button class="tile" type="button" title="Placeholder only"><div class="ico blue">◭</div><b>Intermediate</b><p>Designing tones,<br>layering, performance</p></button>
+              <button class="tile" type="button" title="Open the Beginner path" data-route="#level/beginner"><div class="ico green">♧</div><b>Beginner</b><p>First sounds,<br>keys, knobs</p></button>
+              <button class="tile" type="button" title="Open the Novice path" data-route="#level/novice"><div class="ico purple">❖</div><b>Novice</b><p>Menus, patterns,<br>editing basics</p></button>
+              <button class="tile" type="button" title="Open the Intermediate path" data-route="#level/intermediate"><div class="ico blue">◭</div><b>Intermediate</b><p>Designing tones,<br>layering, performance</p></button>
             </div>
           </div>
 
           <div class="card">
             <div class="card-head"><div><h2>2. Explore by topic</h2><div class="eyebrow">Learn a la carte</div></div><span class="chev">›</span></div>
             <div class="topic-grid">
-              <button class="topic" type="button" title="Placeholder only"><span class="red">▶</span><span>Getting started</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="orange">☷</span><span>Navigating menus</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="green">♫</span><span>Playing notes</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="purple">▦</span><span>Making beats</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="blue">≋</span><span>Bass sounds</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="green">■</span><span>Pad sounds</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="purple">☆</span><span>Lead sounds</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="orange">≈</span><span>Effects &amp; motion</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="blue"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12l4 4v12H4z"/><path d="M8 4v6h7V4"/><rect x="8" y="14" width="8" height="6"/></svg></span><span>Saving sounds</span></button>
-              <button class="topic" type="button" title="Placeholder only"><span class="red">♜</span><span>Mini challenges</span></button>
+              <button class="topic" type="button" title="Open the Getting started topic" data-route="#topic/getting-started"><span class="red">▶</span><span>Getting started</span></button>
+              <button class="topic" type="button" title="Open the Navigating menus topic" data-route="#topic/navigating-menus"><span class="orange">☷</span><span>Navigating menus</span></button>
+              <button class="topic" type="button" title="Open the Playing notes topic" data-route="#topic/playing-notes"><span class="green">♫</span><span>Playing notes</span></button>
+              <button class="topic" type="button" title="Open the Making beats topic" data-route="#topic/making-beats"><span class="purple">▦</span><span>Making beats</span></button>
+              <button class="topic" type="button" title="Open the Bass sounds topic" data-route="#topic/bass-sounds"><span class="blue">≋</span><span>Bass sounds</span></button>
+              <button class="topic" type="button" title="Open the Pad sounds topic" data-route="#topic/pad-sounds"><span class="green">■</span><span>Pad sounds</span></button>
+              <button class="topic" type="button" title="Open the Lead sounds topic" data-route="#topic/lead-sounds"><span class="purple">☆</span><span>Lead sounds</span></button>
+              <button class="topic" type="button" title="Open the Effects and motion topic" data-route="#topic/effects-and-motion"><span class="orange">≈</span><span>Effects &amp; motion</span></button>
+              <button class="topic" type="button" title="Open the Saving sounds topic" data-route="#topic/saving-sounds"><span class="blue"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12l4 4v12H4z"/><path d="M8 4v6h7V4"/><rect x="8" y="14" width="8" height="6"/></svg></span><span>Saving sounds</span></button>
+              <button class="topic" type="button" title="Open the Mini challenges topic" data-route="#topic/mini-challenges"><span class="red">♜</span><span>Mini challenges</span></button>
             </div>
           </div>
         </section>
@@ -94,7 +94,7 @@
               <h2>Recommended path</h2>
               <div class="eyebrow">Your step-by-step roadmap</div>
               <p>A clear path from first sound to full performance.</p>
-              <button class="ghost" type="button" title="Placeholder only">View full roadmap &nbsp;›</button>
+              <button class="ghost" type="button" title="See every tutorial and how far you have got" data-route="#progress">View full roadmap &nbsp;›</button>
             </div>
             <div class="path">
               <div class="node"><div class="num">1</div><div class="icon red">⚑</div><b>Start here</b><p>Meet the JD-Xi<br>and get set up.</p></div>
@@ -118,7 +118,12 @@
         <div class="lesson-head">
           <div class="lesson-ident">
             <span class="fixture-badge" id="lsn-badge">DEVELOPMENT FIXTURE — NOT A TUTORIAL</span>
-            <h1 class="lesson-title" id="lsn-title"></h1>
+            <div class="lesson-titlerow">
+              <h1 class="lesson-title" id="lsn-title"></h1>
+              <button class="favstar" id="lsn-fav" type="button" aria-pressed="false" hidden>
+                <span class="favstar-ico" aria-hidden="true">☆</span><span class="favstar-txt">Favorite</span>
+              </button>
+            </div>
           </div>
           <div class="lesson-prog">
             <span class="prog-text" id="lsn-progress"></span>
@@ -169,11 +174,35 @@
           <button class="lsn-nav next" id="lsn-next" type="button">Next &rsaquo;</button>
         </div>
       </main>
+
+      <!--
+        One catalog view renders every discovery surface: the three guided
+        levels, the topic collections, Favorites, Progress and Settings. They
+        differ in what they list, not in how they are built, so adding a
+        collection needs no new screen and no router change.
+      -->
+      <main class="catalog" id="view-catalog" hidden>
+        <div class="cat-head">
+          <div class="cat-ident">
+            <span class="cat-eyebrow" id="cat-eyebrow"></span>
+            <h1 class="cat-title" id="cat-title"></h1>
+            <p class="cat-desc" id="cat-desc"></p>
+          </div>
+          <div class="cat-actions" id="cat-actions"></div>
+        </div>
+        <div class="cat-body" id="cat-body"></div>
+        <div class="cat-foot">
+          <button class="lsn-nav back" id="cat-back" type="button">&lsaquo; Home</button>
+          <span class="foot-hint" id="cat-hint"></span>
+        </div>
+      </main>
     </div>
   </div>
   <script src="js/hardware-targets.js"></script>
   <script src="js/tutorials.js"></script>
+  <script src="js/collections.js"></script>
   <script src="js/tutorial-fixtures.js"></script>
+  <script src="js/progress.js"></script>
   <script src="js/lesson-renderer.js"></script>
   <script src="js/app.js"></script>
 </body>

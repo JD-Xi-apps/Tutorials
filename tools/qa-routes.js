@@ -73,8 +73,11 @@ const pw = require('playwright');
     const tut = window.JDXI_TUTORIALS || {};
     const cols = window.JDXI_COLLECTIONS || {};
     ['beginner', 'novice', 'intermediate'].forEach((l) => out.push('#level/' + l));
+    /* Every collection with content is routable, live or planned - a planned
+       one is simply not surfaced on the home screen. An empty collection is
+       deliberately not routable, so it is excluded here too. */
     Object.keys(cols).forEach((cid) => {
-      if (cols[cid].status === 'live') out.push('#topic/' + cid);
+      if ((cols[cid].tutorialIds || []).length) out.push('#topic/' + cid);
     });
     Object.keys(tut).sort().forEach((id) => {
       const n = tut[id].steps.length;
@@ -175,7 +178,10 @@ const pw = require('playwright');
   let viewportResults = null;
   if (doViewports) {
     viewportResults = [];
-    const sample = ['#home', '#tutorial/B01', routes[routes.length - 1]];
+    /* One of each kind of surface, so the viewport sweep covers the catalog
+       layouts as well as the lesson and home views. */
+    const sample = ['#home', '#tutorial/B01', '#level/beginner', '#topic/making-beats',
+                    '#progress', '#settings', '#favorites', routes[routes.length - 1]];
     for (const [w, h] of VIEWPORTS) {
       await page.setViewportSize({ width: w, height: h });
       let bad = [];

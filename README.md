@@ -14,10 +14,15 @@ from *Learn the menu controls* through building patterns and sounds to *Save you
 and *Getting unstuck*; I01–I10 go from *Build a bass sound* to a *Performance
 challenge*.
 
-Tutorials are reached from the home screen's level tiles and by direct link —
-`index.html#tutorial/B05`, or `index.html#tutorial/B05/step/8` for a specific step.
-The remaining home-screen buttons (topic cards, My Progress, Favorites, Settings) are
-still placeholders and intentionally do not navigate.
+Every control on the home screen now goes somewhere. The level tiles open guided level
+pages, the topic cards open their collections, and My Progress, Favorites and Settings
+are real surfaces. Anything can also be reached by direct link —
+`index.html#level/novice`, `index.html#topic/making-beats`, `index.html#tutorial/B05`,
+or `index.html#tutorial/B05/step/8` for a specific step.
+
+Completed tutorials, where you had got to, and your favourites are kept in the browser's
+own local storage and nowhere else. There is no account and nothing is sent anywhere. If
+storage is unavailable the app stays fully usable and says so; only persistence is lost.
 
 The home screen supports two learning modes:
 

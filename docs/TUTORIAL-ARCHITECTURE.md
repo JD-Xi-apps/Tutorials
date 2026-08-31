@@ -192,8 +192,28 @@ proposal; membership is expected to be refined as content is authored.
 | Saving sounds | N09, I09 |
 | Mini challenges | B10, I10 |
 
-Note the thin collections: *Pad sounds* and *Lead sounds* currently resolve to a single
-tutorial each. That is acceptable at launch but is a content gap to track.
+Note the thin collections: *Pad sounds* and *Lead sounds* resolved to a single tutorial
+each in this proposal. That is acceptable at launch but was a content gap to track.
+
+> **Refined in Phase 6D, when the content existed to refine against.** The authoritative
+> membership now lives in `js/collections.js`. Changes from the proposal above, each made
+> because the finished tutorials made it obvious:
+>
+> | Collection | Change | Why |
+> |---|---|---|
+> | Making beats | added `N06` | It is the tutorial about getting several parts into one pattern, which is the subject of the collection. |
+> | Bass sounds | added `I04` | `I01` builds a bass out of the filter and envelope; the tutorial that teaches them belongs beside it. |
+> | Pad sounds | added `I04`, `I05` | Resolves the thin-collection gap honestly: a pad is made of an envelope and slow movement, so those two tutorials are the rest of the answer. |
+> | Lead sounds | added `B05`, `I04` | Same reasoning. A lead is a sound plus the Pitch and Mod controls that make it expressive, which is `B05`. |
+>
+> Four of the planned collections gained real membership and are **routable but
+> deliberately not shown on the home screen**, since adding cards there would be a
+> redesign of a frozen surface. They are reachable from the *Other topics* strip that
+> every topic page carries, so nothing is orphaned: **all thirty tutorials appear in at
+> least one collection**, and every collection with content has a route.
+>
+> The Vocoder collection remains empty and is therefore **not routable** — an empty topic
+> page would be a placeholder. It is kept in the data so the content gap stays visible.
 
 ### Planned future collections
 
@@ -469,11 +489,23 @@ Unknown or malformed routes resolve to `#home` rather than failing. A deep link 
 step that no longer exists resolves to the tutorial's first step — a consequence of IDs
 being permanent but step lists being editable.
 
-Not implemented in this phase.
+> **Implemented in Phase 6D.** Every route in the table above works, from `file://`,
+> with browser Back and Forward. The router is generic: levels are derived from the
+> catalog's own `level` and `order`, topics from `Collection.tutorialIds[]`, and
+> Favorites, Progress and Settings share one catalog view — so a new tutorial or a new
+> collection needs a data entry and no router change.
+>
+> Two resolution rules were added to the ones above, both following the same
+> degrade-to-a-defined-destination principle:
+>
+> - an unknown **level** resolves to `#home`;
+> - a collection that exists but has **no tutorials** is not routable and resolves to
+>   `#home`, because an empty topic page would be a placeholder. Only the Vocoder
+>   collection is in that state, and deliberately (see §5).
 
 ## 12. Progress model
 
-A future local-browser progress model. Not implemented in this phase.
+The local-browser progress model. **Implemented in Phase 6D** as `js/progress.js`.
 
 ```
 ProgressState
@@ -535,6 +567,24 @@ safe destination instead of failing.
 Resetting progress must be possible later through Settings (`#settings`). With a single
 namespaced record, reset is the deletion of that one key.
 
+> **Implemented in Phase 6D.** Settings offers a reset that clears completion, the
+> resume point and favourites in one action. It requires **two deliberate presses**: the
+> first arms the control and relabels it, the second acts, and a Cancel appears alongside
+> — a single click on a control that erases the learner's whole record is exactly the
+> accident this guards against.
+
+### How the implementation reads storage
+
+`js/progress.js` probes storage by writing and removing a value rather than by checking
+that `localStorage` exists, because on `file://` the object can be present and still
+throw on use. Every access is wrapped; a failure degrades to an in-memory state for the
+session and the application stays fully navigable. Only persistence is lost, never
+function — and the affected surfaces say so rather than failing silently.
+
+The rules above are enforced rather than assumed: `tools/test-progress.js` provokes each
+failure mode — malformed JSON, wrong types, missing fields, stale tutorial and step ids,
+a record written by a newer build, and storage that throws on read or on write.
+
 ## 13. Content-authority rule
 
 **No detailed JD-Xi technical procedure becomes authoritative merely because it sounds
@@ -568,3 +618,10 @@ Recorded so later phases do not mistake silence for a decision:
 - the Novice capstone question raised in §4;
 - content for the Vocoder collection;
 - visual design of the lesson screen beyond the region contract in §10.
+
+> **Phase 6D postscript.** Of the items this section deferred, the routing model (§11)
+> and the progress model (§12) are now implemented, and the collection memberships
+> sketched in §5 have been refined against finished content. The Novice capstone question
+> and the Vocoder content gap were both **decided by the PM to stay as they are**: N10
+> remains the end of the Novice guided path, and no Vocoder tutorial is added. Both are
+> recorded here as settled rather than open.

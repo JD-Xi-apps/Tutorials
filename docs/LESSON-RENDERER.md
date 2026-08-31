@@ -323,11 +323,33 @@ Hash routing, so direct links and Back/Forward work from `file://` with no serve
 | `#tutorial/<id>/step/<n>` | Canonical tutorial, step *n* |
 | `#dev/lesson-renderer/step/1..4` | Top-view fixture step |
 | `#dev/rear-panel/step/1..6` | Rear-panel fixture step |
+| `#level/beginner` `#level/novice` `#level/intermediate` | Guided level index |
+| `#topic/<collection-id>` | Topic collection index, for any collection with content |
+| `#favorites` `#progress` `#settings` | Learner-state surfaces |
 | out-of-range step (tutorial or fixture) | replaced with step 1 (`#tutorial/<id>` / fixture step 1) |
-| unknown tutorial id, `#tutorial/<id>/anything-else`, anything else | replaced with `#home` |
+| unknown tutorial id, unknown level, empty or unknown collection, `#tutorial/<id>/anything-else`, anything else | replaced with `#home` |
 
 The router is generic: a new canonical tutorial needs only an entry in
-`js/tutorials.js`. Development fixture routes stay separate and unchanged.
+`js/tutorials.js`, and a new topic only an entry in `js/collections.js`. Development
+fixture routes stay separate and unchanged.
+
+### One catalog view renders five surfaces
+
+The three guided levels, every topic collection, Favorites, Progress and Settings are
+not five screens. They are one `#view-catalog` with a shared head, body and foot, and a
+per-surface render function chosen from a small table. They differ in what they list,
+not in how they are built.
+
+Two list layouts, chosen by whether the list is bounded:
+
+- **rich cards** for a level (always ten) and a topic (at most eight) — id, title,
+  summary, minutes, step count, completion tick and a favourite star;
+- **compact rows** for Favorites and Progress, which can hold all thirty. The stage is a
+  fixed height that never scrolls, so an unbounded list cannot use a layout that grows.
+
+Development fixtures are excluded from every one of these surfaces, and from learner
+state entirely: a fixture is not a tutorial, so it never becomes a resume point, never
+appears in Progress, and shows no favourite control.
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
 and Back write the hash, so browser history follows step navigation naturally. Back
@@ -377,8 +399,9 @@ in `index.html`.
 - **(no longer deferred)** tutorial content: all thirty canonical tutorials are
   authored — B01–B10, N01–N10 and I01–I10 — each with source notes in
   `docs/tutorials/`;
-- the rest of the production route catalog (levels, topics, favorites, progress);
-- progress persistence;
+- **(no longer deferred)** the production route catalog — levels, topics, Favorites,
+  Progress and Settings all route and render;
+- **(no longer deferred)** progress persistence, in `js/progress.js`;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
   emulator. The preview is a presentation surface: it will render whatever lines a step
   supplies, and it is content review, not the renderer, that keeps invented screens out
