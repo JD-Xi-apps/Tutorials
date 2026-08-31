@@ -386,8 +386,8 @@ window.JDXI_TUTORIALS = {
     title: "Learn the menu controls",
     shortTitle: "Menu controls",
     summary:
-      "Learn the small group of buttons next to the display: how to open the Menu, move through it, open an item, change a value, and get back out again. You will leave the JD-Xi exactly as you found it.",
-    estimatedMinutes: 14,
+      "Learn the small group of buttons next to the display: how to open the Menu, move through it, open an item, understand where the Value buttons are used, and get back out again. You will leave the JD-Xi exactly as you found it.",
+    estimatedMinutes: 10,
     prerequisites: ["B02"],
     learningGoals: [
       "Recognize the top screen and get back to it from anywhere.",
@@ -403,11 +403,15 @@ window.JDXI_TUTORIALS = {
     // Nothing is invented: the character grid is still unresolved
     // (ROLAND-SOURCE-MAP Q4), so no screen is composed by us.
     //
-    // The tutorial is deliberately non-destructive end to end. The only
-    // values it asks the learner to change are program and tone selection,
-    // both of which write nothing and are undone by one press. SYSTEM is
-    // entered for navigation only, because Roland saves system parameters
-    // automatically when you leave that screen (OM p.13).
+    // The tutorial changes nothing on the instrument. Not one step selects
+    // another program or another tone, and no Value button is pressed
+    // anywhere. That is a direct consequence of prerequisites being advisory
+    // (TUTORIAL-ARCHITECTURE §6): a learner can open N01 at any moment, so
+    // N01 cannot assume they have no unsaved work, and switching program or
+    // tone would discard it (OM p.6, p.9). N01-S13 teaches the two -/+ pairs
+    // apart by sight instead. SYSTEM is entered for navigation only, because
+    // Roland saves system parameters automatically when you leave that
+    // screen (OM p.13).
     steps: [
       {
         id: "N01-S01",
@@ -491,7 +495,7 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["cursorRightButton", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "Cursor only moves the selection. It never opens anything and never changes a value, so you can move around the Menu as much as you like without any risk.",
+          "Cursor only moves the selection. It never opens anything and never changes a value, so you can move up and down the Menu list as much as you like.",
         checkpoint: "The display reads VERSION INFO.",
         recoveryHelp:
           "If you go past it, press Cursor ◄ to come back. If you pressed Enter by accident and the screen changed, press Exit once and you are back on the list.",
@@ -555,15 +559,15 @@ window.JDXI_TUTORIALS = {
         title: "Open SYSTEM, and look before you press",
         instruction: "Press Enter.",
         detail:
-          "Important: from here on, do not press the Value buttons. Anything you change in SYSTEM is saved by the JD-Xi automatically when you leave the screen. You are here to look, and to learn how to move around.",
+          "Important: from here on, do not press the Value buttons. Anything you change in SYSTEM is saved by the JD-Xi automatically when you leave the screen. You are here to look, and to learn how to move around. Whichever group and parameter your JD-Xi shows you, the screen has the same two-line shape.",
         hardwareTargets: ["enterButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["GENERAL", "LCD Contrast 10"],
         syntheticDisplay: false,
         displayNote:
-          "Roland's own example. The upper line is the group you are in; the lower line is one parameter and its value. Your contrast number may differ.",
+          "Roland's illustrated SYSTEM example. Your JD-Xi may open on a different SYSTEM group, or show a different value.",
         whyItMatters:
-          "Most JD-Xi screens throw your changes away unless you deliberately save them. SYSTEM is the exception: it saves itself as you leave. That is why it is the one place to look before you touch.",
+          "When you edit a sound, the JD-Xi discards that change unless you deliberately save it. SYSTEM is different: it saves itself as you leave the screen. That difference is why this is the one screen to look at before you touch anything.",
         checkpoint:
           "The upper line shows a group name and the lower line shows a parameter name with a value beside it.",
         recoveryHelp:
@@ -591,14 +595,14 @@ window.JDXI_TUTORIALS = {
         title: "Shift and Cursor jump between groups",
         instruction: "Hold down Shift and press Cursor ►.",
         detail:
-          "The upper line jumps to the next group: GENERAL, KEY TOUCH, SOUND, CLICK, INPUT, MIDI. Cursor on its own walks through parameters; Shift with Cursor jumps between whole groups.",
+          "The upper line changes to a neighbouring group. SYSTEM has six of them: GENERAL, KEY TOUCH, SOUND, CLICK, INPUT and MIDI. Cursor on its own walks through parameters; Shift with Cursor moves between whole groups.",
         hardwareTargets: ["shiftButton", "cursorRightButton"],
         visualMode: "full-plus-inset",
         whyItMatters:
           "Roland documents this as working in setting screens such as SYSTEM and the edit screens. It is not a universal shortcut: while you are typing a name, the same combination deletes a character instead. On this instrument, what a combination does depends on which screen you are in.",
         checkpoint: "The name on the upper line has changed to a different group.",
         recoveryHelp:
-          "Hold Shift and press Cursor ◄ to jump back. If the upper line did not change, check that you are still inside SYSTEM and that Shift is held down before you press Cursor.",
+          "If the group name does not change, you may already be at the last group. Keep holding Shift and press Cursor ◄ once instead. If it still does not change, check that you are inside SYSTEM and that Shift is held down before you press Cursor.",
         nextHint: "Now leave, without having changed anything.",
       },
       {
@@ -619,77 +623,26 @@ window.JDXI_TUTORIALS = {
         recoveryHelp:
           "Keep pressing Exit. If the screen still looks different, one more press will usually do it.",
         nextHint:
-          "Two buttons left to sort out — the pair that gets mixed up most.",
+          "Two more sets of buttons to sort out — the ones that get mixed up most.",
       },
       {
         id: "N01-S13",
         title: "Two pairs that are not the same",
         instruction: "Find the two −/+ button pairs on the panel.",
         detail:
-          "One has Value printed between its − and its +, with Program (Pattern) above it. The other has Tone printed between its − and its +, to the right of the four Part Select buttons. They look identical and they do different jobs.",
+          "One has Value printed between its − and its +, with Program (Pattern) above it. The other has Tone printed between its − and its +, to the right of the four Part Select buttons. They look identical and they do different jobs. Find them, but do not press either one.",
         hardwareTargets: ["programValueButtons", "toneButtons"],
         visualMode: "full",
         whyItMatters:
-          "Program Value chooses which whole setup you are playing. Tone changes the sound inside the setup you already have. Reaching for the wrong pair is the most common way a beginner loses the sound they had.",
+          "Program Value chooses which whole setup you are playing. Tone changes the sound inside the setup you already have. Reaching for the wrong pair is the most common way a beginner loses the sound they had — and that is exactly why this tutorial has you find them rather than press them. If you had been part-way through changing a sound and had not saved it, either pair would throw that work away.",
         checkpoint:
           "You can point to each pair and say which word is printed on it.",
         recoveryHelp:
           "Read the printed word rather than the − and the +. The pair nearer the display says Value; the pair further to the right says Tone.",
-        nextHint: "Try the Program pair first.",
-      },
-      {
-        id: "N01-S14",
-        title: "Program Value changes the whole program",
-        instruction: "Press Program Value + once.",
-        detail:
-          "Note the program number on the display before you press. You are on the top screen, so this selects the next program: a different complete setup.",
-        hardwareTargets: ["programValuePlusButton", "display"],
-        visualMode: "full-plus-inset",
-        expectedSound:
-          "Play a key and you will hear a different sound from before. The program the keys play has changed.",
-        whyItMatters:
-          "Selecting a program writes nothing. One caution though: if you had already changed a sound and not saved it, switching programs loses that change. You have changed nothing yet, so there is nothing to lose here.",
-        checkpoint:
-          "The program number on the upper line of the display has gone up by one.",
-        recoveryHelp:
-          "Press Program Value − once to come straight back.",
-        nextHint: "Now put it back.",
-      },
-      {
-        id: "N01-S15",
-        title: "Put it back",
-        instruction: "Press Program Value − once.",
-        detail: "You are back on the program you started from.",
-        hardwareTargets: ["programValueMinusButton", "display"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "Getting into the habit of putting things back is worth more than memorizing what every control does. Almost everything on the JD-Xi that is not a deliberate save can be undone by hand like this.",
-        checkpoint:
-          "The program number on the display is the one you noted a moment ago.",
-        recoveryHelp:
-          "If you have lost count, press Program Value − or + until the number matches the one you noted. Nothing has been saved either way.",
-        nextHint: "Now the other pair.",
-      },
-      {
-        id: "N01-S16",
-        title: "Tone changes the sound inside the program",
-        instruction: "Press Tone + once.",
-        detail:
-          "Note the tone number and name on the lower line before you press. This changes the tone of the part the keys are playing and leaves the rest of the program as it was.",
-        hardwareTargets: ["tonePlusButton", "display"],
-        visualMode: "full-plus-inset",
-        expectedSound:
-          "Play a key: the same program, but a different sound under your hands.",
-        whyItMatters:
-          "This is the difference between the two pairs, in one press. Program Value swapped the whole setup; Tone swapped only the sound of the part you are playing.",
-        checkpoint:
-          "The tone number and name on the lower line of the display have changed.",
-        recoveryHelp:
-          "Press Tone − once to come back. Roland also documents a revert: hold down Shift and press Enter to return to the original sound after you have switched or edited it.",
         nextHint: "One last thing, and it is about what not to press.",
       },
       {
-        id: "N01-S17",
+        id: "N01-S14",
         title: "Two combinations to leave alone for now",
         instruction:
           "Do not press Shift with Menu/Write, or Shift with Erase, yet.",
@@ -708,11 +661,11 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last step: what to do when you are lost.",
       },
       {
-        id: "N01-S18",
+        id: "N01-S15",
         title: "When you are lost",
         instruction: "Press Exit several times.",
         detail:
-          "That is the whole recovery procedure. However far into a menu you are, repeated Exit presses walk you back to the top screen.",
+          "However far into a menu you are, repeated Exit presses walk you back to the top screen. That is the move to reach for first, every time.",
         hardwareTargets: ["exitButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["A64   1-1    120", "256:Synth Lead01"],
@@ -720,7 +673,7 @@ window.JDXI_TUTORIALS = {
         displayNote:
           "Roland's own example of the top screen. Your JD-Xi shows its own program, tempo and tone name.",
         whyItMatters:
-          "Three moves cover almost everything that goes wrong in the menus: Exit to back out, Shift with Enter to bring back the original sound after you have changed one, and — because nothing is written until you deliberately save — simply choosing another program and coming back. The JD-Xi has no undo, so these are the recovery tools you have.",
+          "Exit is how you back out of a menu, and pressing it several times is how you get all the way home. Two things it does not cover: SYSTEM saves what you changed in it as you leave, and repairing a sound you have edited has rules of its own that a later tutorial teaches. The JD-Xi has no general undo, so this tutorial does not promise you one.",
         checkpoint:
           "You are back at the top screen, and you know how to get here from anywhere.",
         recoveryHelp:

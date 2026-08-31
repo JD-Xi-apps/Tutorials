@@ -231,6 +231,17 @@ Field notes:
 - **`prerequisites`** are advisory, not gates. The à-la-carte promise is that a learner
   may enter any tutorial directly; prerequisites let the UI *offer* a prior tutorial,
   never refuse entry.
+
+  **This has a safety consequence, and it binds content.** Because entry is always
+  direct, a tutorial may never assume the learner arrived through its prerequisites,
+  and therefore may never assume anything about the state of the instrument in front
+  of them — in particular, it may not assume there is no unsaved work. A step whose
+  correctness depends on "you have not changed anything yet" is a defect, not a
+  simplification. Where an action would discard a learner's unsaved work, the tutorial
+  either does not ask for it, or is itself the tutorial that teaches saving first.
+  N01 is the worked example: it teaches the Program Value and Tone button pairs apart
+  by sight and deliberately presses neither, because either press would discard an
+  unsaved sound (`docs/tutorials/N01-SOURCE-NOTES.md`).
 - **`topics` is deliberately absent from the authored shape.** Topic membership lives
   in `Collection.tutorialIds[]` (§5) and nowhere else. A read-only `topics` index may
   be derived at load time for rendering — "which collections is this tutorial in?" —

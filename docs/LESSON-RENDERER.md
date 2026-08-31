@@ -54,7 +54,7 @@ launched from the home screen's Beginner tile; **`#tutorial/B02`** (B02 *Get you
 first sound*, 11 steps) follows it. Tutorials use the same renderer and the same Step
 shape as the fixtures; nothing tutorial-specific lives in `lesson-renderer.js`.
 
-`#tutorial/N01` (N01 *Learn the menu controls*, 18 steps) is the first Novice
+`#tutorial/N01` (N01 *Learn the menu controls*, 15 steps) is the first Novice
 tutorial, launched from the home screen's Novice tile.
 
 B01 is a silent orientation tour. **B02 is the first canonical tutorial that

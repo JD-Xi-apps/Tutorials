@@ -8,12 +8,13 @@ learner-facing factual statement comes from, per the content-authority rule
 
 | Field | Value |
 |---|---|
-| Tutorial | **N01 — Learn the menu controls** (novice, order 1, 18 steps, ~14 min) |
+| Tutorial | **N01 — Learn the menu controls** (novice, order 1, 15 steps, ~10 min) |
 | Short title | Menu controls |
 | Prerequisites | `["B02"]` — advisory, not a gate (`TUTORIAL-ARCHITECTURE.md` §6) |
 | Kind | **Operating procedure.** Menu navigation, display states, Cursor / Enter / Exit, Shift, Program Value vs Tone, recovery. |
+| Revision | v2, Phase 5C.1 — *Make N01 safe for direct entry*. See the correction record below. |
 | Authored | 2026-08-30 |
-| Persistent change to the instrument | **None.** See *The no-persistent-change contract* below. |
+| Persistent change to the instrument | **None.** No step selects a program or a tone, and no Value button is pressed anywhere. See *The no-change contract* below. |
 
 Learning goals as authored:
 
@@ -21,6 +22,32 @@ Learning goals as authored:
 2. Open the Menu, move through it, and open an item with Enter.
 3. Tell the Program Value buttons and the Tone buttons apart.
 4. Use Shift safely, and know which combinations to leave alone for now.
+
+## Phase 5C.1 correction record
+
+The first published version of N01 (`55346b7`, 18 steps) ended its Program-versus-Tone
+section with three operating steps: press Program Value +, press Program Value − to
+return, press Tone +. PM review rejected them, and the rejection is correct:
+
+- **A canonical tutorial is directly enterable.** `TUTORIAL-ARCHITECTURE.md` §6 makes
+  prerequisites advisory, so a learner can open N01 at any moment — including part-way
+  through editing a sound they have not saved. Selecting another program or tone
+  discards that work (OM p.6, OM p.9). The steps were safe only for a learner who had
+  arrived through B02 with nothing in progress.
+- **The old S14 said so out loud.** Its *why* read "You have changed nothing yet, so
+  there is nothing to lose here" — a statement the tutorial had no way to know was
+  true.
+- **The Tone press was never undone in the normal path.** Only `recoveryHelp` offered
+  Tone −, so a learner who followed the happy path finished on a different tone. The
+  tutorial's own promise to leave the JD-Xi exactly as it was found did not hold.
+
+The three steps were deleted rather than replaced. Nothing took their place, because
+S13 already teaches the distinction the section exists for, and it teaches it by sight.
+The surviving steps were renumbered (old S17 → **S14**, old S18 → **S15**) and N01 is
+15 steps. Two over-broad recovery claims went with them, and two open hardware
+questions were converted from assumptions into tolerated variation. The corrected
+tutorial is a strict subset of what the owner ran on hardware: the Menu / Cursor /
+Enter / Exit / SYSTEM / [Shift]+Cursor spine is byte-for-byte the sequence that passed.
 
 `ROLAND-SOURCE-MAP.md` §9 calls N01 "the heaviest reconciliation" in the catalogue.
 That is because the controls it teaches are described in one place, their *universal*
@@ -45,25 +72,39 @@ Not consulted, by rule: any third-party tutorial, video, forum or wiki.
 The MIDI Implementation was not needed. `ROLAND-SOURCE-MAP.md` §9 already records that
 no tutorial in the canonical set requires it.
 
-## The no-persistent-change contract
+## The no-change contract
 
-N01 is the tutorial most able to leave a beginner's instrument altered, so its scope
-was drawn to make that impossible. Every action it asks for falls into one of three
-classes:
+N01 is the tutorial most able to leave a beginner's instrument altered, so its scope is
+drawn to make that impossible. **Every one of its fifteen steps is navigation or
+looking. Not one selects a program or a tone, and no Value button is pressed
+anywhere.**
 
-| Class | Steps | Why nothing persists |
+| What the learner does | Steps | Why nothing changes |
 |---|---|---|
-| Navigation and looking only | S01–S13, S17, S18 | Cursor, Enter, Exit and held [Shift] select and move; none of them writes. S02, S13 and S17 ask the learner only to read the display or find a control. OM p.14's whole menu procedure is navigation plus Value, and inside the Menu N01 uses only the navigation half |
-| Selection, reversed in the next step | S14 → S15 | Program (Pattern) Value selects a program (OM p.5). Selecting writes nothing; S15 presses the other button once and the learner is back |
-| Selection, reversal documented in recovery | S16 | Tone [-] [+] selects a tone (OM p.5). S16's `recoveryHelp` gives both the one-press reversal and Roland's own documented revert, [Shift] + [Enter] (OM p.5, p.16) |
+| Moves between screens | S01, S04, S06, S07, S09, S12, S15 | [Menu/Write] opens the Menu, [Enter] opens the selected item, [Exit] returns to the previous screen (OM p.2 item 3, OM p.14). None of them writes. The one item N01 opens with [Enter] outside SYSTEM is VERSION INFO, which contains nothing to change |
+| Moves the selection | S05, S08, S10, S11 | Cursor moves the cursor and nothing else (OM p.2 item 3); [Shift] + Cursor moves between menu groups (OM p.13 step 3). Both are pure navigation |
+| Holds a modifier and looks | S03 | Held [Shift] shows the program name on the upper line and nothing more (OM p.5) |
+| Reads the display, or finds a control | S02, S13, S14 | No press at all |
 
-**The Value buttons are never pressed inside a menu screen.** This is the load-bearing
-decision of the tutorial. Roland states plainly that SYSTEM parameters "are saved when
-you exit the system setting screen" (OM p.13 step 5; restated at v1.50 p.3), so a
-demonstration press inside SYSTEM would be written to the instrument by the very act of
-leaving. S09's `detail` therefore instructs the learner not to press Value at all, and
-S09's `whyItMatters` explains the asymmetry that makes SYSTEM special. S10 teaches what
-Value *would* do without pressing it.
+Two decisions carry that contract, and both are load-bearing.
+
+**The Value buttons are never pressed inside a menu screen.** Roland states plainly
+that SYSTEM parameters "are saved when you exit the system setting screen" (OM p.13
+step 5; restated at v1.50 p.3), so a demonstration press inside SYSTEM would be written
+to the instrument by the very act of leaving. S09's `detail` instructs the learner not
+to press Value at all, and S09's `whyItMatters` explains the asymmetry that makes
+SYSTEM special. S10 teaches what Value *would* do without pressing it.
+
+**The Value buttons are never pressed outside a menu screen either** — which is the
+Phase 5C.1 correction. On the top screen, Program (Pattern) Value selects a program and
+Tone selects a tone (OM p.5). Neither writes anything, so the first version treated
+them as safe practice. They are not, because **a canonical tutorial is directly
+enterable** (`TUTORIAL-ARCHITECTURE.md` §6): the learner may be part-way through an
+unsaved edit, and Roland is explicit that such an edit "will change if you move the
+knobs or if you select a different tone or program" (OM p.9; OM p.6). A tutorial that
+cannot know the instrument's state must not perform an action whose safety depends on
+it. S13 therefore teaches the two pairs apart by sight and tells the learner, in the
+`detail` itself, not to press either one.
 
 That is also why **VERSION INFO is the item N01 opens first**. It is the only Menu
 entry in OM p.14's list that contains nothing to change: Roland describes it as "View
@@ -86,16 +127,13 @@ repository's own hardware image, not a Roland claim.
 | **N01-S06** Open an item with Enter | `enterButton`, `display` | `display-focus` | Enter opens the selected item. VERSION INFO only shows information. The lower line reads Version followed by your instrument's system version. | OM p.2 item 3: "[Enter] button — Press this to confirm a value or execute an operation." OM p.14 step 2. OM p.14 *Editable items*: "VERSION INFO — View the version of the JD-Xi system program." Screen text from v1.10 p.1 / v1.50 p.1. See *Display strings* below for the version number |
 | **N01-S07** Exit goes back one screen | `exitButton`, `display` | `full-plus-inset` | One press returns to the Menu list, not out of the Menu. *Why:* Exit is one step backwards, which is why reaching the top screen takes several presses. | OM p.2 item 3 ("Returns you to the previous screen") read together with OM p.14 step 4 ("several times to return to the top screen"). The two sentences are the whole claim; nothing is added |
 | **N01-S08** Select SYSTEM | `cursorLeftButton`, `display` | `full-plus-inset` | Press Cursor ◄ until SYSTEM. SYSTEM is the first item in the list. *Why:* SYSTEM holds settings that affect the whole instrument: display contrast, keyboard feel, tuning, the click, the microphone input, and the MIDI settings. | OM p.14 *Editable items* lists SYSTEM first, and describes it as "Make settings that affect the operating environment of the entire JD-Xi." OM p.13 step 2 is the same selection. The five areas named are Roland's own SYSTEM menu groups (OM p.13: GENERAL, KEY TOUCH, SOUND, CLICK, INPUT, MIDI), summarised in plain words. **Moving left is chosen deliberately**: the first item is reachable by going left whether or not the list wraps, and Roland states nothing about wrapping |
-| **N01-S09** Open SYSTEM, and look before you press | `enterButton`, `display` | `display-focus` | Do not press the Value buttons. Anything changed in SYSTEM is saved automatically when you leave the screen. *Why:* most JD-Xi screens discard changes unless you save; SYSTEM is the exception. *Recovery:* SYSTEM has no undo; `Mic Sel` set to Attached sends power to the MIC jack and Roland warns it can damage a microphone that did not come with the JD-Xi. | OM p.13 step 5: "The parameters you edit are saved when you exit the system setting screen", restated at v1.50 p.3. The contrast is OM p.6 and OM p.9: "A sound that you create will change if you move the knobs or if you select a different tone or program. It will also be lost if you power-off." OM p.15: "If this is set to 'Attached,' 5V of power is supplied from the MIC jack. If you use a commercially available microphone with the 'Attached' setting, the microphone may be damaged." That the JD-Xi has no undo is a **negative finding**, recorded at `ROLAND-SOURCE-MAP.md` Q10 after a full-corpus search |
+| **N01-S09** Open SYSTEM, and look before you press | `enterButton`, `display` | `display-focus` | Do not press the Value buttons. Anything changed in SYSTEM is saved automatically when you leave the screen. Whichever group and parameter the JD-Xi shows, the screen has the same two-line shape. *Why:* an edited sound is discarded unless you deliberately save it; SYSTEM is different and saves itself as you leave. *Recovery:* SYSTEM has no undo; `Mic Sel` set to Attached sends power to the MIC jack and Roland warns it can damage a microphone that did not come with the JD-Xi. | OM p.13 step 5: "The parameters you edit are saved when you exit the system setting screen", restated at v1.50 p.3. The contrast is OM p.6 and OM p.9: "A sound that you create will change if you move the knobs or if you select a different tone or program. It will also be lost if you power-off." OM p.15: "If this is set to 'Attached,' 5V of power is supplied from the MIC jack. If you use a commercially available microphone with the 'Attached' setting, the microphone may be damaged." That the JD-Xi has no undo is a **negative finding**, recorded at `ROLAND-SOURCE-MAP.md` Q10 after a full-corpus search |
 | **N01-S10** Cursor picks the parameter | `cursorRightButton`, `display` | `full-plus-inset` | Cursor moves along the parameters of the group; Value would change the one you are looking at. *Why:* this pattern is the same in every edit screen. | OM p.13 step 4 and OM p.14 step 3, which are the same sentence for SYSTEM and for the Menu generally; OM p.9 repeats it for Program / Tone / Effects Edit; OM p.6 repeats it for Arpeggio Edit. PG pp.10–29 carry it as the column headers of every parameter table. **Value is described, not pressed** |
-| **N01-S11** Shift and Cursor jump between groups | `shiftButton`, `cursorRightButton` | `full-plus-inset` | Shift with Cursor jumps between GENERAL, KEY TOUCH, SOUND, CLICK, INPUT and MIDI. *Why:* Roland documents this for setting screens such as system or edit; while entering a name the same combination deletes a character instead. | OM p.13 step 3: "Hold down the [Shift] button and use the Cursor [◄] [►] buttons to select the menu item that you want to edit", with the group names taken from the `Menu` column of the OM p.13 table. OM p.16 / PG p.2: "[Shift] + CURSOR — In setting screens such as system or edit, moves between major menu items", and, separately, "When entering a name — [Shift] + [◄] Deletes the character at the cursor position." The universal/context split is `ROLAND-SOURCE-MAP.md` §6.2, which exists for this step |
+| **N01-S11** Shift and Cursor jump between groups | `shiftButton`, `cursorRightButton` | `full-plus-inset` | Shift with Cursor moves between the six groups GENERAL, KEY TOUCH, SOUND, CLICK, INPUT and MIDI. *Recovery:* if the group name does not change, you may already be at the last group — hold Shift and press Cursor ◄ instead. *Why:* Roland documents this for setting screens such as system or edit; while entering a name the same combination deletes a character instead. | OM p.13 step 3: "Hold down the [Shift] button and use the Cursor [◄] [►] buttons to select the menu item that you want to edit", with the group names taken from the `Menu` column of the OM p.13 table. OM p.16 / PG p.2: "[Shift] + CURSOR — In setting screens such as system or edit, moves between major menu items", and, separately, "When entering a name — [Shift] + [◄] Deletes the character at the cursor position." The universal/context split is `ROLAND-SOURCE-MAP.md` §6.2, which exists for this step |
 | **N01-S12** Leave the Menu | `exitButton`, `display` | `full-plus-inset` | A few presses. Leaving SYSTEM saves its system settings. | OM p.13 step 5, both halves of the same instruction |
-| **N01-S13** Two pairs that are not the same | `programValueButtons`, `toneButtons` | `full` | One pair has Value printed between − and +, with Program (Pattern) above it; the other has Tone printed between its − and +, to the right of the four Part Select buttons. *Why:* Program Value chooses the whole setup; Tone changes the sound inside it. | Naming and function: OM p.2 item 3 "Program (Pattern) Value [-] [+] buttons — Select a program"; OM p.5 *Choosing a Tone* "Tone [-] [+] buttons — Select a tone." Panel legends and relative position are **visual**, read from `assets/images/JD-Xi.jpg` and matching the registry's `panelLegend` fields (`Program (Pattern) − Value +`, `− Tone +`). `ROLAND-SOURCE-MAP.md` §5.1 records this as the likeliest beginner mix-up on the panel |
-| **N01-S14** Program Value changes the whole program | `programValuePlusButton`, `display` | `full-plus-inset` | One press selects the next program — a different complete setup. *Why:* selecting writes nothing, but an unsaved change to a sound is lost when you switch programs. *Sound:* a different sound from before. | OM p.5 *Choosing a Program*: "Use the Program (Pattern) Value [-] [+] buttons to select a program." OM p.4: "A program consists of four parts", so "a different complete setup" is that structure in plain words. The caution is OM p.6 and OM p.9 verbatim in substance: an edited sound "will change if you… select a different tone or program". That selection itself saves nothing is the complement of OM p.9, where saving requires the deliberate WRITE sequence |
-| **N01-S15** Put it back | `programValueMinusButton`, `display` | `full-plus-inset` | One press of the other button returns to the program you started from. | OM p.5, the same sentence used in the other direction. **No claim is made that the JD-Xi restores anything**: the learner is selecting the earlier program by number, which is why S14's `detail` asks them to note it first |
-| **N01-S16** Tone changes the sound inside the program | `tonePlusButton`, `display` | `full-plus-inset` | One press changes the tone of the part the keys are playing and leaves the rest of the program as it was. *Recovery:* Tone − comes back; Roland also documents [Shift] + [Enter] to return to the original sound after switching or editing. *Sound:* the same program with a different sound. | OM p.5 *Choosing a Tone*, for all three part types. That the change is confined to the selected part follows from OM p.5 (*Choosing a Part to Play*: the keys play one selected part) plus OM p.4 (a program holds four parts). The revert: OM p.5 note "If you want to return to the original sound after you've switched or edited the sound, hold down the [Shift] button and press the [Enter] button", and OM p.16 / PG p.2 |
-| **N01-S17** Two combinations to leave alone for now | `shiftButton`, `menuWriteButton`, `eraseButton` | `full-plus-inset` | Shift with Menu/Write opens the WRITE screen, which can overwrite a program that is already stored. Shift with Erase opens the Pattern Erase screen. *Recovery:* neither screen does anything until you press Enter, so Exit leaves them alone. | OM p.9 *Saving a Sound (Program) (WRITE)*: "Hold down the [Shift] button and press the [Menu/Write] button", and its warning "If you specify a number in which data is already saved… Saving to this number will overwrite the program, erasing the previous data"; step 6 "If you decide to cancel, press the [Exit] button." OM p.10 *Erasing an Entire Pattern*: "[Shift] + [Erase]… Use the Value [-] [+] buttons to select the part… and then press the [Enter] button" — the erase happens on [Enter], which is what makes the Exit recovery correct. Both also appear in OM p.16 / PG p.2 |
-| **N01-S18** When you are lost | `exitButton`, `display` | `display-focus` | Repeated Exit presses walk you back to the top screen. *Why:* Exit, [Shift] + [Enter] to restore the original sound, and choosing another program and coming back, are the recovery moves; the JD-Xi has no undo. *Recovery:* `Now Playing!` and `Now Recording!` mean the JD-Xi is refusing an operation until you stop with the ▶/■ button. | OM p.14 step 4 / OM p.13 step 5. OM p.5 for the [Shift] + [Enter] revert. OM p.6 and OM p.9 for unsaved work being discarded on a program change. The absence of undo is `ROLAND-SOURCE-MAP.md` Q10. PG p.5: "Now Playing! — Since the JD-Xi is playing, this operation cannot be executed. Stop playback before you execute the operation", and the same for `Now Recording!`. That the transport button stops playback is OM p.10 |
+| **N01-S13** Two pairs that are not the same | `programValueButtons`, `toneButtons` | `full` | One pair has Value printed between − and +, with Program (Pattern) above it; the other has Tone printed between its − and +, to the right of the four Part Select buttons. **Find them, but do not press either one.** *Why:* Program Value chooses the whole setup; Tone changes the sound inside it, and either press would throw away an unsaved sound. | Naming and function: OM p.2 item 3 "Program (Pattern) Value [-] [+] buttons — Select a program"; OM p.5 *Choosing a Tone* "Tone [-] [+] buttons — Select a tone." Panel legends and relative position are **visual**, read from `assets/images/JD-Xi.jpg` and matching the registry's `panelLegend` fields (`Program (Pattern) − Value +`, `− Tone +`). `ROLAND-SOURCE-MAP.md` §5.1 records this as the likeliest beginner mix-up on the panel. The instruction not to press is the direct-entry rule: OM p.9 "A sound that you create will change if you move the knobs or if you select a different tone or program", read against `TUTORIAL-ARCHITECTURE.md` §6 |
+| **N01-S14** Two combinations to leave alone for now | `shiftButton`, `menuWriteButton`, `eraseButton` | `full-plus-inset` | Shift with Menu/Write opens the WRITE screen, which can overwrite a program that is already stored. Shift with Erase opens the Pattern Erase screen. *Recovery:* neither screen does anything until you press Enter, so Exit leaves them alone. | OM p.9 *Saving a Sound (Program) (WRITE)*: "Hold down the [Shift] button and press the [Menu/Write] button", and its warning "If you specify a number in which data is already saved… Saving to this number will overwrite the program, erasing the previous data"; step 6 "If you decide to cancel, press the [Exit] button." OM p.10 *Erasing an Entire Pattern*: "[Shift] + [Erase]… Use the Value [-] [+] buttons to select the part… and then press the [Enter] button" — the erase happens on [Enter], which is what makes the Exit recovery correct. Both also appear in OM p.16 / PG p.2 |
+| **N01-S15** When you are lost | `exitButton`, `display` | `display-focus` | Repeated Exit presses walk you back to the top screen; reach for it first, every time. *Why:* Exit backs you out of a menu. Two things it does not cover — SYSTEM saves what you changed as you leave, and repairing an edited sound has rules of its own that a later tutorial teaches. The JD-Xi has no general undo, and this tutorial does not promise one. *Recovery:* `Now Playing!` and `Now Recording!` mean the JD-Xi is refusing an operation until you stop with the ▶/■ button. | OM p.14 step 4 / OM p.13 step 5. The SYSTEM exception is OM p.13 step 5. The absence of a general undo is `ROLAND-SOURCE-MAP.md` Q10, a negative finding from a full-corpus search. **Deliberately narrowed in Phase 5C.1:** the first version also offered [Shift] + [Enter] (OM p.5) and "select another program and come back" (OM p.6, p.9) as general recovery moves. Both are real but conditional, and set beside Exit they read as a general undo the instrument does not have; the second is also itself a program change, which N01 no longer asks for. The broader recovery pattern belongs to N10 (§7 row 53). PG p.5: "Now Playing! — Since the JD-Xi is playing, this operation cannot be executed. Stop playback before you execute the operation", and the same for `Now Recording!`. That the transport button stops playback is OM p.10 |
 
 ## Display strings — the first canonical use of `expectedDisplay`
 
@@ -113,7 +151,7 @@ the grid. Every N01 screen and its provenance:
 
 | Steps | `expectedDisplay` | Roland's illustration | What varies, and how the learner is told |
 |---|---|---|---|
-| S01, S02, S12, S18 | `A64   1-1    120` / `256:Synth Lead01` | OM p.5, the labelled *Top screen* figure, reproduced as the document renders it, spacing included | `displayNote`: "Roland's own example of the top screen. Your JD-Xi shows its own program, tempo and tone name." The checkpoints ask only for the *shape* of the screen, never for these values |
+| S01, S02, S12, S15 | `A64   1-1    120` / `256:Synth Lead01` | OM p.5, the labelled *Top screen* figure, reproduced as the document renders it, spacing included | `displayNote`: "Roland's own example of the top screen. Your JD-Xi shows its own program, tempo and tone name." The checkpoints ask only for the *shape* of the screen, never for these values |
 | S06 | `VERSION INFO` / `  Version 1.51` | v1.50 p.1, which renders `VERSION INFO` over `  Version 1.10`; v1.10 p.1 renders the same screen as `VERSION INFO` over ` Version 1.02` | The version number is the only field changed from Roland's copy. `displayNote`: "Roland's own screen. The number is whatever system version your own JD-Xi is running; 1.51 is shown here as an example." 1.51 is the owner-observed installed version (`ROLAND-SOURCE-MAP.md` §4.8) — hardware evidence, not a document claim, and labelled as an example rather than an expectation |
 | S09 | `GENERAL` / `LCD Contrast 10` | OM p.13, the figure printed immediately after step 2 | `displayNote`: "Roland's own example. The upper line is the group you are in; the lower line is one parameter and its value. Your contrast number may differ." The checkpoint asks only that the upper line shows a group name and the lower line a parameter with a value |
 
@@ -134,9 +172,12 @@ Three consequences were accepted deliberately:
 - **No screen is shown for a state Roland does not illustrate.** The Menu list itself,
   the held-[Shift] program name (S03), the selected-but-unopened item (S05, S08) and
   the second SYSTEM parameter (S10) are all confirmed by prose `checkpoint` instead.
-  Nine of the eighteen steps therefore carry neither `expectedDisplay` nor
+  Nine of the fifteen steps therefore carry neither `expectedDisplay` nor
   `expectedSound`; each states its confirmation in the checkpoint, which is what
-  `TUTORIAL-ARCHITECTURE.md` §7 asks such a step to be examined for.
+  `TUTORIAL-ARCHITECTURE.md` §7 asks such a step to be examined for. **No N01 step
+  carries `expectedSound` at all** since the Phase 5C.1 correction: the only two that
+  did were the deleted Program and Tone presses, and a tutorial that changes no sound
+  has nothing to listen for.
 - **The `syntheticDisplay: false` + `displayNote` pair is mandatory together**, and the
   data QA enforces it: a real screen must say where it came from.
 - **The 16-character bound is a guard, not a claim.** Every Roland illustration in the
@@ -175,19 +216,21 @@ generalisation is available to contradict later.
 
 ## Deliberate omissions
 
+- **No program and no tone is selected, anywhere.** The single biggest omission, and
+  the Phase 5C.1 correction. Covered above under *The no-change contract*.
 - **The Value buttons are never pressed inside a menu screen.** Covered above.
 - **No SYSTEM parameter is changed, and none is taught.** S09 and S10 name what the
   groups contain, because a learner needs to know what SYSTEM is *for* before deciding
   not to touch it. `Local Switch` — Roland's documented cause of "no sound" (OM p.17),
   and the omission B02 recorded — is still not acted on here; it belongs to
   N10 *Getting unstuck* (`ROLAND-SOURCE-MAP.md` §7 row 53, §9).
-- **WRITE is named, never performed.** S17 states what [Shift] + [Menu/Write] opens and
+- **WRITE is named, never performed.** S14 states what [Shift] + [Menu/Write] opens and
   what it can overwrite, and stops. The full sequence is N09's.
 - **Nothing destructive is performed.** Pattern Erase, Pattern Copy, Factory Reset,
   Backup and Restore are all reachable from the controls this tutorial teaches; none is
   demonstrated. Only Pattern Erase is named, and only as something to avoid.
 - **The boxed-legend hypothesis is still not taught.** `Write` and `Shift` are visibly
-  boxed in S04's and S17's insets. `ROLAND-SOURCE-MAP.md` **Q3** remains open — Roland
+  boxed in S04's and S14's insets. `ROLAND-SOURCE-MAP.md` **Q3** remains open — Roland
   states no such convention and `Rest` under `Erase` looks like a counterexample — so
   no step tells the learner that a box means a Shift function.
 - **No favourite, bank-switch, measure-switch or name-entry combination is taught.**
@@ -196,15 +239,17 @@ generalisation is available to contradict later.
   `ROLAND-SOURCE-MAP.md` §6 separates its two tables to prevent.
 - **Transpose is not taught**, although [Shift] + OCTAVE is a Shift combination on the
   owner's 1.51 instrument (v1.50 p.2). It is B05's material and is firmware-gated.
-- **No note names, no music theory, no memorisation request.** S14 and S16 ask the
-  learner to play "a key", never a named note.
+- **No key is played, and no sound is made.** N01 is silent from end to end. The two
+  steps that asked the learner to press a key — to hear the program and the tone
+  change — went with the presses that made them meaningful.
+- **No note names, no music theory, no memorisation request.**
 
 ## Visual-mode choices
 
 | Steps | Mode | Reason |
 |---|---|---|
-| S01, S02, S06, S09, S18 | `display-focus` | The four steps whose whole point is a display state, plus S02 which is nothing but reading the display. Each shows the documented screen beside a magnified view of where to look on the instrument |
-| S03–S05, S07, S08, S10–S12, S14–S17 | `full-plus-inset` | Every button in the Operation cluster is small at full-instrument scale and four of them sit in one row. All of them share the display's canonical zoom, so the inset frames the display and the whole cluster together — the learner sees the button they are pressing and the screen it changes in one crop |
+| S01, S02, S06, S09, S15 | `display-focus` | The steps whose whole point is a display state, plus S02 which is nothing but reading the display. Each shows the documented screen beside a magnified view of where to look on the instrument |
+| S03–S05, S07, S08, S10–S12, S14 | `full-plus-inset` | Every button in the Operation cluster is small at full-instrument scale and four of them sit in one row. All of them share the display's canonical zoom, so the inset frames the display and the whole cluster together — the learner sees the button they are pressing and the screen it changes in one crop. **S12 additionally carries `expectedDisplay`**, which this mode renders as an *On the display* card rather than a preview |
 | S13 | `full` | The only step whose subject is *relative position across the panel*: the two −/+ pairs are far apart with the Part Select column between them, and a crop of either one would destroy the comparison. The same choice as B01-S04, which pairs the Category dial with the Tone buttons |
 
 `control-closeup` is not used. No N01 step needs a crop to dominate the frame; the
@@ -216,7 +261,7 @@ would cost the learner their orientation in a tutorial that moves around the pan
 `TUTORIAL-ARCHITECTURE.md` §7 calls more than two targets "a signal the step is doing
 too much". One N01 step has three, by record:
 
-**N01-S17** highlights `shiftButton`, `menuWriteButton` and `eraseButton`. It is a
+**N01-S14** highlights `shiftButton`, `menuWriteButton` and `eraseButton`. It is a
 single *recognise-and-avoid* action, not three sequential hardware actions — the same
 shape as B01-S05, which highlights four sections as one orientation action. Shift and
 Menu/Write fall inside the shared cluster zoom and are magnified in the inset; Erase
@@ -267,16 +312,28 @@ attribute and a data attribute changed, so `#home` renders pixel-identically.
 
 ## Ambiguities and open items found while authoring
 
-1. **Roland does not say whether the Menu list wraps.** Neither OM p.14 nor either
-   supplement states what happens at the ends of the list. S05 and S08 are written so
-   the answer does not matter: S05 goes right to the last item, S08 goes left to the
-   first. If a later tutorial needs to move between two items in the middle of the list,
-   the wrap behaviour has to be observed on hardware first.
-2. **Roland does not state whether the Menu remembers the last item you opened.**
-   OM p.13's illustration shows `GENERAL` / `LCD Contrast 10` immediately after
-   entering SYSTEM, but that is an example screen, not a claim that SYSTEM always opens
-   there. S09's checkpoint therefore asks for the *shape* of the screen, not for
-   `GENERAL`. Worth confirming on hardware.
+Two of these are open **hardware** questions. Phase 5C.1's ruling on both is the
+same: N01 is made correct under either answer, and neither is treated as a blocker or
+resolved by assumption. They stay recorded for an opportunistic hardware check.
+
+1. **Roland does not say whether the Menu or the SYSTEM group list wraps.** Neither
+   OM p.14, OM p.13 nor either supplement states what happens at the ends of a list.
+   Three steps are written so the answer does not matter: S05 goes right to the last
+   Menu item, S08 goes left to the first, and S11's `recoveryHelp` covers the learner
+   already sitting on the last SYSTEM group — "you may already be at the last group.
+   Keep holding Shift and press Cursor ◄ once instead" — without asserting either that
+   the list wraps or that it does not. If a later tutorial needs to move between two
+   items in the *middle* of a list, the wrap behaviour has to be observed first.
+2. **Roland does not state whether SYSTEM remembers the group and parameter you last
+   visited.** OM p.13's illustration shows `GENERAL` / `LCD Contrast 10` immediately
+   after entering SYSTEM, but that is an example screen, not a claim that SYSTEM always
+   opens there. N01 reproduces it under the display house rule and says so in three
+   places: the `displayNote` reads "Roland's illustrated SYSTEM example. Your JD-Xi may
+   open on a different SYSTEM group, or show a different value"; S09's `detail` adds
+   that whichever group and parameter appear, the screen has the same two-line shape;
+   and S09's `checkpoint` asks only for that shape — an upper-line group name and a
+   lower-line parameter with a value. Nothing downstream depends on the answer, because
+   S10 and S11 move *relative* to wherever the learner landed.
 3. **`ROLAND-SOURCE-MAP.md` Q4 is still open and still binding.** The house rule above
    works around it; it does not resolve it. A future tutorial that needs a screen Roland
    never illustrates cannot be written until the real grid is known.

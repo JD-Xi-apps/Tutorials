@@ -799,10 +799,18 @@ never states the boxed-legend convention (Q3).
 > **Phase 5C postscript:** N01 discharged §11.3 without resolving anything, and adopted
 > the display-string house rule recorded under Q4. It also gave Q3, Q4, Q10 and Q13
 > their first real content pressure — Q3 (`Write` and `Shift` are both visibly boxed in
-> the insets N01 shows repeatedly), Q4 (above), Q10 (the four documented recovery moves
-> are now written as a lesson, and N01-S18 is the house pattern the other tutorials'
-> `recoveryHelp` fields can point at), and Q13 (N01 names no confirmation prompt,
-> because it performs no operation that raises one). All six of Q3, Q4, Q8, Q10, Q11
-> and Q13 remain open.
+> the insets N01 shows repeatedly), Q4 (above), Q10 (N01 teaches only the one recovery
+> move it can state without qualification, [Exit]; the other three documented moves are
+> conditional, and PM ruled in Phase 5C.1 that N01 must not present them as a general
+> undo, so the house recovery pattern Q10 asks for is still to be designed and belongs
+> with N10), and Q13 (N01 names no confirmation prompt, because it performs no
+> operation that raises one). All six of Q3, Q4, Q8, Q10, Q11 and Q13 remain open.
+>
+> **Phase 5C.1 postscript:** the two hardware questions N01 was written to be
+> independent of are still open, and N01 is now robust to either answer rather than
+> waiting on it — SYSTEM's opening group and value are presented as Roland's example
+> only, and the [Shift] + Cursor step's recovery covers being at the last group without
+> asserting that the group list wraps. Both are opportunistic hardware checks, not
+> blockers.
 - Whether Vocoder/Auto Pitch gets canonical tutorials.
 - The Novice capstone question (architecture §4).
