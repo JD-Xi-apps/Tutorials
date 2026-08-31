@@ -5,7 +5,7 @@ Source reconciliation record for N06. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **N06 — Combine parts in a pattern** (novice, order 6, 10 steps, ~11 min) |
+| Tutorial | **N06 — Combine parts in a pattern** (novice, order 6, 11 steps, ~11 min) |
 | Short title | Combine parts |
 | Prerequisites | `["N05"]` — advisory, not a gate |
 | Kind | **Authoring and arranging.** Adds a part to the pattern, then balances the parts. |
@@ -41,14 +41,15 @@ Roland's own terms, and every later step is about arranging rather than layering
 | **N06-S04** Add a note without deleting anything | `stepButtons`, `keys` | `full-plus-inset` | Hold a numbered button, play a key, release: the note is added and existing notes are kept. | OM p.12, the fourth method, steps 1–4, and its note: "With this recording method, the originally existing notes are not deleted; the notes you enter are added to the recording." PG p.3 repeats it. The removal instruction in `recoveryHelp` is OM p.10's stop-and-hold-Erase gesture. |
 | **N06-S05** Build it up and listen | `stepButtons`, `keys` | `full` | Same method, repeated. | As N06-S04. |
 | **N06-S06** Listen to one part at a time | `shiftButton`, `partSelectGroup` | `full-plus-inset` | `[Shift]` + Part Select mutes; the same combination unmutes; several parts can be muted; nothing is changed by it. | OM p.10 *Part Mute*, including "You can select multiple parts if you like" and "To return to the original state, once again hold down the [Shift] button and press the Part Select button." |
-| **N06-S07** Open the part settings | `menuWriteButton`, `display` | `display-focus` | Menu/Write → Program Edit → Enter, then `[Shift]` + Cursor to reach MAIN; two letters show the part. | OM p.9 steps 1–2; PG p.10 MAIN, its `Menu [Shift]+Cursor` column and its part indicator. Screen from PG p.10 — see *Display provenance*. |
-| **N06-S08** Set each part's level | `partSelectGroup`, `programValueButtons` | `full-plus-inset` | Part Select chooses the part being edited; Value changes its Level; this is a different control from the AMP/ENV Level knob and from Master Volume. | PG p.10: "Use the [Part Select] button to switch parts", and "Level 0–127 — Volume of each part". The distinction from the panel knob is OM p.8 ("[Level] knob — This sets the volume", within the tone's AMP section) and from Master Volume is OM p.2 item 7 (output level). Three different scopes, three Roland sentences. |
-| **N06-S09** Give each part its own space | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Pan places a part in the stereo picture, from far left through centre to far right. | PG p.10: "Pan L64–63R — Specifies the stereo position of each part's sound. 'L64' is far left, '0' is center, and '63R' is far right." |
-| **N06-S10** Come out and listen | `exitButton` | `full-plus-inset` | Exit returns to the top screen; nothing was written to storage. | OM p.9 step 4. Nothing written: a program edit requires WRITE (OM p.9). |
+| **N06-S07** Open Program Edit | `menuWriteButton`, `display` | `full-plus-inset` | Menu/Write → Cursor → Program Edit → Enter. | OM p.9 steps 1–2; OM p.14's Menu item list. |
+| **N06-S08** Move to the part settings | `shiftButton`, `cursorRightButton`, `display` | `display-focus` | `[Shift]` + Cursor reaches the MAIN group; two letters at the right show the part. | PG p.10 MAIN, its `Menu [Shift]+Cursor` column and its part indicator. Screen from PG p.10 — see *Display provenance*. |
+| **N06-S09** Set each part's level | `partSelectGroup`, `programValueButtons` | `full-plus-inset` | Part Select chooses the part being edited; Value changes its Level; this is a different control from the AMP/ENV Level knob and from Master Volume. | PG p.10: "Use the [Part Select] button to switch parts", and "Level 0–127 — Volume of each part". The distinction from the panel knob is OM p.8 ("[Level] knob — This sets the volume", within the tone's AMP section) and from Master Volume is OM p.2 item 7 (output level). Three different scopes, three Roland sentences. |
+| **N06-S10** Give each part its own space | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Pan places a part in the stereo picture, from far left through centre to far right. | PG p.10: "Pan L64–63R — Specifies the stereo position of each part's sound. 'L64' is far left, '0' is center, and '63R' is far right." |
+| **N06-S11** Come out and listen | `exitButton` | `full-plus-inset` | Exit returns to the top screen; nothing was written to storage. | OM p.9 step 4. Nothing written: a program edit requires WRITE (OM p.9). |
 
 ## Display provenance
 
-One screen, at N06-S07, reproduced verbatim from PG p.10:
+One screen, at N06-S08, reproduced verbatim from PG p.10:
 
 ```
 PROG: MAIN D1
@@ -79,7 +80,7 @@ this program that N06 is meant to build on rather than replace.
 N06 assumes nothing about which parts already have pattern data — N06-S03 tells the
 learner how to find out by muting rather than asserting which are free, and offers
 Digital Synth 2 as the alternative if Digital Synth 1 turns out to be busy. It assumes
-nothing about the current Level or Pan values either: N06-S08's `recoveryHelp` tells the
+nothing about the current Level or Pan values either: N06-S09's `recoveryHelp` tells the
 learner to note the number before changing it, and explicitly declines to claim that 127
 is what they will find, saying to check rather than assume because the program may have
 been set up differently.
@@ -92,6 +93,6 @@ been set up differently.
 - **`Part Output` and the send levels** are not opened. Routing parts to effects
   individually is `I06`/`I07` work.
 - **Pattern Copy** (OM p.10) is omitted; it overwrites the destination part.
-- **No balance is called correct.** N06-S08 offers one piece of craft advice — pull back
+- **No balance is called correct.** N06-S09 offers one piece of craft advice — pull back
   what is too loud rather than pushing everything else up — as advice, not as a rule, and
   no target level is given.

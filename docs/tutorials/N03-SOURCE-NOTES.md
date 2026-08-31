@@ -5,7 +5,7 @@ Source reconciliation record for N03. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **N03 — Sequencer basics** (novice, order 3, 10 steps, ~10 min) |
+| Tutorial | **N03 — Sequencer basics** (novice, order 3, 11 steps, ~10 min) |
 | Short title | Sequencer basics |
 | Prerequisites | `["N02"]` — advisory, not a gate |
 | Kind | **Structural, with one change.** Records no notes; changes pattern length only. |
@@ -30,9 +30,9 @@ Source reconciliation record for N03. Content lives in `js/tutorials.js`
 | **N03-S05** Protect any work you want to keep | `playStopButton`, `programValueButtons` | `full` | Changing the length alters the pattern in the loaded program; it is not written to storage; the way back is selecting another program, which discards everything unsaved. | OM p.10's note: "Even if you change the number of measures in the pattern, it will revert to the original number if you select another program before saving the modified program." OM p.6/p.9 for the discard. |
 | **N03-S06** Open Pattern Length | `menuWriteButton`, `display` | `full-plus-inset` | Menu/Write → Cursor → Pattern Length → Enter. | OM p.10 *Changing the Number of Measures* steps 1–2; OM p.14's Menu item list places Pattern Length after the Edit screens. |
 | **N03-S07** Choose a length, and answer the question | `programValueButtons`, `enterButton`, `display` | `display-focus` | Value chooses the number of measures, Enter confirms; the JD-Xi then asks a question; Enter copies from the existing pattern, Exit adds blank measures; **either answer applies the change**. | OM p.10 steps 3–4 and the button table: "[Enter] button — If the number of measures is being increased, measures are copied from the original pattern. [Exit] button — Blank measures are added." Roland's step 4 is "Press the [Enter] or [Exit] button to change the number of measures", which is what makes "this is not a cancel" a Roland claim rather than an inference. Screen from OM p.10 — see *Display provenance*. |
-| **N03-S08** Look at the scale setting | `menuWriteButton`, `display` | `full-plus-inset` | Scale Setting decides the note value of each step; Roland offers eighth-note triplets, sixteenth notes and thirty-second notes. | OM p.10 *Changing the Scale* steps 1–3, and OM p.14's Menu list entry ("In the pattern sequencer, access the screen where you specify the note value of each step"). **The value is read, not changed** — see *Deliberate omissions*. |
-| **N03-S09** Back to the top | `exitButton`, `display` | `full-plus-inset` | Exit returns to the top screen. | OM p.10 step 4 / OM p.14 step 4. |
-| **N03-S10** How notes get in | `stepButtons`, `patternSequencerSection` | `full-plus-inset` | The next tutorials use TR-REC: choose a sound, light the steps where you want it. | OM p.11 *What is TR-REC?* and *TR-REC* procedure. No recording is performed here. |
+| **N03-S09** Look at the scale setting | `menuWriteButton`, `display` | `full-plus-inset` | Scale Setting decides the note value of each step; Roland offers eighth-note triplets, sixteenth notes and thirty-second notes. | OM p.10 *Changing the Scale* steps 1–3, and OM p.14's Menu list entry ("In the pattern sequencer, access the screen where you specify the note value of each step"). **The value is read, not changed** — see *Deliberate omissions*. |
+| **N03-S10** Back to the top | `exitButton`, `display` | `full-plus-inset` | Exit returns to the top screen. | OM p.10 step 4 / OM p.14 step 4. |
+| **N03-S11** How notes get in | `stepButtons`, `patternSequencerSection` | `full-plus-inset` | The next tutorials use TR-REC: choose a sound, light the steps where you want it. | OM p.11 *What is TR-REC?* and *TR-REC* procedure. No recording is performed here. |
 
 ## Display provenance
 
@@ -67,7 +67,7 @@ setting, or which part is selected.
 
 ## Why Scale Setting is opened but not changed
 
-N03-S08 has the learner open Scale Setting, **read** the value, and leave the Value
+N03-S09 has the learner open Scale Setting, **read** the value, and leave the Value
 buttons alone. The reason is a gap in the documentation rather than caution for its own
 sake: Roland documents how to change the scale (OM p.10) but does not document what
 happens to notes already recorded when the scale changes underneath them. The only

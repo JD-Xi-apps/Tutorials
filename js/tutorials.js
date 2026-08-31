@@ -2467,9 +2467,21 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "N03-S08",
+        title: "Come back out",
+        instruction: "Press Exit once.",
+        detail:
+          "That leaves the pattern length screen and puts you back on the Menu list, ready for the next item.",
+        hardwareTargets: ["exitButton"],
+        visualMode: "full-plus-inset",
+        checkpoint: "The display is showing a menu item again rather than the length screen.",
+        recoveryHelp:
+          "If you pressed Exit more than once you may be back at the top screen — that is fine, press Menu/Write once to open the Menu again.",
+        nextHint: "One more Menu item decides what a step is worth.",
+      },
+      {
+        id: "N03-S09",
         title: "Look at the scale setting",
-        instruction:
-          "Press Exit to leave, then open the Menu again and select Scale Setting with Cursor, and press Enter.",
+        instruction: "Use Cursor to select Scale Setting, and press Enter.",
         detail:
           "This decides how much time one step represents. Roland offers eighth-note triplets, sixteenth notes, or thirty-second notes. Read the value your JD-Xi is on — and this time, leave the Value buttons alone.",
         hardwareTargets: ["menuWriteButton", "display"],
@@ -2482,7 +2494,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now come out.",
       },
       {
-        id: "N03-S09",
+        id: "N03-S10",
         title: "Back to the top",
         instruction: "Press Exit until you reach the top screen.",
         hardwareTargets: ["exitButton", "display"],
@@ -2492,7 +2504,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Last thing: how notes get into those steps.",
       },
       {
-        id: "N03-S10",
+        id: "N03-S11",
         title: "How notes get in",
         instruction: "Look once more at the numbered row.",
         detail:
@@ -3020,12 +3032,24 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "N06-S07",
-        title: "Open the part settings",
+        title: "Open Program Edit",
         instruction:
-          "Press Menu/Write, select Program Edit with Cursor, press Enter, then hold Shift and press Cursor ► to reach the MAIN group.",
-        detail:
-          "This is the screen N02 toured. The two letters at the right of the upper line tell you which part you are about to change.",
+          "Press Menu/Write, use Cursor to select Program Edit, and press Enter.",
+        detail: "This is the screen N02 toured.",
         hardwareTargets: ["menuWriteButton", "display"],
+        visualMode: "full-plus-inset",
+        checkpoint: "The display is showing a Program Edit screen.",
+        recoveryHelp:
+          "A long press of Menu/Write opens PORTAMENTO instead of the Menu — press Exit and try a short press. If you opened the wrong item, press Exit once to get back to the list.",
+        nextHint: "The part settings are in the other group.",
+      },
+      {
+        id: "N06-S08",
+        title: "Move to the part settings",
+        instruction: "Hold down Shift and press Cursor ►.",
+        detail:
+          "This moves to the MAIN group, where each part has its own settings. The two letters at the right of the upper line tell you which part you are about to change.",
+        hardwareTargets: ["shiftButton", "cursorRightButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["PROG: MAIN D1", "Level 127"],
         syntheticDisplay: false,
@@ -3038,7 +3062,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now balance the parts.",
       },
       {
-        id: "N06-S08",
+        id: "N06-S09",
         title: "Set each part's level",
         instruction:
           "Use Part Select to choose a part, then use Value to change its Level.",
@@ -3055,7 +3079,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One more setting makes a real difference.",
       },
       {
-        id: "N06-S09",
+        id: "N06-S10",
         title: "Give each part its own space",
         instruction: "Press Cursor ► to reach Pan, and use Value to move a part left or right.",
         detail:
@@ -3071,7 +3095,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now come out and hear what you have.",
       },
       {
-        id: "N06-S10",
+        id: "N06-S11",
         title: "Come out and listen",
         instruction: "Press Exit until you reach the top screen, and listen to the whole pattern.",
         detail:
