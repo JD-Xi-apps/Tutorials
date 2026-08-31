@@ -25,7 +25,10 @@ This file records the current owner-approved product and layout decisions. Treat
 ## 3. Global navigation
 
 - Use a compact dark top bar. It should consume roughly half the height of the original concept banner.
-- Keep Roland branding and Home visible.
+- Keep the JD-Xi logo (`assets/images/JD-Xi_logo.png`) and Home visible. The bar
+  carries no Roland branding: this is a JD-Xi learning tool, not an official
+  Roland application. The logo is placed with CSS sizing only; the source PNG
+  is never resized, recolored, or recompressed.
 - My Progress and Favorites may show icon + text.
 - Settings is **gear icon only**. Use an accessible label and tooltip/title; no visible `Settings` text.
 

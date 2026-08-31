@@ -17,15 +17,20 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 }
 
 .topbar { height:36px; background:#151515; color:#fff; display:flex; align-items:center; padding:0 22px; gap:16px; }
-.brand { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:760; letter-spacing:-.2px; }
-.brand-mark { width:20px; height:12px; border:2px solid #fff; border-radius:6px 2px 6px 2px; position:relative; }
-.brand-mark::after { content:""; position:absolute; inset:2px; border:1px solid #fff; border-radius:4px 1px 4px 1px; }
+.brand { display:flex; align-items:center; height:100%; }
+/* Source PNG is solid black on transparency with no padding; invert it to
+   white so it matches the nav on the dark bar without rewriting the asset. */
+.brand-logo { display:block; width:auto; height:18px; max-width:150px; object-fit:contain; filter:brightness(0) invert(1); }
 .homebtn,.navbtn { border:0; background:transparent; color:#fff; display:flex; align-items:center; gap:6px; height:24px; padding:0 2px; font-weight:650; cursor:pointer; font-size:12px; }
 .homebtn { margin-right:auto; }
 .nav { display:flex; gap:16px; align-items:center; }
 .navbtn.settings { width:26px; justify-content:center; padding:0; }
 .topbar button:hover { opacity:.72; }
 .iconline { font-size:14px; line-height:1; }
+/* At one font-size the house and gear glyphs draw far smaller than the box and
+   star. Size them by drawn height instead so all four icons read alike. */
+.homebtn .iconline { font-size:21px; position:relative; top:-2px; }
+.navbtn.settings .iconline { font-size:19px; position:relative; top:-1px; }
 
 /* 864 = 22 top pad + 394 + 14 + 196 + 14 + 150 + 14 + 42 + 18 bottom pad */
 .shell { height:864px; padding:22px 34px 18px; display:grid; grid-template-rows:394px 196px 150px 42px; gap:14px; }
