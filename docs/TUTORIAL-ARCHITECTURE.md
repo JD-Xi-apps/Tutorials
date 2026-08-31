@@ -248,7 +248,11 @@ Step
   detail            optional elaboration for a learner who needs more
   hardwareTargets[] target IDs to highlight (see §8)
   visualMode        how the instrument is presented (see §9)
-  expectedDisplay   optional — what the LCD should show
+  expectedDisplay   optional — what the display should show, as display lines
+  syntheticDisplay  optional — false when expectedDisplay reproduces a real
+                    documented screen rather than a placeholder
+  displayNote       optional — provenance for expectedDisplay: which source the
+                    screen comes from and what varies between instruments
   expectedSound     optional — what the learner should hear
   whyItMatters      optional — the explanation, always secondary
   checkpoint        how the learner confirms they succeeded
@@ -266,8 +270,16 @@ Field meanings:
   signal the step is doing too much.
 - **`visualMode`** is chosen per step, not per tutorial — a single tutorial routinely
   moves between full view and a display close-up.
-- **`expectedDisplay`** is optional because many steps do not change the LCD. When
+- **`expectedDisplay`** is optional because many steps do not change the display. When
   present it is a critical confirmation signal, especially in menu navigation.
+- **`syntheticDisplay` and `displayNote`** exist because a display state is a factual
+  claim about the instrument, and the content-authority rule (§13) applies to it like
+  any other. The house rule established with N01: **a step may reproduce a screen the
+  official documentation illustrates, and may never compose one.** A reproduced screen
+  sets `syntheticDisplay: false` and must carry a `displayNote` saying where it came
+  from and which fields differ between instruments. A placeholder keeps the default and
+  is labelled synthetic. Neither field asks the renderer to judge the claim; both make
+  the claim's provenance visible to the learner.
 - **`expectedSound`** is optional because many steps are silent — navigating a menu,
   selecting without playing. When present it is written as a listening cue, not a
   technical description.

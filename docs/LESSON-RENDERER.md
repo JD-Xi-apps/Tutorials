@@ -14,7 +14,7 @@ registry, and about nothing else.
 | File | Role |
 |---|---|
 | `js/hardware-targets.js` | Canonical target registry. **Loaded, never edited by the renderer.** |
-| `js/tutorials.js` | `window.JDXI_TUTORIALS` — canonical learner-facing tutorials (currently B01). Source record per tutorial in `docs/tutorials/`. |
+| `js/tutorials.js` | `window.JDXI_TUTORIALS` — canonical learner-facing tutorials (B01, B02, N01). Source record per tutorial in `docs/tutorials/`. |
 | `js/tutorial-fixtures.js` | Development fixture only. No canonical content. |
 | `js/lesson-renderer.js` | `window.JDXI_LESSON_RENDERER` — builds the lesson view from a Step. |
 | `js/app.js` | Stage fitting (unchanged) plus the hash router. |
@@ -54,11 +54,17 @@ launched from the home screen's Beginner tile; **`#tutorial/B02`** (B02 *Get you
 first sound*, 11 steps) follows it. Tutorials use the same renderer and the same Step
 shape as the fixtures; nothing tutorial-specific lives in `lesson-renderer.js`.
 
+`#tutorial/N01` (N01 *Learn the menu controls*, 18 steps) is the first Novice
+tutorial, launched from the home screen's Novice tile.
+
 B01 is a silent orientation tour. **B02 is the first canonical tutorial that
 describes real JD-Xi operation** — connections, Roland's power-on order, part
 selection and listening level — and every claim in it is reconciled against official
-documentation in `docs/tutorials/B02-SOURCE-NOTES.md`. That changes nothing in this
-file: the renderer has no notion of whether a step is an operating procedure.
+documentation in `docs/tutorials/B02-SOURCE-NOTES.md`. **N01 is the first canonical
+tutorial to navigate menus and to author `expectedDisplay`**; its record is
+`docs/tutorials/N01-SOURCE-NOTES.md`. Neither changes anything in this file: the
+renderer has no notion of whether a step is an operating procedure, and no notion of
+where a display string came from.
 
 Development fixtures remain the exception in the other direction. No fixture step
 describes a real JD-Xi operation; the display preview text is synthetic and labelled
@@ -137,7 +143,50 @@ its image. Real lessons use one Step per image, which is the better instruction 
 | `full` | Whole instrument, target highlighted, label attached. |
 | `full-plus-inset` | Whole instrument plus a runtime-generated magnified inset; every Step target is highlighted on the full view, and every Step target whose region lies inside the crop is highlighted in the inset. |
 | `control-closeup` | Crop dominates (highlighting every Step target inside it, as above); a small context view of the whole instrument shows where the crop came from, outlined. |
-| `display-focus` | Display preview plus an "on the instrument" crop, over the whole instrument with display and navigation controls highlighted. |
+| `display-focus` | Display preview plus a "Where this is" crop, over the whole instrument with the display and the step's navigation controls highlighted. |
+
+### The containment rule is shared by every crop
+
+`containedIn(zoom, targets)` returns the Step targets whose canonical region lies
+fully inside a crop, and **every mode that draws a crop uses it**. A crop can
+therefore never carry a highlight for a control it does not contain: a target outside
+the crop appears on the full view only.
+
+`display-focus` was the exception until this phase — it handed *all* measurable
+targets to the display crop, so an out-of-crop target produced a highlight positioned
+outside the frame and silently clipped by `overflow: hidden`. No fixture step reached
+that path, so fixture rendering is unchanged; N01 has steps that do.
+
+The `display-focus` context caption reads **Where this is**, the same caption
+`control-closeup` gives its context view. Both are location views, and beside a
+preview of the screen the learner *should* see, a photograph whose own display shows
+something else must not read as a second expectation.
+
+## Display states
+
+`expectedDisplay` is an array of display lines. Three Step fields govern how it is
+presented; none of them is tutorial-specific, and the renderer never composes a
+display state of its own.
+
+| Field | Effect |
+|---|---|
+| `expectedDisplay` | The lines. Rendered as the preview in `display-focus`, and as an **On the display** card in the instruction column in every other visual mode. |
+| `syntheticDisplay` | Defaults to true. A truthy value adds the **Synthetic placeholder — not real JD-Xi output** badge. Set `false` for a screen reproduced from Roland's own documentation. |
+| `displayNote` | Optional caption stating where the screen came from and what varies between instruments. Shown under the preview, and under the card. |
+
+Two rules this implements:
+
+- **The field is never silently dropped.** It used to render only in `display-focus`;
+  any other mode discarded it, which for a menu lesson loses the learner's only
+  confirmation signal. The card is chosen by visual mode, never by tutorial.
+- **Documented spacing survives.** Both display surfaces set `white-space: pre`.
+  Without it HTML collapses runs of spaces, and Roland's top screen
+  (`A64   1-1    120`) renders as `A64 1-1 120`. The fixture strings contain no
+  repeated spaces and are unaffected.
+
+Whether a screen may be shown at all is a **content** rule, not a renderer one:
+a step may reproduce a screen Roland illustrates, and may never compose one. See
+`docs/tutorials/N01-SOURCE-NOTES.md`, *Display strings*.
 
 ## Crop generation
 
@@ -264,13 +313,22 @@ The renderer performs no catalog lookup of its own. It is told what follows; it 
 not go and find out. That keeps the "adding a tutorial must not mean editing the
 renderer" invariant intact.
 
+Adding N01 exercised that: N01 is `novice` order 1 with no successor, so its last step
+offers **Return home**, and B01's and B02's guided-path behaviour is untouched because
+a novice tutorial is not a beginner successor. No router or renderer edit was needed
+for the new tutorial itself — only the Novice tile gained `data-route="#tutorial/N01"`
+in `index.html`.
+
 ## Deferred
 
-- further tutorial content (B03 onward) — requires Roland-source verification first;
+- further tutorial content (B03 onward, N02 onward) — requires Roland-source
+  verification first;
 - the rest of the production route catalog (levels, topics, favorites, progress);
 - progress persistence;
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
-  emulator;
+  emulator. The preview is a presentation surface: it will render whatever lines a step
+  supplies, and it is content review, not the renderer, that keeps invented screens out
+  of it;
 - Steps that mix hardware images (same-image constraint above);
 - rear connectors beyond those a canonical tutorial has needed (B02 uses OUTPUT and
   PHONES; the rest of the OM p.3 strip is registered but unused by any tutorial);

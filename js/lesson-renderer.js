@@ -154,6 +154,17 @@ window.JDXI_LESSON_RENDERER = (function () {
     );
   }
 
+  /*
+   * Every target in `list` whose canonical region lies fully inside `zoom`.
+   * One rule, used by every mode that draws a crop, so a crop can never carry
+   * a highlight for a control it does not contain.
+   */
+  function containedIn(zoom, list) {
+    return list.filter(function (r) {
+      return containsRect(zoom, r.target.region);
+    });
+  }
+
   function overlaps(a, b) {
     return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
   }
@@ -355,9 +366,15 @@ window.JDXI_LESSON_RENDERER = (function () {
   /*
    * NOT an emulator. The true character grid of the JD-Xi display is not
    * authoritatively documented (source-map Q4), so this is a clearly labelled
-   * preview surface that later verified expectedDisplay content can fill.
+   * preview surface, never a simulation of the instrument.
+   *
+   * It renders whatever lines a Step supplies and judges none of them. Two
+   * captions carry the provenance: the synthetic badge for a placeholder, and
+   * `note` (Step.displayNote) for a screen reproduced from documentation.
+   * Which screens may be shown at all is a content rule, enforced in review
+   * and in the data checks - not here.
    */
-  function buildDisplayPreview(lines, synthetic) {
+  function buildDisplayPreview(lines, synthetic, note) {
     var wrap = el("div", "disp-preview");
     wrap.appendChild(el("div", "disp-cap", "Display preview"));
     var screen = el("div", "disp-screen");
@@ -370,6 +387,12 @@ window.JDXI_LESSON_RENDERER = (function () {
         el("div", "disp-note", "Synthetic placeholder — not real JD-Xi output.")
       );
     }
+    /*
+     * A step showing a real documented screen states where that screen comes
+     * from and what varies between instruments. The renderer only places the
+     * text - it never composes a display state.
+     */
+    if (note) wrap.appendChild(el("div", "disp-src", note));
     return wrap;
   }
 
@@ -424,11 +447,7 @@ window.JDXI_LESSON_RENDERER = (function () {
      * not share a zoom object. Targets outside the crop stay on the full view
      * only. Tolerance covers 4-decimal registry rounding at the crop edge.
      */
-    var cropTargets = zoomSource
-      ? measurable.filter(function (r) {
-          return containsRect(zoomSource.target.zoom, r.target.region);
-        })
-      : [];
+    var cropTargets = zoomSource ? containedIn(zoomSource.target.zoom, measurable) : [];
 
     switch (step.visualMode) {
       case "full-plus-inset": {
@@ -479,15 +498,23 @@ window.JDXI_LESSON_RENDERER = (function () {
         var stackC = el("div", "vis-stack");
         var top = el("div", "disp-row");
         top.appendChild(
-          buildDisplayPreview(step.expectedDisplay, step.syntheticDisplay !== false)
+          buildDisplayPreview(
+            step.expectedDisplay,
+            step.syntheticDisplay !== false,
+            step.displayNote
+          )
         );
         var dz = measurable.filter(function (r) {
           return r.id === "display" && r.target.zoom;
         })[0];
         if (dz) {
           var dwrap = el("div", "inset-wrap");
-          dwrap.appendChild(el("div", "vis-cap", "On the instrument"));
-          dwrap.appendChild(buildCrop(image, dz.target.zoom, measurable, { extraClass: "inset" }));
+          dwrap.appendChild(el("div", "vis-cap", "Where this is"));
+          dwrap.appendChild(
+            buildCrop(image, dz.target.zoom, containedIn(dz.target.zoom, measurable), {
+              extraClass: "inset",
+            })
+          );
           top.appendChild(dwrap);
         }
         stackC.appendChild(top);
@@ -509,6 +536,28 @@ window.JDXI_LESSON_RENDERER = (function () {
   }
 
   /* ----------------------------------------------------------------- render */
+
+  function renderDisplayCard(step) {
+    var card = document.getElementById("lsn-see-card");
+    if (!card) return;
+    var lines =
+      step.visualMode === "display-focus" ? null : step.expectedDisplay;
+    var has = !!(lines && lines.length);
+    card.hidden = !has;
+
+    var body = document.getElementById("lsn-see-body");
+    body.innerHTML = "";
+    if (has) {
+      lines.forEach(function (line) {
+        body.appendChild(el("div", "disp-line-sm", line));
+      });
+    }
+
+    var note = document.getElementById("lsn-see-note");
+    var hasNote = has && !!step.displayNote;
+    note.textContent = hasNote ? step.displayNote : "";
+    note.hidden = !hasNote;
+  }
 
   function setCard(cardEl, bodyEl, value) {
     var has = value != null && value !== "";
@@ -539,6 +588,15 @@ window.JDXI_LESSON_RENDERER = (function () {
       var pipCls = "pip" + (i < n ? " done" : "") + (i === ctx.stepIndex ? " here" : "");
       track.appendChild(el("span", pipCls));
     }
+
+    /*
+     * expectedDisplay in the instruction column. display-focus already draws
+     * it as a preview, so the card is suppressed there; in every other visual
+     * mode the field would otherwise be silently dropped, which for a menu
+     * lesson loses the learner's only confirmation signal. Mode-driven, never
+     * tutorial-driven.
+     */
+    renderDisplayCard(step);
 
     setCard(
       document.getElementById("lsn-hear-card"),

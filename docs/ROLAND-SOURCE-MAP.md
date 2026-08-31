@@ -633,6 +633,14 @@ The Owner's Manual's Menu item list (OM p.14) omits `Chord Edit`, which 1.50 add
 does not list — and N01, which teaches menu navigation by naming what the learner will see,
 cannot be written correctly without knowing which case applies.
 
+> **Discharged in Phase 5C by N01.** The tutorial does not pick a case. It lists
+> Roland's eleven documented items, adds one conditional sentence naming `Chord Edit`
+> for an instrument at 1.50 or later, and then has the learner read their own version
+> off the `VERSION INFO` screen and close the loop themselves. N01 is therefore
+> correct on a baseline instrument and on a 1.50+ one, and needs no version
+> precondition. See `docs/tutorials/N01-SOURCE-NOTES.md`, *Version-dependent
+> content*.
+
 ### 11.4 Features that simply do not exist below their version
 
 Export, Extra Banks S–Z, Interactive Chord, Transpose, Shuffle, side-chain compression, and
@@ -679,6 +687,17 @@ strand learners. *Needs hardware, or a Roland source we have not found.*
 sixteen characters, but Roland never states it. The `display-focus` visual mode
 (architecture §9) needs the real figure to render `expectedDisplay` faithfully. *Needs
 hardware.*
+
+> **Still open, and now worked around rather than waited on (Phase 5C).** N01 is a menu
+> tutorial and cannot omit display states the way B02 could. The house rule adopted is
+> that **a step may reproduce a screen Roland illustrates, verbatim, and may never
+> compose one** — which asserts nothing about the grid, so Q4 is untouched. Every such
+> step carries a `displayNote` giving the source and naming the fields that vary by
+> instrument, and the data QA rejects an `expectedDisplay` line longer than sixteen
+> characters as a guard against a future author inventing a screen the hardware could
+> not show. That bound is a guard, not a finding: it does **not** claim the grid is
+> 16 × 2. Resolving Q4 still needs hardware, and until it is resolved no tutorial can
+> show a screen Roland never printed.
 
 **Q5 — `partSelect` must become four targets.** ✅ **RESOLVED by the canonical registry**
 (`js/hardware-targets.js`, reconciled in [`HARDWARE-TARGETS.md`](HARDWARE-TARGETS.md)).
@@ -776,5 +795,14 @@ never states the boxed-legend convention (Q3).
 > registered and `powerSwitch`/`dcInJack` are measured on it; Phase 4C.1 extended that
 > to every OM p.3 rear-panel item. Q3, Q4, Q8, Q10, Q11 and
 > Q13 remain open.
+>
+> **Phase 5C postscript:** N01 discharged §11.3 without resolving anything, and adopted
+> the display-string house rule recorded under Q4. It also gave Q3, Q4, Q10 and Q13
+> their first real content pressure — Q3 (`Write` and `Shift` are both visibly boxed in
+> the insets N01 shows repeatedly), Q4 (above), Q10 (the four documented recovery moves
+> are now written as a lesson, and N01-S18 is the house pattern the other tutorials'
+> `recoveryHelp` fields can point at), and Q13 (N01 names no confirmation prompt,
+> because it performs no operation that raises one). All six of Q3, Q4, Q8, Q10, Q11
+> and Q13 remain open.
 - Whether Vocoder/Auto Pitch gets canonical tutorials.
 - The Novice capstone question (architecture §4).
