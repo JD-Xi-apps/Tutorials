@@ -1117,7 +1117,7 @@ window.JDXI_TUTORIALS = {
       {
         id: "B06-S09",
         title: "Change the speed and the target",
-        instruction: "With Depth still up, turn the LFO Rate knob, then press or turn Destination.",
+        instruction: "With Depth still up, turn the LFO Rate knob, then turn Destination.",
         detail:
           "Rate is how fast the movement is. Destination chooses what gets moved, and the indicator that is lit shows which: applying it to pitch gives vibrato, to the filter gives a wah effect, and to the amp gives tremolo.",
         hardwareTargets: ["lfoRateKnob", "lfoDestinationKnob"],

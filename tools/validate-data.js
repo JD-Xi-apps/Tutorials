@@ -262,6 +262,50 @@ LEVELS.forEach((lvl) => {
   }
 });
 
+/* ------------------------------------------------- learner-facing references */
+
+/*
+ * Tutorials point at each other in learner-facing prose ("N09 Save your work is
+ * the tutorial that teaches saving"). A reference to an id outside the canonical
+ * thirty is a typo that would send a learner nowhere, and no route or render
+ * check can catch it because it is prose. Before the catalog is complete a
+ * reference to a real-but-unauthored id is expected and only warns; at --beta
+ * every one of them must resolve.
+ */
+const CANONICAL_IDS = new Set();
+['beginner', 'novice', 'intermediate'].forEach((lvl) => {
+  for (let i = 1; i <= 10; i++) {
+    CANONICAL_IDS.add(LEVEL_PREFIX[lvl] + String(i).padStart(2, '0'));
+  }
+});
+const PROSE_FIELDS = [
+  'summary', 'title', 'instruction', 'detail', 'expectedSound',
+  'whyItMatters', 'checkpoint', 'recoveryHelp', 'nextHint',
+];
+
+ids.forEach((id) => {
+  const t = tutorials[id];
+  const scan = (text, where) => {
+    (String(text || '').match(/\b([BNI]\d\d)\b/g) || []).forEach((ref) => {
+      check(CANONICAL_IDS.has(ref),
+        `${where}: references "${ref}", which is not a canonical tutorial id`);
+      if (CANONICAL_IDS.has(ref)) {
+        if (beta) {
+          check(!!tutorials[ref], `${where}: references "${ref}", which does not exist`);
+        } else {
+          warn(!!tutorials[ref],
+            `${where}: references "${ref}", not authored yet (expected until the catalog is complete)`);
+        }
+      }
+    });
+  };
+  scan(t.summary, `tutorial ${id} summary`);
+  (t.learningGoals || []).forEach((g, i) => scan(g, `tutorial ${id} learningGoal ${i + 1}`));
+  (t.steps || []).forEach((s) => {
+    PROSE_FIELDS.forEach((f) => scan(s[f], `${id} step ${s.id} ${f}`));
+  });
+});
+
 /* -------------------------------------------------------------- collections */
 
 if (collections) {
