@@ -419,16 +419,47 @@ ids.forEach((id) => {
  * renumbers everything after it, and a stale citation silently points the
  * reader at the wrong evidence - which is worse than no citation, and which
  * nothing else here would catch because the notes are prose.
+ *
+ * Curriculum reconciliation removes steps, and a note that records where the
+ * removed material went is worth keeping - it is the only place a reader can
+ * find out that B03's Favorite steps became N09's. Such a record has to name
+ * ids that deliberately no longer exist, so it goes inside a marked region:
+ *
+ *   <!-- removed-steps:begin -->  ... <!-- removed-steps:end -->
+ *
+ * The exemption is narrow and polices itself in BOTH directions. Inside the
+ * region an id must be genuinely gone; naming a live step there would let a
+ * real stale citation hide behind the marker, so that is an error too.
  */
+const REMOVED_REGION = /<!--\s*removed-steps:begin\s*-->([\s\S]*?)<!--\s*removed-steps:end\s*-->/g;
+
 ids.forEach((id) => {
   const notes = path.join(ROOT, 'docs', 'tutorials', `${id}-SOURCE-NOTES.md`);
   if (!fs.existsSync(notes)) return;
   const text = fs.readFileSync(notes, 'utf8');
   const stepIds = new Set((tutorials[id].steps || []).map((s) => s.id));
-  const cited = new Set(text.match(new RegExp(id + '-S\\d+', 'g')) || []);
+  const pattern = new RegExp(id + '-S\\d+', 'g');
+
+  const removedRegions = text.match(REMOVED_REGION) || [];
+  const declaredRemoved = new Set();
+  removedRegions.forEach((region) => {
+    (region.match(pattern) || []).forEach((ref) => declaredRemoved.add(ref));
+  });
+
+  /* A marked region may only name steps that are actually gone. */
+  declaredRemoved.forEach((ref) => {
+    check(!stepIds.has(ref),
+      `tutorial ${id}: source notes list step "${ref}" as removed, but it still exists`);
+  });
+
+  const live = text.replace(REMOVED_REGION, '');
+  const cited = new Set(live.match(pattern) || []);
   cited.forEach((ref) => {
     check(stepIds.has(ref),
-      `tutorial ${id}: source notes cite step "${ref}", which does not exist`);
+      `tutorial ${id}: source notes cite step "${ref}", which does not exist` +
+        (declaredRemoved.has(ref)
+          ? ' (it is listed as removed elsewhere, but this citation is outside that region)'
+          : ''));
   });
 });
 

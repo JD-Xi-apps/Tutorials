@@ -386,22 +386,21 @@ window.JDXI_TUTORIALS = {
     title: "Find sounds you like",
     shortTitle: "Find sounds",
     summary:
-      "Browse the JD-Xi's sounds by ear. You will change tones, change whole programs, and keep the ones you like so you can find them again.",
-    estimatedMinutes: 9,
+      "Browse the JD-Xi's sounds by ear. You will step through tones one at a time, jump between different kinds of sound, and compare a few until you find one you like.",
+    estimatedMinutes: 8,
     prerequisites: ["B02"],
     learningGoals: [
       "Change the sound the keys play, and go back again.",
       "Use the Category dial to jump between different kinds of sound.",
-      "Tell a whole program apart from the tone inside it.",
-      "Keep a sound you like so you can recall it later.",
+      "Compare several sounds and choose one by ear.",
     ],
     // Source record: docs/tutorials/B03-SOURCE-NOTES.md
-    // B03 is the first Beginner tutorial that selects another Program or
-    // Tone, so it is the first to carry the protect-your-work preflight
-    // (B03-S02) immediately before that first discard-capable transition.
-    // The Favorite steps use Roland's own documented empty-slot signal --
-    // pressing an unregistered Favorite button reports "Not Registered!"
-    // (OM p.5) -- rather than asserting that any button is free.
+    // B03 owns Tone browsing only: the Category dial, Tone -/+, and choosing
+    // by ear (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 8). Program browsing and
+    // hardware-Favorite recall belong to N02; Favorite registration to N09
+    // and I09. Selecting a Tone still discards an unsaved edit (OM p.9), so
+    // the protect-your-work preflight stays at B03-S02, immediately before
+    // the first Tone change.
     steps: [
       {
         id: "B03-S01",
@@ -427,13 +426,12 @@ window.JDXI_TUTORIALS = {
         instruction:
           "Decide whether there is a sound on this JD-Xi you have been working on and have not saved.",
         detail:
-          "From the next step onward you will select different tones and different programs. On the JD-Xi, doing that throws away an edited sound that has not been saved. This tutorial cannot tell what state your instrument is in, so the decision is yours: if there is unsaved work you want to keep, stop here and come back after you have learned to save it.",
-        // The two -/+ pairs are the controls whose use from B03-S04 onward is
-        // discard-capable, so the preflight highlights exactly them.
-        hardwareTargets: ["programValueButtons", "toneButtons"],
+          "From the next step onward you will select different tones. On the JD-Xi, doing that throws away an edited sound that has not been saved. This tutorial cannot tell what state your instrument is in, so the decision is yours: if there is unsaved work you want to keep, stop here and come back after you have learned to save it.",
+        // The Tone -/+ pair is the only discard-capable control B03 now uses.
+        hardwareTargets: ["toneButtons"],
         visualMode: "full",
         whyItMatters:
-          "The JD-Xi holds the sound you are editing in a working area, not in permanent storage. Selecting another tone or another program replaces what is in that working area, and there is no undo. Nothing warns you first, which is why this step exists.",
+          "The JD-Xi holds the sound you are editing in a working area, not in permanent storage. Selecting another tone replaces what is in that working area, and there is no undo. Nothing warns you first, which is why this step exists.",
         checkpoint:
           "You have decided: either there is nothing you need to keep, or you are going to save it first.",
         recoveryHelp:
@@ -530,84 +528,42 @@ window.JDXI_TUTORIALS = {
         checkpoint: "You can point to the Vocoder/AutoPitch position on the dial.",
         recoveryHelp:
           "If you did select it and the Analog Synth part has stopped responding, turn the Category dial to any other position.",
-        nextHint: "So far you have changed the tone. There is a bigger unit above it.",
+        nextHint: "Now put two sounds side by side and pick between them.",
       },
       {
         id: "B03-S09",
-        title: "Change the whole program",
-        instruction: "Press Value + once, then play a key.",
-        detail:
-          "This is the pair marked Value, with Program (Pattern) printed above it — not the Tone pair. It selects a whole program: all four parts, the effects, and the pattern together.",
-        hardwareTargets: ["programValuePlusButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "A different sound, and possibly a very different character.",
-        whyItMatters:
-          "A program is the whole setup. A tone is one sound inside it. Reaching for Value when you meant Tone is the most common way a beginner loses the sound they had, because it replaces everything at once.",
-        checkpoint:
-          "The program number on the upper line of the display has changed.",
-        recoveryHelp:
-          "Press Value − to step back to the program number you were on. The program itself is unchanged — only anything you had edited and not saved is gone.",
-        nextHint: "Programs are grouped into banks.",
-      },
-      {
-        id: "B03-S10",
-        title: "Move between banks",
-        instruction: "Hold down Shift and press Value +.",
-        detail:
-          "This switches banks rather than stepping one program at a time. Roland's preset banks are A to D, and the user banks — where your own saved programs go — are E to H.",
-        hardwareTargets: ["shiftButton", "programValuePlusButton"],
-        visualMode: "full-plus-inset",
-        checkpoint: "The letter in front of the program number has changed.",
-        recoveryHelp:
-          "Hold Shift and press Value − to go back. If the letter did not change, make sure Shift is held down before you press Value.",
-        nextHint: "Now keep a sound you liked.",
-      },
-      {
-        id: "B03-S11",
-        title: "Find a free Favorite button",
-        instruction: "Press Favorite, then press one of the buttons numbered 01 to 16.",
-        detail:
-          "With Favorite lit, the numbered buttons become favorite slots. If the one you press has nothing stored, the display reports “Not Registered!” — that is the JD-Xi telling you the slot is free. If instead a sound loads, that button is already in use, so try another one.",
-        hardwareTargets: ["favoriteButton", "stepButtons"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "Registering a favorite replaces whatever was on that button, and the JD-Xi does not ask first. Checking for “Not Registered!” is the one way it will tell you a slot is free before you use it.",
-        checkpoint:
-          "You have found a numbered button that reports “Not Registered!”, and you have made a note of which one it is.",
-        recoveryHelp:
-          "If pressing a button loaded a different sound, that button was already registered — the sound you were auditioning has been replaced, and you can press Value − and + or step through tones again to find it. Try a different numbered button.",
-        nextHint: "Now go back and get the sound you wanted to keep.",
-      },
-      {
-        id: "B03-S12",
-        title: "Register the sound you liked",
+        title: "Compare two sounds",
         instruction:
-          "Select the program you want to keep, then hold down Favorite and press that free numbered button.",
+          "Find a sound you like, then press Tone − a few times and Tone + the same number of times, playing a key at each end.",
         detail:
-          "The program that is selected right now is the one that gets registered. Use the free button you found in the last step, not one that already had something on it.",
-        hardwareTargets: ["favoriteButton", "stepButtons"],
+          "Going back and forth between two sounds is how you tell them apart. On its own a sound is just a sound; next to another one you can hear which you actually prefer.",
+        hardwareTargets: ["toneButtons"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "The same two sounds alternating, so the difference between them becomes obvious.",
         whyItMatters:
-          "A favorite also remembers which part was selected when you registered it, so recalling it brings back the part you were playing as well as the sound.",
+          "Choosing by ear is the whole skill here. You never need to know what a sound is called, or how it is built, to know whether you want it.",
         checkpoint:
-          "Pressing that numbered button while Favorite is lit brings your sound back.",
+          "You have gone back and forth between two sounds and decided which of the two you prefer.",
         recoveryHelp:
-          "If you registered it to the wrong button, register it again to the button you meant. To clear a registration, hold down Erase and press that numbered button while Favorite is lit. Note that registering stores the program as it is saved — if you have edited a sound and not saved it, save the program first, which is what N09 teaches.",
+          "If you have lost count and cannot find the first sound again, nothing is broken — no sound has been changed or overwritten. Pick any two neighbouring tones and compare those instead.",
         nextHint: "Last step: back to where you started.",
       },
       {
-        id: "B03-S13",
+        id: "B03-S10",
         title: "Back to the top screen",
-        instruction: "Press Favorite to turn it off, then press Exit until you reach the top screen.",
+        instruction: "Press Exit until you reach the top screen.",
         detail:
-          "Turning Favorite off returns the numbered buttons to their normal job.",
-        hardwareTargets: ["favoriteButton", "exitButton"],
+          "Leave the tone you chose selected. It is the sound this part will play until you or a program change replaces it.",
+        hardwareTargets: ["exitButton"],
         visualMode: "full",
-        checkpoint: "Favorite is no longer lit, and the display is back on the top screen.",
+        whyItMatters:
+          "The tone you picked is selected, not saved. Switching the program later replaces it, and the JD-Xi does not ask first. Keeping a sound for good is what N09 Save your work teaches.",
+        checkpoint: "The display is back on the top screen.",
         recoveryHelp:
-          "If the numbered buttons still seem to be selecting sounds, Favorite is still lit — press it once more.",
+          "Press Exit a few more times. Exit only ever moves back toward the top screen, so you cannot overshoot it.",
         nextHint:
-          "You can find and keep sounds now. Next, meet the four parts those sounds live in.",
+          "You can find sounds now. Next, meet the four parts those sounds live in.",
       },
     ],
   },
@@ -618,31 +574,33 @@ window.JDXI_TUTORIALS = {
     title: "Meet the four parts",
     shortTitle: "The four parts",
     summary:
-      "Every JD-Xi program is made of four parts. You will hear each one from the keys and learn why only one of them plays at a time.",
-    estimatedMinutes: 7,
+      "The JD-Xi has four parts, and they do not sound alike. You will select each one and hear it from the keys, including the drum part that puts a different instrument on every key.",
+    estimatedMinutes: 6,
     prerequisites: ["B03"],
     learningGoals: [
       "Name the four parts and find their buttons.",
-      "Hear each part from the keys.",
+      "Hear each part from the keys, and hear how they differ.",
       "Explain why the keys play only one part at a time.",
     ],
     // Source record: docs/tutorials/B04-SOURCE-NOTES.md
-    // B04 deliberately performs NO Program or Tone selection: pressing a Part
-    // Select button chooses which part the keys play and discards nothing, so
-    // the tutorial needs no protect-your-work preflight. The differences in
-    // how each part's tone is chosen are described, not performed -- B03
-    // already taught the doing.
+    // B04 makes the four parts concrete THROUGH SOUND
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 8). It is deliberately not the
+    // Program-architecture lesson -- N02 owns what a Program is -- and it
+    // teaches no synth-engine theory.
+    // It performs NO Program or Tone selection: pressing a Part Select button
+    // chooses which part the keys play and discards nothing, so the tutorial
+    // needs no protect-your-work preflight.
     steps: [
       {
         id: "B04-S01",
-        title: "Four parts, one program",
+        title: "Find the four parts",
         instruction: "Find the four Part Select buttons.",
         detail:
-          "They read Digital Synth 1, Digital Synth 2, Drums and Analog Synth. Whichever program is loaded, it is made of these same four parts.",
+          "They read Digital Synth 1, Digital Synth 2, Drums and Analog Synth. Whatever your JD-Xi is loaded with right now, these same four parts are in it.",
         hardwareTargets: ["partSelectGroup"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "A program is not one sound. It is four sound-making sections plus the effects and the pattern that go with them. Everything else in this tutorial follows from that.",
+          "The JD-Xi is not one sound-maker but four, side by side. This tutorial is about hearing what each of them sounds like, so the names on these buttons start to mean something.",
         checkpoint: "You can see all four Part Select buttons together.",
         recoveryHelp:
           "Look in the left half of the control panel, to the right of the display. The magnified view shows the four buttons in a column.",
@@ -720,25 +678,10 @@ window.JDXI_TUTORIALS = {
           "You can say which part the keys are playing right now, and how to change it.",
         recoveryHelp:
           "If you are unsure which part is selected, press the one you want again — the last button you press wins.",
-        nextHint: "One part has controls of its own on the panel.",
-      },
-      {
-        id: "B04-S07",
-        title: "The Analog Synth's own controls",
-        instruction: "Find the Oscillator and Sub OSC buttons and the pulse width knob.",
-        detail:
-          "Look, do not press. These three belong to the Analog Synth part only, and they choose the raw waveform its sound is built from. The other parts have no equivalent on the panel.",
-        hardwareTargets: ["analogOscSection"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "The four parts are not four copies of the same thing. The two digital parts share one design, the Drums part gives each key its own instrument, and the Analog Synth has real analog circuits with their own front-panel controls. That is why the same knob can feel different depending on the part you have selected.",
-        checkpoint: "You can point to the Oscillator button, the Sub OSC button and the pulse width knob.",
-        recoveryHelp:
-          "These sit to the left of the panel, below the sound-selection controls. If you pressed Oscillator, you changed the Analog Synth's waveform — press it again to step on through the waveforms until you are back where you started, or move on: nothing is saved unless you save the program.",
         nextHint: "Last step: what to remember.",
       },
       {
-        id: "B04-S08",
+        id: "B04-S07",
         title: "What you can now say",
         instruction: "Press each of the four buttons once more, naming each part as you go.",
         detail:
@@ -763,11 +706,12 @@ window.JDXI_TUTORIALS = {
     title: "Play with the keys",
     shortTitle: "Play the keys",
     summary:
-      "Get comfortable with the keys themselves: high and low, soft and firm, short and long, and the two controls beside them that bend and shake the sound.",
-    estimatedMinutes: 8,
+      "Get comfortable with the keys themselves: high and low, one at a time or several together, soft and firm, short and long — and the two controls beside them that bend and shake the sound.",
+    estimatedMinutes: 9,
     prerequisites: ["B04"],
     learningGoals: [
       "Hear how position, force and length change what you play.",
+      "Play one key and hold several together.",
       "Move the keyboard up and down in octaves, and put it back.",
       "Use the Pitch and Mod controls, and leave them somewhere safe.",
     ],
@@ -778,7 +722,9 @@ window.JDXI_TUTORIALS = {
     // as an unsaved edit, with Roland's documented reset -- both OCTAVE
     // buttons together return the value to 0 -- stated exactly as Roland
     // states it, without claiming it restores a program's stored value.
-    // B05-S10 is firmware-gated: Transpose exists from system version 1.50.
+    // Transpose (B05-S11) is taught directly rather than conditionally: this
+    // course targets the owner's instrument at system 1.51, so the 1.50
+    // feature set is simply present (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 2).
     steps: [
       {
         id: "B05-S01",
@@ -807,10 +753,29 @@ window.JDXI_TUTORIALS = {
         checkpoint: "You can hear the sound getting higher as you move right.",
         recoveryHelp:
           "If some keys are silent, check which part is selected. On the Drums part the top of the keyboard has no instruments assigned and stays quiet — press Digital Synth 1 and try again.",
-        nextHint: "Now change how you press, not where.",
+        nextHint: "Now try more than one key at a time.",
       },
       {
         id: "B05-S03",
+        title: "One key, then several",
+        instruction:
+          "Play one key on its own. Then hold two or three keys down together.",
+        detail:
+          "Pick keys that are close to each other to start with, then try ones further apart. There is no right answer — you are listening for how a handful of keys together sounds against a single one.",
+        hardwareTargets: ["keys"],
+        visualMode: "full",
+        expectedSound:
+          "One key gives you a single clear note. Several held together give you a thicker, fuller sound.",
+        whyItMatters:
+          "Holding several keys at once is worth being comfortable with early, because two later tutorials ask for it: the arpeggiator in N07 needs two or three keys held down, and a pad in I02 is only really audible that way.",
+        checkpoint:
+          "You have held two or three keys down at the same time and heard them sound together.",
+        recoveryHelp:
+          "If holding several keys gives you no more sound than one key did, try a different tone with Tone + — some sounds play only one note at a time. On the Drums part each key is a separate instrument, so several keys give you several drums rather than a thicker note.",
+        nextHint: "Now change how you press, not where.",
+      },
+      {
+        id: "B05-S04",
         title: "Soft and firm",
         instruction: "Play one key gently, then play the same key firmly.",
         hardwareTargets: ["keys"],
@@ -825,7 +790,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now change how long you hold.",
       },
       {
-        id: "B05-S04",
+        id: "B05-S05",
         title: "Short and long",
         instruction: "Tap a key and let go, then press the same key and hold it down.",
         hardwareTargets: ["keys"],
@@ -840,7 +805,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now move the whole keyboard.",
       },
       {
-        id: "B05-S05",
+        id: "B05-S06",
         title: "Drop an octave",
         instruction: "Press Octave Down once, then play the same key as before.",
         detail:
@@ -856,7 +821,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now go the other way.",
       },
       {
-        id: "B05-S06",
+        id: "B05-S07",
         title: "Climb back up",
         instruction: "Press Octave Up twice, then play the same key.",
         detail:
@@ -870,7 +835,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "There is a quick way back to the middle.",
       },
       {
-        id: "B05-S07",
+        id: "B05-S08",
         title: "Reset the octave",
         instruction: "Press Octave Down and Octave Up together.",
         detail:
@@ -885,7 +850,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Two controls to the left of the keys are still untouched.",
       },
       {
-        id: "B05-S08",
+        id: "B05-S09",
         title: "Bend the pitch",
         instruction: "Hold a key down and move the Pitch control away from you, then release it.",
         detail:
@@ -901,7 +866,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "The one beside it behaves differently, and that matters.",
       },
       {
-        id: "B05-S09",
+        id: "B05-S10",
         title: "Add movement, then take it away",
         instruction:
           "Hold a key and move the Mod control away from you, then move it back toward you.",
@@ -918,14 +883,14 @@ window.JDXI_TUTORIALS = {
         recoveryHelp:
           "If everything is still wobbling, move the Mod control fully toward yourself — Roland's description is that no effect is applied in that position.",
         nextHint:
-          "One more, and whether you have it depends on your JD-Xi's system version.",
+          "One more control, and it moves everything at once.",
       },
       {
-        id: "B05-S10",
-        title: "Shift the whole instrument (version 1.50 or later)",
+        id: "B05-S11",
+        title: "Shift the whole instrument",
         instruction: "Hold down Shift and press Octave Up.",
         detail:
-          "This is Transpose, and it shifts the pitch in semitone steps rather than whole octaves. It was added in JD-Xi system version 1.50. If your instrument is older it will not have this, and you can skip straight to the last step — nothing else in this tutorial depends on it.",
+          "This is Transpose. It shifts the pitch of the whole instrument by the smallest step there is, rather than by whole octaves.",
         hardwareTargets: ["shiftButton", "octaveUpButton", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["< TRANSPOSE +1 >", "D1:Ah Super Saw"],
@@ -939,11 +904,11 @@ window.JDXI_TUTORIALS = {
         checkpoint:
           "The display briefly shows a TRANSPOSE value, and what you play sounds a semitone higher.",
         recoveryHelp:
-          "Hold Shift and press Octave Down once to bring it back to 0. If nothing happened at all, your JD-Xi is very likely running a system version earlier than 1.50, which does not have Transpose — that is not a fault, and N01 shows you where to read your version. Transpose is never saved in any case, and returns to 0 when you switch the power off.",
+          "Hold Shift and press Octave Down once to bring it back to 0. If you have lost track of how far you have shifted, switching the power off and on clears it: Transpose is never saved, and always returns to 0 with the power.",
         nextHint: "Last step: leave things tidy.",
       },
       {
-        id: "B05-S11",
+        id: "B05-S12",
         title: "Leave the keyboard where you found it",
         instruction:
           "Check that neither OCTAVE button is lit and that the Mod control is all the way toward you.",
@@ -1053,36 +1018,20 @@ window.JDXI_TUTORIALS = {
         title: "Change the filter type",
         instruction: "Press the FILTER Type button, then move Cutoff again.",
         detail:
-          "This switches which kind of filtering is applied, and the indicator that is lit shows the one selected. The digital parts offer four types; the Analog Synth part has only a low-pass filter.",
+          "This changes what Cutoff takes away. Press it once, move Cutoff, and listen to how the knob behaves differently.",
         hardwareTargets: ["filterTypeButton"],
         visualMode: "full-plus-inset",
         expectedSound:
           "Cutoff now removes a different part of the sound — for instance thinning it out from below instead of darkening it from above.",
         whyItMatters:
-          "Same knob, different job. Knowing the type button exists explains why Cutoff sometimes seems to do the opposite of what you expected.",
+          "Same knob, different job. Knowing this button exists explains why Cutoff sometimes seems to do the opposite of what you expected.",
         checkpoint: "A different filter indicator is lit and Cutoff behaves differently.",
         recoveryHelp:
-          "Keep pressing the Type button to step on through the types until you find the one you like the sound of. If you have selected the Analog Synth part, only the low-pass filter is available and the button will not offer you the others.",
-        nextHint: "Next section along: how loud, and how the sound moves through time.",
-      },
-      {
-        id: "B06-S06",
-        title: "Set the part's own level",
-        instruction: "Play some keys and turn the AMP/ENV Level knob.",
-        detail:
-          "This sets the volume of the sound itself, which is not the same thing as Master Volume.",
-        hardwareTargets: ["levelKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The part gets quieter or louder.",
-        whyItMatters:
-          "Master Volume controls everything going to your headphones and speakers. Level belongs to the sound. When you later put several parts together, Level is how you balance them against each other, and Master Volume is how loud the whole thing is in the room.",
-        checkpoint: "You can change this part's loudness without touching Master Volume.",
-        recoveryHelp:
-          "If the sound has gone, turn Level back to the right. If it is uncomfortably loud, turn Master Volume down first and then set Level where you want it.",
+          "Keep pressing the Type button to step on through the choices until you find the one you like the sound of. If you have the Analog Synth part selected, this button has fewer options to offer you than it does on a digital part.",
         nextHint: "Now the knob that changes the shape of a note.",
       },
       {
-        id: "B06-S07",
+        id: "B06-S06",
         title: "Change the shape of the note",
         instruction: "Turn the Envelope knob to the left, then play a key.",
         detail:
@@ -1099,7 +1048,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "One section left, and it makes things move on their own.",
       },
       {
-        id: "B06-S08",
+        id: "B06-S07",
         title: "Make the sound move by itself",
         instruction: "Hold a key down and turn the LFO Depth knob up from zero.",
         detail:
@@ -1115,7 +1064,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Two more knobs decide how fast, and what it moves.",
       },
       {
-        id: "B06-S09",
+        id: "B06-S08",
         title: "Change the speed and the target",
         instruction: "With Depth still up, turn the LFO Rate knob, then turn Destination.",
         detail:
@@ -1131,7 +1080,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now the important part: what happens to all of this.",
       },
       {
-        id: "B06-S10",
+        id: "B06-S09",
         title: "Where these changes went",
         instruction: "Look at the lower line of the display.",
         detail:
@@ -1147,7 +1096,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "There is one documented way back.",
       },
       {
-        id: "B06-S11",
+        id: "B06-S10",
         title: "Go back to the original sound",
         instruction: "Hold down Shift and press Enter.",
         detail:
@@ -1173,14 +1122,13 @@ window.JDXI_TUTORIALS = {
     title: "Add effects",
     shortTitle: "Add effects",
     summary:
-      "Put your sound in a room, add echoes, and give it some grit. Four knobs and two buttons, all by ear.",
+      "Put your sound in a room, add echoes, and give it some grit — then take it all away again and decide which you preferred. All by ear.",
     estimatedMinutes: 9,
     prerequisites: ["B06"],
     learningGoals: [
       "Add space and echo to a sound.",
-      "Change the character of a sound with the two effect slots.",
-      "Know the fixed order the effects run in.",
-      "Know what to check when an effect seems to do nothing.",
+      "Hear that the other two effect slots change the sound itself rather than where it sits.",
+      "Compare a sound with effects against the same sound without them, and choose by ear.",
     ],
     // Source record: docs/tutorials/B07-SOURCE-NOTES.md
     // Effects belong to the program, not to the tone (OM p.9), so B07 does
@@ -1252,50 +1200,25 @@ window.JDXI_TUTORIALS = {
       },
       {
         id: "B07-S05",
-        title: "Choose what Effect 1 does",
-        instruction: "Press the Effect 1 Type button.",
+        title: "Try one of the other effects",
+        instruction:
+          "Press the Effect 1 Type button once, then hold a key down and turn the Effect 1 knob up.",
         detail:
-          "Effect 1 offers Distortion, Fuzz, Compressor and Bit Crusher. The button steps between them.",
-        hardwareTargets: ["effect1TypeButton"],
+          "The button chooses what the effect is; the knob decides how much of it you get. There is a second slot beside it, Effect 2, which works exactly the same way. You do not need to learn what any of the choices are called — press, turn, and listen.",
+        hardwareTargets: ["effect1TypeButton", "effect1Knob"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "Something rougher or more processed than Reverb and Delay gave you — these change what the sound is made of rather than where it seems to be.",
         whyItMatters:
-          "These four are about grit and weight rather than space. They change what the sound is made of, not where it seems to be.",
-        checkpoint: "You have stepped the Effect 1 type at least once.",
+          "Reverb and Delay put a sound somewhere. These two slots change the sound itself. That is the whole distinction worth having at this stage.",
+        checkpoint:
+          "You have heard the Effect 1 knob change the character of the sound.",
         recoveryHelp:
-          "Keep pressing to step on to the next type. If nothing seems to change, that is expected until you turn the Effect 1 knob up in the next step — the type chooses what the effect is, and the knob decides how much of it you get.",
-        nextHint: "Now turn it up.",
+          "Turn Effect 1 back to the left to remove it. If nothing changed at all, turn the knob further — the type chooses what the effect is, and until the knob is up you get none of it. Some choices get much louder as you turn them up, so if the sound jumps, turn Master Volume down first.",
+        nextHint: "One button decides which effects are switched on at all.",
       },
       {
         id: "B07-S06",
-        title: "Turn Effect 1 up",
-        instruction: "Hold a key down and turn the Effect 1 knob up.",
-        detail: "This knob sets how much of the chosen effect is applied.",
-        hardwareTargets: ["effect1Knob"],
-        visualMode: "full-plus-inset",
-        expectedSound:
-          "Depending on the type you chose: dirtier, harder, more compressed, or crunchy and digital.",
-        checkpoint: "The character of the sound changes as you turn the knob.",
-        recoveryHelp:
-          "Turn Effect 1 back to the left to remove it. Distortion and Fuzz can get much louder as you turn them up — if it jumps in volume, turn Master Volume down first.",
-        nextHint: "The second slot does different things again.",
-      },
-      {
-        id: "B07-S07",
-        title: "Try Effect 2",
-        instruction: "Press the Effect 2 Type button, then turn the Effect 2 knob up.",
-        detail:
-          "Effect 2 offers Flanger, Phaser, Ring Mod and Slicer. As before, the button chooses which and the knob decides how much.",
-        hardwareTargets: ["effect2TypeButton", "effect2Knob"],
-        visualMode: "full-plus-inset",
-        expectedSound:
-          "Sweeping, swooshing, metallic or chopped, depending on which type is selected.",
-        checkpoint: "You have heard at least one Effect 2 type change the sound.",
-        recoveryHelp:
-          "Turn the Effect 2 knob back to the left to remove it. Ring Mod in particular can make a sound unrecognizable — that is what it does, not a fault.",
-        nextHint: "One button decides which of these are switched on at all.",
-      },
-      {
-        id: "B07-S08",
         title: "Switch effects in and out",
         instruction: "Press the Effects On/Off button and listen.",
         detail:
@@ -1309,37 +1232,23 @@ window.JDXI_TUTORIALS = {
           "You can hear the sound change as you press, and the lit indicators change with it.",
         recoveryHelp:
           "Keep pressing to step on through the combinations until the indicators show the effects you want. Nothing here is destructive — you are switching effects in and out, not deleting their settings.",
-        nextHint: "Two facts worth having before you go.",
+        nextHint: "Last step: decide what you actually want to keep on.",
       },
       {
-        id: "B07-S09",
-        title: "When an effect does nothing",
-        instruction: "Read this before you decide an effect is broken.",
+        id: "B07-S07",
+        title: "Choose by ear, and leave it there",
+        instruction:
+          "Set the four knobs where you like the sound, comparing against no effects at all with the Effects On/Off button.",
         detail:
-          "Roland lists the usual causes: the effect switch may be off; the send level to that effect may be zero; the effect's own output level, or the delay or reverb level, may be zero; or the part may not be routed to that effect at all. Any one of them makes a knob look dead.",
-        hardwareTargets: ["effectsSection"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "A knob that appears to do nothing is the most discouraging thing that can happen to a beginner, and on this instrument it usually has an ordinary explanation somewhere else in the settings rather than being a fault.",
-        checkpoint: "You know there is a documented list to work through rather than guessing.",
-        recoveryHelp:
-          "The quickest check by ear is to press Effects On/Off and see whether anything changes at all. If the sound never changes, try a different program — programs carry their own effect settings, and a program routed away from the effects will not respond to these knobs.",
-        nextHint: "Last thing: the order they run in, and where your changes went.",
-      },
-      {
-        id: "B07-S10",
-        title: "The order, and what is kept",
-        instruction: "Turn Reverb up and Effect 1 up together, and listen to which happens first.",
-        detail:
-          "The audio always passes through Effect 1, then Effect 2, then Delay, then Reverb, in that order, and only the effects that are switched on apply. One set of effects serves the whole program.",
-        hardwareTargets: ["effectsSection"],
+          "There is no correct amount. The only test is whether you prefer it with or without, and the On/Off button gives you that comparison in one press.",
+        hardwareTargets: ["effectsSection", "effectsOnOffButton"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "The grit from Effect 1 is inside the space that Reverb puts around it — the room is around the dirty sound, not the other way round.",
+          "Your sound with effects, then bare, then with effects again — and a clear preference between them.",
         whyItMatters:
-          "The order is fixed and you cannot change it. Knowing it explains why distortion after reverb is not something this instrument will do, and why turning up two effects can sound different from what you expected.",
+          "Effects are easy to overdo, because each one sounds better on its own than it does in a mix. Getting used to switching them out and asking whether you miss them is the habit that keeps a sound usable later.",
         checkpoint:
-          "You can describe the order the four effects run in without looking it up.",
+          "You have settled the four knobs somewhere you like, and you can say what the effects are adding.",
         recoveryHelp:
           "Everything you changed here belongs to this program and none of it is saved yet. There is no undo for effect settings, and no single button that puts them back. Turning the knobs back by ear is one way. Selecting a different program and returning gives you the stored version — but be clear that doing so discards every unsaved change on this program, effects and sound alike. N09 is where you learn to keep them instead.",
         nextHint:
@@ -1354,14 +1263,14 @@ window.JDXI_TUTORIALS = {
     title: "Play a pattern",
     shortTitle: "Play a pattern",
     summary:
-      "Start and stop the JD-Xi's pattern sequencer, and listen inside a pattern by muting parts while it runs. You will not record anything.",
+      "Start and stop the JD-Xi's pattern sequencer, then listen inside a running pattern — moving between its parts, and muting one to hear what it was doing. You will not record anything.",
     estimatedMinutes: 8,
     prerequisites: ["B07"],
     learningGoals: [
       "Start and stop a pattern.",
       "Tell from the display that a pattern is running.",
+      "Move between the parts of a pattern while it plays.",
       "Hear what one part is contributing by muting it.",
-      "Know why a pattern might not play.",
     ],
     // Source record: docs/tutorials/B08-SOURCE-NOTES.md
     // B08 records nothing. Part Mute (OM p.10) is used deliberately because
@@ -1449,10 +1358,29 @@ window.JDXI_TUTORIALS = {
         checkpoint: "You have a pattern playing that you can hear.",
         recoveryHelp:
           "Remember to stop the pattern with Play/Stop before stepping to the next program, so you are always listening to one thing at a time. If several programs in a row give you nothing, keep going — you are stepping one program at a time, and holding Shift while pressing Value jumps a whole bank.",
-        nextHint: "With a pattern running, you can take it apart by ear.",
+        nextHint: "With a pattern running, you can look inside it.",
       },
       {
         id: "B08-S06",
+        title: "Look inside the pattern",
+        instruction:
+          "While the pattern plays, press each Part Select button in turn and play a few keys after each one.",
+        detail:
+          "Selecting a part while a pattern runs does not change the pattern. It changes which part the keys play, so you can hear each part's own sound against everything else that is going on.",
+        hardwareTargets: ["partSelectGroup", "keys"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The pattern carries on unchanged, and what you play on the keys changes character with each part you select.",
+        whyItMatters:
+          "A pattern is several parts at once. Being able to move between them while it runs is how you work out which part is making which sound — and it is the same move every sequencer tutorial from N03 onward starts with.",
+        checkpoint:
+          "The pattern kept playing throughout, and the keys sounded different on at least two of the parts.",
+        recoveryHelp:
+          "If the pattern stopped, you pressed Play/Stop rather than a Part Select button — press it again to restart. If the keys make no sound on a particular part, that part may have nothing but a low level in this program; move on to the next one.",
+        nextHint: "Now take a part out and hear what it was doing.",
+      },
+      {
+        id: "B08-S07",
         title: "Mute a part while it plays",
         instruction: "With the pattern running, hold down Shift and press Drums.",
         detail:
@@ -1468,7 +1396,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "The same gesture puts it back.",
       },
       {
-        id: "B08-S07",
+        id: "B08-S08",
         title: "Bring it back",
         instruction: "Hold down Shift and press Drums again.",
         detail:
@@ -1484,7 +1412,7 @@ window.JDXI_TUTORIALS = {
         nextHint: "Now look at where the pattern lives.",
       },
       {
-        id: "B08-S08",
+        id: "B08-S09",
         title: "Where a pattern lives",
         instruction: "Look at the row of buttons numbered 01 to 16.",
         detail:
@@ -1499,18 +1427,19 @@ window.JDXI_TUTORIALS = {
         nextHint: "One last thing, in case a pattern ever refuses to play.",
       },
       {
-        id: "B08-S09",
-        title: "If a pattern will not play",
-        instruction: "Stop the pattern with Play/Stop.",
+        id: "B08-S10",
+        title: "Stop where you are",
+        instruction: "Press Play/Stop to stop the pattern.",
         detail:
-          "Roland documents one specific cause worth knowing: if the system setting Sync Mode is set to SLAVE, the JD-Xi waits for timing messages from another device and patterns will not play on their own. Left as MASTER, which is the setting for using the JD-Xi by itself, they play normally.",
+          "Leave the parts you muted unmuted. Nothing you did here was recorded or saved — starting, stopping and muting change nothing that is stored.",
         hardwareTargets: ["playStopButton"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "It is a single setting with a big effect, and nothing on the front panel hints at it — so a pattern that will not start looks like a broken instrument rather than a setting.",
-        checkpoint: "The pattern is stopped and you know what to check if one will not start.",
+          "Muting is the one arranging move you already have. Taking a part out and hearing what the rest sounds like without it is how you decide, later, what a pattern actually needs.",
+        checkpoint:
+          "The pattern is stopped, the counting has stopped, and every part is audible again.",
         recoveryHelp:
-          "That setting lives in the JD-Xi's system settings, and this tutorial deliberately does not take you in there: anything you change in the system settings is saved automatically as you leave the screen, so it is not a place to poke around. N01 Learn the menu controls shows you how to move about in there safely, and N10 Getting unstuck works through problems like this one.",
+          "If a part is still silent after you stop, hold Shift and press its Part Select button once to unmute it. If a pattern would not start at all in this tutorial, N10 Getting unstuck is where that is worked through.",
         nextHint:
           "You can start, stop and listen inside a pattern. Next, change how it feels.",
       },
@@ -1523,22 +1452,23 @@ window.JDXI_TUTORIALS = {
     title: "Change the feel",
     shortTitle: "Change the feel",
     summary:
-      "Speed a pattern up, slow it down, set the tempo by tapping, and — on a JD-Xi at system version 1.50 or later — give it a bouncy shuffle.",
+      "Speed a pattern up, slow it down, set the tempo by tapping, and give the whole thing a bouncy shuffle.",
     estimatedMinutes: 8,
     prerequisites: ["B08"],
     learningGoals: [
       "Change the tempo with the knob and by tapping.",
       "Know that tempo belongs to the program and is shared with the pattern.",
-      "Add a shuffle feel, where your instrument supports it.",
+      "Add a shuffle feel, and hear a pattern go from straight to swinging.",
     ],
     // Source record: docs/tutorials/B09-SOURCE-NOTES.md
-    // Two mechanisms, deliberately separated by evidence class: tempo is
-    // baseline behaviour (OM p.6) and shuffle was added at system version
-    // 1.50 (v1.50 p.2). The shuffle steps state that requirement in
-    // learner-facing text and are written so an older instrument simply
-    // skips them -- B09 needs no version precondition and makes no claim
-    // about what version any particular JD-Xi is running. Tempo Lock is a
-    // SYSTEM parameter and is deliberately not performed here.
+    // Two mechanisms from two documents: tempo is baseline behaviour
+    // (OM p.6) and shuffle was added at system version 1.50 (v1.50 p.2).
+    // Both are taught unconditionally, because this course targets the
+    // owner's instrument at 1.51 (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 2);
+    // the version provenance stays in the source notes, not in learner text.
+    // No sequencer Scale or note-value language appears anywhere: B09 owns
+    // faster/slower and straighter/swingier, and nothing more.
+    // Tempo Lock is a SYSTEM parameter and is deliberately not performed.
     steps: [
       {
         id: "B09-S01",
@@ -1590,7 +1520,7 @@ window.JDXI_TUTORIALS = {
         title: "Tap the tempo you want",
         instruction: "Press the Tap button three or more times, evenly, at the speed you want.",
         detail:
-          "Tap at a steady pace, as though counting a song in. Roland's requirement is three presses or more, at quarter-note intervals — which is to say, at the speed you would count along.",
+          "Tap at a steady pace, as though counting a song in. Three presses is the minimum; more is fine, and steadier is better than faster.",
         hardwareTargets: ["tapButton"],
         visualMode: "full-plus-inset",
         expectedSound: "The pattern settles to roughly the speed you tapped.",
@@ -1616,21 +1546,21 @@ window.JDXI_TUTORIALS = {
         recoveryHelp:
           "If you want a particular tempo back, set it again with the knob or the Tap button — the JD-Xi has no undo, and tempo is easy to reset by ear against the pattern.",
         nextHint:
-          "One more way to change the feel, and whether you have it depends on your JD-Xi.",
+          "One more way to change the feel, and it is about swing rather than speed.",
       },
       {
         id: "B09-S06",
-        title: "About shuffle (version 1.50 or later)",
+        title: "About shuffle",
         instruction: "Keep the pattern playing and read this before the next two steps.",
         detail:
-          "Shuffle changes the timing inside the beat rather than the speed of it. Roland describes 50% as notes spaced at equal intervals; raising it gives an increasingly bouncy feel. It was added in JD-Xi system version 1.50, so an older instrument will not have it — in that case skip to the last step, and nothing else here is affected.",
+          "Shuffle changes the timing inside the beat rather than the speed of it. Roland describes 50% as notes spaced at equal intervals; raising it gives an increasingly bouncy feel.",
         hardwareTargets: ["playStopButton"],
         visualMode: "full",
         whyItMatters:
           "Tempo is how fast. Shuffle is how it swings. Two patterns at the same tempo can feel completely different, and this is the control that does it.",
         checkpoint: "The pattern is still playing and you know what you are about to change.",
         recoveryHelp:
-          "Shuffle needs a pattern to be playing before it will respond. If you have stopped, press Play/Stop again. If you would rather check your system version first, N01 shows you where to read it.",
+          "Shuffle needs a pattern to be playing before it will respond. If you have stopped, press Play/Stop again.",
         nextHint: "First choose which part gets the shuffle.",
       },
       {
@@ -1642,7 +1572,7 @@ window.JDXI_TUTORIALS = {
         hardwareTargets: ["enterButton", "partSelectGroup"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "Enter is normally the button that confirms things. From system version 1.50 it also works as a held modifier, in the same way Shift does — which is a genuinely surprising thing about this instrument and worth meeting deliberately rather than by accident.",
+          "Enter is normally the button that confirms things. Here it works as a held modifier instead, in the same way Shift does. That is worth knowing because the shortcut lists printed in Roland's manuals do not include this combination, so it is not one you could find by reading them.",
         checkpoint: "You have chosen a part while holding Enter, and the pattern is still playing.",
         recoveryHelp:
           "If nothing seems to happen, that is expected at this step — choosing the part is silent, and you will see the value in the next step. Make sure the pattern is playing and that Enter is held down before you press the part button. If the part simply changed as it normally does, Enter was not held.",
@@ -1665,7 +1595,7 @@ window.JDXI_TUTORIALS = {
         checkpoint:
           "The display shows a SHUFFLE percentage, and you can hear the feel of the pattern change as you turn.",
         recoveryHelp:
-          "Turn it back to 50% and the notes are evenly spaced again — that is Roland's own description of that value. If nothing appears on the display, check the pattern is playing, that Enter is held down while you turn, and that you are turning the Depth knob in the LFO section. If it still does nothing, your JD-Xi is very likely running a system version earlier than 1.50, which does not have shuffle.",
+          "Turn it back to 50% and the notes are evenly spaced again — that is Roland's own description of that value. If nothing appears on the display, check three things: the pattern is playing, Enter is held down while you turn, and the knob you are turning is Depth in the LFO section.",
         nextHint: "Last step: stop, and know what you are leaving behind.",
       },
       {
@@ -1827,11 +1757,30 @@ window.JDXI_TUTORIALS = {
         expectedSound: "The same pattern at a speed you chose.",
         checkpoint: "The pattern is running at a tempo you set.",
         recoveryHelp:
-          "B09 Change the feel covers this, including the shuffle setting if your JD-Xi is at system version 1.50 or later.",
-        nextHint: "One last thing, and it is the honest one.",
+          "B09 Change the feel covers this, including the shuffle setting if you want the pattern to swing rather than just run faster.",
+        nextHint: "Now take something out of it.",
       },
       {
         id: "B10-S10",
+        title: "Take a part out, then put it back",
+        instruction:
+          "With the pattern running, mute one part, listen for a few bars, then unmute it.",
+        detail:
+          "Hold Shift and press a Part Select button to mute that part; the same combination brings it back.",
+        hardwareTargets: ["shiftButton", "partSelectGroup"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The pattern carries on with a piece missing, then sounds fuller again when you bring the part back.",
+        whyItMatters:
+          "This is the first arranging decision you will ever make on this instrument: does the pattern need that part or not? You can only answer it by taking the part away and listening.",
+        checkpoint:
+          "You have heard the pattern with a part missing and with it back again, and you have an opinion about which you preferred.",
+        recoveryHelp:
+          "If a part will not come back, hold Shift and press its Part Select button once more — it is the same combination both ways, and it is easy to press one time too many. B08 Play a pattern covers this step by step.",
+        nextHint: "One last thing, and it is the honest one.",
+      },
+      {
+        id: "B10-S11",
         title: "What you have, and what happens to it",
         instruction: "Stop the pattern and look at what you have made.",
         detail:

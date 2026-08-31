@@ -37,6 +37,19 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   const goto = async (h) => { await p.goto(APP + h); await p.waitForTimeout(260); };
   const hash = () => p.evaluate(() => window.location.hash);
 
+  /*
+   * Ask the page how long a tutorial is rather than writing the number here.
+   * A hard-coded "#tutorial/B04/step/8" silently stops testing completion the
+   * moment B04 gains or loses a step: the route falls out of range, the router
+   * correctly redirects to step 1, and the tutorial never completes - so the
+   * failure surfaces four assertions later as "reset cleared progress", which
+   * is nowhere near the cause.
+   */
+  const lastStepHash = async (id) => {
+    const n = await p.evaluate((t) => window.JDXI_TUTORIALS[t].steps.length, id);
+    return `#tutorial/${id}/step/${n}`;
+  };
+
   /* --- favourite a tutorial from the lesson screen --- */
   await goto('#tutorial/B03');
   ok(await p.isVisible('#lsn-fav'), 'favourite control visible on a canonical tutorial');
@@ -68,7 +81,7 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok((await hash()) === '#tutorial/B05/step/4', 'resume button returns to the right step');
 
   /* --- completing a tutorial marks it done --- */
-  await goto('#tutorial/B04/step/8');   // B04's last step
+  await goto(await lastStepHash('B04'));
   await goto('#level/beginner');
   const lvl = await p.textContent('#cat-body');
   ok(lvl.includes('1 of 10'), 'level page counts the completed tutorial');
@@ -94,7 +107,7 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok((await p.textContent('#cat-body')).includes('0 of 30'), 'reset cleared progress');
 
   /* --- cancel path --- */
-  await goto('#tutorial/B04/step/8');
+  await goto(await lastStepHash('B04'));
   await goto('#settings');
   await p.click(danger); await p.waitForTimeout(100);
   await p.click('#cat-body .cat-btn.quiet'); await p.waitForTimeout(120);

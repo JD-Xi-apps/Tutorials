@@ -5,7 +5,7 @@ Source reconciliation record for B10. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **B10 — First 15-minute challenge** (beginner, order 10, 10 steps, ~15 min) |
+| Tutorial | **B10 — First 15-minute challenge** (beginner, order 10, 11 steps, ~15 min) |
 | Short title | 15-minute challenge |
 | Prerequisites | `["B09"]` — advisory, not a gate |
 | Kind | **Challenge.** Composes `B02`–`B09`; introduces no new procedure and no new technical claim. |
@@ -16,6 +16,24 @@ Learning goals as authored:
 1. Do the whole Beginner sequence without being told which button to press.
 2. Recognize which tutorial to go back to when something does not work.
 3. Finish with a sound and a pattern you like the sound of.
+
+## Master-plan reconciliation (2026-08-31)
+
+The master plan (§8) sets out B10's challenge as a specific sequence: *pick Part → find
+sound → play → alter → add effect → start pattern → change tempo/feel → **mute/unmute***.
+
+The pre-reconciliation B10 performed every element of that except the last. It ended on
+tempo and went straight to the closing step, so a learner finished the Beginner path without
+once being asked to do the arranging move `B08` had taught them.
+
+`B10-S10` closes that gap and introduces no new procedure, which is B10's governing
+constraint. It asks for a mute and an unmute, gives the gesture in one sentence of `detail`
+rather than as instruction, and points at `B08` in its recovery — the same shape as every
+other step in this tutorial.
+
+One firmware conditional was also removed, from `B10-S09`'s recovery: it recommended `B09`
+"including the shuffle setting if your JD-Xi is at system version 1.50 or later". The course
+targets 1.51, so the recommendation is now unconditional.
 
 ## Sources consulted
 
@@ -35,7 +53,8 @@ would be a second place for the same claim to drift.
 | **B10-S07** Put it in a space | Reverb, Delay, Effects On/Off as the "is anything happening" check | `B07` — `docs/tutorials/B07-SOURCE-NOTES.md` (OM p.9; OM p.17) |
 | **B10-S08** Play along with a pattern | Play/Stop, part mute | `B08` — `docs/tutorials/B08-SOURCE-NOTES.md` (OM p.10) |
 | **B10-S09** Change the feel | Tempo knob, [Tap], and shuffle's version caveat | `B09` — `docs/tutorials/B09-SOURCE-NOTES.md` (OM p.6; v1.50 p.2) |
-| **B10-S10** What you have, and what happens to it | Unsaved work is lost on program change or power-off | `B03`/`B06`/`B07`/`B09` (OM p.6, p.9) |
+| **B10-S10** Take a part out, then put it back | `shiftButton`, `partSelectGroup` | `full-plus-inset` | Hold [Shift] and press a Part Select button to mute that part; the same combination unmutes it. | OM p.10 *Muting a specific part (Part Mute)*: "Hold down the [Shift] button and press the Part Select button. The selected part is muted… To return to the original state, once again hold down the [Shift] button and press the Part Select button." No new procedure — `B08` taught this; B10 only asks for it without instructions. |
+| **B10-S11** What you have, and what happens to it | Unsaved work is lost on program change or power-off | `B03`/`B06`/`B07`/`B09` (OM p.6, p.9) |
 
 No claim in B10 goes beyond the tutorial it points at. Where a fact is repeated — the
 Drums high register, the OCTAVE reset, the `[Shift] + [Enter]` scope, shuffle's version
@@ -94,7 +113,7 @@ into every action it asks for.
 
 ## The ending is deliberate
 
-B10-S10 ends the Beginner path by telling the learner that nothing they made is stored
+B10-S11 ends the Beginner path by telling the learner that nothing they made is stored
 and that switching off loses it. That is not a downbeat note added for honesty's sake —
 it is the accurate state of affairs (OM p.6, p.9), and it is the hand-off the guided
 path needs: the first thing the Novice path can do for them is teach saving (`N09`).
@@ -109,7 +128,7 @@ been changed.
 - **Nothing new is introduced.** Not one control, gesture, menu, or display state appears
   in B10 that `B02`–`B09` did not already teach.
 - **Saving is not performed.** It is the one thing the challenge deliberately cannot do,
-  and B10-S10 says so plainly rather than gesturing at it. WRITE is destructive-risk and
+  and B10-S11 says so plainly rather than gesturing at it. WRITE is destructive-risk and
   belongs to `N09`, under the save-safety rules.
 - **No recording** of any kind. B10-S08 plays along with a pattern; it does not record
   one.

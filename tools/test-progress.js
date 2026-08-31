@@ -58,7 +58,20 @@ function load(storageOpts) {
   ['js/tutorials.js', 'js/progress.js'].forEach((rel) => {
     vm.runInContext(fs.readFileSync(path.join(ROOT, rel), 'utf8'), sandbox, { filename: rel });
   });
-  return { P: sandbox.window.JDXI_PROGRESS, storage: sandbox.window.localStorage };
+  return {
+    P: sandbox.window.JDXI_PROGRESS,
+    storage: sandbox.window.localStorage,
+    catalog: sandbox.window.JDXI_TUTORIALS,
+  };
+}
+
+/*
+ * Never hard-code a step count. Curriculum reconciliation changes them, and a
+ * fixture that says "B04 has 8 steps" turns a content edit into a test failure
+ * that looks like a regression in storage.
+ */
+function lastStep(catalog, id) {
+  return catalog[id].steps.length - 1;
 }
 
 const KEY = 'jdxi.tutorial-hub.progress';
@@ -102,12 +115,13 @@ const KEY = 'jdxi.tutorial-hub.progress';
 
 /* ------------------------------------------------------- mark tutorial done */
 {
-  const { P } = load();
+  const { P, catalog } = load();
+  const last = lastStep(catalog, 'B04');
   P.noteVisit('B04', 0);
   eq(P.completed(), [], 'complete: first step does not complete');
-  P.noteVisit('B04', 7); // B04 has 8 steps
+  P.noteVisit('B04', last);
   eq(P.completed(), ['B04'], 'complete: final step completes');
-  P.noteVisit('B04', 7);
+  P.noteVisit('B04', last);
   eq(P.completed(), ['B04'], 'complete: not duplicated');
   eq(P.levelCounts('beginner'), { total: 10, done: 1 }, 'complete: level count follows');
 }
@@ -212,11 +226,11 @@ const KEY = 'jdxi.tutorial-hub.progress';
 
 /* ----------------------------------------------------- write throws */
 {
-  const { P } = load({ throwOnWrite: true });
+  const { P, catalog } = load({ throwOnWrite: true });
   ok(P.isAvailable() === false, 'write throws: reported unavailable');
   ok(P.toggleFavorite('B01') === true, 'write throws: favouriting still works in memory');
   eq(P.favorites(), ['B01'], 'write throws: in-memory state kept');
-  P.noteVisit('B04', 7);
+  P.noteVisit('B04', lastStep(catalog, 'B04'));
   eq(P.completed(), ['B04'], 'write throws: completion tracked in memory');
   P.reset();
   eq(P.favorites(), [], 'write throws: reset still clears in-memory state');

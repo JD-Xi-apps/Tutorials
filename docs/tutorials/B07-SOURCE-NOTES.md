@@ -5,7 +5,7 @@ Source reconciliation record for B07. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **B07 — Add effects** (beginner, order 7, 10 steps, ~9 min) |
+| Tutorial | **B07 — Add effects** (beginner, order 7, 7 steps, ~7 min) |
 | Short title | Add effects |
 | Prerequisites | `["B06"]` — advisory, not a gate |
 | Kind | **Operating procedure.** Program-level effect settings, by ear. |
@@ -14,9 +14,50 @@ Source reconciliation record for B07. Content lives in `js/tutorials.js`
 Learning goals as authored:
 
 1. Add space and echo to a sound.
-2. Change the character of a sound with the two effect slots.
-3. Know the fixed order the effects run in.
-4. Know what to check when an effect seems to do nothing.
+2. Hear that the other two effect slots change the sound itself rather than where it sits.
+3. Compare a sound with effects against the same sound without them, and choose by ear.
+
+## Master-plan reconciliation (2026-08-31)
+
+The master plan (§8) limits B07 to **Reverb, Delay, one simple Effect 1/2 example, a dry
+versus effected comparison, and an ear-based choice.** It excludes effect algorithm
+taxonomy, deep effect routing and detailed Effect 1/2 study. The brief adds that B07 must
+not require memorising all the algorithms, the effect-chain taxonomy, the routing
+architecture, or detailed troubleshooting.
+
+Measured against that, the pre-reconciliation B07 was the furthest out of scope of any
+Beginner tutorial: it named all eight effect algorithms, walked both slots separately, gave
+a step to Roland's effects-troubleshooting list, and closed on the fixed signal chain.
+
+Four steps became one, and two were removed.
+
+| Removed | Old position | Was | Now owned by |
+|---|---|---|---|
+| Choose what Effect 1 does | 5 | Named Distortion, Fuzz, Compressor, Bit Crusher | folded into the new `B07-S05`; the type names go to the Hardware Explorer and `I06` |
+| Turn Effect 1 up | 6 | The Effect 1 depth knob | folded into the new `B07-S05` |
+| Try Effect 2 | 7 | Named Flanger, Phaser, Ring Mod, Slicer | folded into one sentence of the new `B07-S05`; `I06` owns using both slots deliberately |
+| When an effect does nothing | 9 | Roland's four documented causes of a silent effect | **Hardware Explorer**, on the EFFECTS section, where a reference note is the right shape for it |
+| The order, and what is kept | 10 | Effect 1 → Effect 2 → Delay → Reverb, fixed | **Hardware Explorer**, EFFECTS section |
+
+**The new `B07-S05` is the master plan's "one simple Effect 1/2 example".** It presses the
+type button once, turns the knob up, and says outright that the learner does not need to
+know what the choices are called. Effect 2 is named as a second slot that works the same
+way — that is panel orientation, not taxonomy.
+
+**The new `B07-S07` is the dry-versus-effected comparison**, which the master plan lists as
+B07's own and which the old tutorial only ever did incidentally. It closes on choosing by
+ear and keeps the honest not-saved warning that used to end the tutorial.
+
+Neither removed fact is lost or contradicted. The chain order and the effects-troubleshooting
+list are both genuinely useful, both well sourced (OM p.9 and OM p.17 respectively), and
+both reference material rather than beginner instruction — which is precisely the disposal
+route §37 of the master plan prescribes.
+
+<!-- removed-steps:begin -->
+
+Ids that no longer exist in B07: `B07-S08`, `B07-S09`, `B07-S10`.
+
+<!-- removed-steps:end -->
 
 ## Sources consulted
 
@@ -34,12 +75,9 @@ Learning goals as authored:
 | **B07-S02** Protect any work you want to keep | `effectsSection` | `full-plus-inset` | Effect settings belong to the program; these knobs change them; the changes are not saved until you save the program; there is no documented one-button way back from an effect change. | OM p.9: "Effect settings are saved individually for each program", with the cross-reference to *Saving a Sound (Program) (WRITE)*. OM p.6/p.9: unsaved changes are lost on program change or power-off. The absence of a documented revert for effects is exactly that — an absence — and is stated as "no documented one-button way back", not as a claim that none exists. See *Recovery scope*. |
 | **B07-S03** Put the sound in a room | `reverbKnob` | `full-plus-inset` | The Reverb knob adjusts the depth of reverb; reverb adds reverberation. | OM p.9: "[Reverb] knob — This adjusts the depth of reverb", and the section preamble: "'Effects' allow you to modify or enhance the sound in various ways, such as by adding reverberation or delaying the sound." |
 | **B07-S04** Add echoes | `delayKnob` | `full-plus-inset` | The Delay knob adjusts the depth of delay; delay repeats what you play. | OM p.9: "[Delay] knob — This adjusts the depth of delay", plus the same preamble ("delaying the sound"). |
-| **B07-S05** Choose what Effect 1 does | `effect1TypeButton` | `full-plus-inset` | Effect 1 offers Distortion, Fuzz, Compressor and Bit Crusher; the Type button selects the type. | OM p.9: "Effect 1/2 [Type] button — These select the type of effect. Effect 1: Distortion, Fuzz, Compressor, Bit Crusher." The list is also drawn in OM p.8's audio-flow diagram. |
-| **B07-S06** Turn Effect 1 up | `effect1Knob` | `full-plus-inset` | The Effect 1 knob adjusts the depth of the effect. | OM p.9: "[Effect 1/2] knob — These adjust the depth of the effect." The volume caution in the recovery is generic care wording. |
-| **B07-S07** Try Effect 2 | `effect2TypeButton`, `effect2Knob` | `full-plus-inset` | Effect 2 offers Flanger, Phaser, Ring Mod and Slicer. | OM p.9, the Effect 2 list, and OM p.8's diagram. |
-| **B07-S08** Switch effects in and out | `effectsOnOffButton` | `full-plus-inset` | The combination changes each time you press; the indicators at the upper left of each knob light to show the available effects; effects can be specified per part. | OM p.9, quoted closely: "You can specify the effects that are used by each part. The combination changes each time you press the [Effects ON/OFF] button. The indicators at the upper left of each knob light to indicate the available effects." OM p.8's footnote makes the per-part point too. **No cycle length or return-to-start is claimed** — see *Deliberate omissions*. |
-| **B07-S09** When an effect does nothing | `effectsSection` | `full-plus-inset` | Documented causes: the effect switch may be off; the send level to that effect may be zero; the effect output level, delay level or reverb level may be zero; the part may not be routed to that effect. | OM p.17 *Issues Related to Effects*, "Effects not applied", listing exactly these: the effect on/off setting of each effect; whether each part's Output Assign is set to Effect 1/Effect 2/Delay/Reverb; "Effects do not apply if the send level to each effect is set to 0"; and "even if the send level… is above 0, effects do not apply if the effect output level, delay level, or reverb level are set to 0." PG pp.8–9 is where those levels live. |
-| **B07-S10** The order, and what is kept | `effectsSection` | `full-plus-inset` | Audio passes through Effect 1, then Effect 2, then Delay, then Reverb; only effects that are on apply; one set of effects serves the whole program; the order cannot be changed. | OM p.9: "The audio passes through 'Effect 1' → 'Effect 2' → 'Delay' → 'Reverb' in that order, and only the effects that are turned on will apply." OM p.8's diagram draws the same chain. "One set of effects per program" is OM p.8: "Although the settings of the effect section are shared by the entire program, effects can be turned on/off individually for each part." That the order cannot be changed is the absence of any documented routing control on the panel or in OM p.9 — stated as "the order is fixed and you cannot change it", which is what the fixed chain means. |
+| **B07-S05** Try one of the other effects | `effect1TypeButton`, `effect1Knob` | `full-plus-inset` | The Type button chooses what the effect is; the Effect 1 knob sets how much is applied; Effect 2 is a second slot that works the same way. | OM p.9: "[Effect 1/2] knob — Adjusts the depth of effect 1/2" and "[Type] button — Switches the type of effect 1/2." **Roland's eight type names are deliberately not listed** — see *Master-plan reconciliation*. The loudness caution in the recovery is not a Roland statement and is not written as one: it says "some choices get much louder", which is ordinary gain behaviour the learner will hear, and it directs them to Master Volume, which is documented at OM p.2 item 7. |
+| **B07-S06** Switch effects in and out | `effectsOnOffButton` | `full-plus-inset` | The combination changes each time you press; the indicators at the upper left of each knob light to show the available effects; effects can be specified per part. | OM p.9, quoted closely: "You can specify the effects that are used by each part. The combination changes each time you press the [Effects ON/OFF] button. The indicators at the upper left of each knob light to indicate the available effects." OM p.8's footnote makes the per-part point too. **No cycle length or return-to-start is claimed** — see *Deliberate omissions*. |
+| **B07-S07** Choose by ear, and leave it there | `effectsSection`, `effectsOnOffButton` | `full-plus-inset` | No new procedural claim: the learner sets the four knobs and uses the On/Off button to compare against no effects. Effect changes are not saved until the program is saved; there is no undo for them. | The comparison gesture is the same OM p.9 `[Effects ON/OFF]` behaviour cited on the previous row. The not-saved warning is OM p.6 and p.9, and the recovery repeats the discard consequence of selecting another program rather than offering it as a clean undo. "There is no correct amount" is a teaching stance, not a claim about the instrument. |
 
 ## Recovery scope — why B07 does not offer `[Shift] + [Enter]`
 
@@ -52,8 +90,8 @@ draws the effect section downstream of, and shared by, the four parts. Roland ne
 says whether the revert reaches them.
 
 Offering `[Shift] + [Enter]` here would therefore be an unsourced claim about the scope
-of a shortcut, which the recovery house rule forbids. B07-S10's `recoveryHelp` instead
-gives only what is documented and true:
+of a shortcut, which the recovery house rule forbids. The closing step's `recoveryHelp`
+(now `B07-S07`) instead gives only what is documented and true:
 
 - there is no undo, and no single button that puts effect settings back;
 - turning the knobs back by ear is available, and is offered without any promise that it
@@ -73,9 +111,15 @@ declines to assume: "if you are not sure whether this program has been edited, a
 it has."
 
 B07 assumes nothing about which effects are currently on, what types are selected, what
-the knobs are set to, or whether the loaded part is routed to the effects at all —
-which is why B07-S09 exists as a documented list to work through rather than a promise
-that every knob will do something.
+the knobs are set to, or whether the loaded part is routed to the effects at all.
+
+That last one used to be handled by a step of its own, listing Roland's documented causes
+of a silent effect. With that step moved to the Hardware Explorer, the assumption is
+carried instead by the steps that remain: `B07-S05`'s recovery tells a learner who hears
+nothing to turn the knob further and explains why the type button alone changes nothing, and
+`B07-S06` has them press Effects On/Off, which is the one-press way to find out whether the
+effects are reaching this part at all. Neither step promises that every knob will do
+something.
 
 ## Deliberate omissions
 

@@ -8,7 +8,7 @@ Source reconciliation record for B09. Content lives in `js/tutorials.js`
 | Tutorial | **B09 — Change the feel** (beginner, order 9, 9 steps, ~8 min) |
 | Short title | Change the feel |
 | Prerequisites | `["B08"]` — advisory, not a gate |
-| Kind | **Operating procedure**, split across two evidence classes: baseline tempo, and shuffle added at system version 1.50. |
+| Kind | **Operating procedure**, drawing on two documents: baseline tempo (OM), and shuffle (v1.50 supplement). Both are taught unconditionally against system 1.51. |
 | Authored | 2026-08-30 |
 
 Learning goals as authored:
@@ -33,9 +33,9 @@ Learning goals as authored:
 | **B09-S01** Protect any work you want to keep | `tempoSection` | `full-plus-inset` | The tempo and the shuffle setting belong to the program; changing them replaces what it is set to. | OM p.6 MEMO ("The tempo is saved for each individual program"); v1.50 p.2 ("If you want to save the settings, you should save it as a program"). |
 | **B09-S02** Get a pattern running | `playStopButton` | `full-plus-inset` | Play/Stop starts a pattern. | OM p.10: "[▶/■] button — Play or stop the pattern." The pointer back to `B08` covers the case where the loaded program has nothing recorded. |
 | **B09-S03** Speed it up and slow it down | `tempoKnob` | `full-plus-inset` | Turning the tempo knob changes the tempo; the tempo number is at the right of the upper line. | OM p.6 *Changing the Tempo* step 1: "Turn the tempo knob." OM p.2 item 8 names the control. The tempo field's position is OM p.5's *Top screen* callout. The "follows an external device" note in the recovery is OM p.17's Sync Mode entry, referred to rather than repeated. |
-| **B09-S04** Tap the tempo you want | `tapButton` | `full-plus-inset` | Pressing [Tap] three or more times at quarter-note intervals sets the tempo. | OM p.6: "Alternatively, you can set the tempo by pressing the [Tap] button three or more times at quarter-note intervals of the desired tempo." "At the speed you would count along" is a plain-language gloss of *quarter-note intervals*, offered because the audience has no theory (`DESIGN-RULES.md` §1); the Roland phrasing is kept in the same sentence so nothing is replaced. |
+| **B09-S04** Tap the tempo you want | `tapButton` | `full-plus-inset` | Pressing [Tap] three or more times, steadily, sets the tempo. | OM p.6: "Alternatively, you can set the tempo by pressing the [Tap] button three or more times at quarter-note intervals of the desired tempo." **Roland's "quarter-note intervals" is deliberately not quoted to the learner.** The master plan (§3.3) forbids note-value language in learner text and supplies the substitute — "as though counting a song in". An earlier draft quoted the Roland phrase and then glossed it, which is worse than either: it introduces the notation term the course exists to avoid and then admits it needs translating. The three-press minimum is stated because it is a real requirement. |
 | **B09-S05** Whose tempo is it | `display` | `full-plus-inset` | The tempo is saved with each individual program and is shared with that program's pattern. Changing it is an unsaved edit. Switching programs loads that program's tempo. | OM p.6 MEMO, both bullets: "The tempo is saved for each individual program" and "The tempo setting is shared with the pattern", with the cross-reference to WRITE. That an unsaved change is lost on program change or power-off is OM p.6/p.9. PG p.10 confirms Tempo as a program parameter. |
-| **B09-S06** About shuffle (1.50+) | `playStopButton` | `full` | Shuffle changes timing within the beat, not speed. 50% is notes at equal intervals; higher is increasingly bouncy. Added at system version 1.50. A pattern must be playing. | v1.50 p.2 *Shuffle*: "This setting lets you modify the note timing to create shuffle rhythms. With a setting of '50%' the notes are spaced at equal intervals. As you increase this setting, you'll get an increasingly 'bouncy' feel as though the notes were dotted." Its step 1 is "Play a pattern", which is why the requirement is stated. See *Version-dependent content*. |
+| **B09-S06** About shuffle | `playStopButton` | `full` | Shuffle changes timing within the beat, not speed. 50% is notes at equal intervals; higher is increasingly bouncy. A pattern must be playing. | v1.50 p.2 *Shuffle*: "This setting lets you modify the note timing to create shuffle rhythms. With a setting of '50%' the notes are spaced at equal intervals. As you increase this setting, you'll get an increasingly 'bouncy' feel as though the notes were dotted." Its step 1 is "Play a pattern", which is why the requirement is stated. See *Version-dependent content*. |
 | **B09-S07** Choose the shuffle part | `enterButton`, `partSelectGroup` | `full-plus-inset` | Holding Enter and pressing a Part Select button chooses the shuffle part. From 1.50, Enter also works as a held modifier. | v1.50 p.2 step 2: "Hold down the [Enter] button and press [Part Select] buttons to select the shuffle part." That 1.50 introduced [Enter] as a held modifier — a role the Owner's Manual gives only to [Shift] — is recorded at `ROLAND-SOURCE-MAP.md` §11.2, and is drawn from the v1.50 supplement's own set of [Enter] + combinations. The recovery's "if the part simply changed as it normally does, Enter was not held" follows from OM p.5's ordinary Part Select behaviour. |
 | **B09-S08** Set the shuffle amount | `enterButton`, `lfoDepthKnob`, `display` | `display-focus` | Holding Enter and turning the LFO Depth knob sets the shuffle rate; the display shows 0%–50%–100%. | v1.50 p.2 step 3: "Hold down the [Enter] button and rotate [LFO Depth] knob to adjust the shuffle rate. The display shows the value (0%–50%–100%)." Screen reproduced verbatim — see *Display provenance*. |
 | **B09-S09** Stop, and what is kept | `playStopButton` | `full-plus-inset` | Both tempo and shuffle are saved with the program if you save it; until then they are unsaved edits. There is no undo. | OM p.6 MEMO (tempo saved per program) and v1.50 p.2 ("If you want to save the settings, you should save it as a program"). The discard alternative is offered with its explicit warning, per the recovery house rule. No undo: `ROLAND-SOURCE-MAP.md` Q10. |
@@ -57,24 +57,35 @@ characters each), which asserts nothing about the real character grid
 
 ## Version-dependent content
 
-B09 carries **two mechanisms of different evidence class**, and keeps them apart:
+B09 carries **two mechanisms of different evidence class**, and the record keeps them apart
+even though the learner no longer sees the distinction:
 
-| Steps | Mechanism | Version | Source |
+| Steps | Mechanism | Introduced | Source |
 |---|---|---|---|
 | B09-S02 – B09-S05 | Tempo knob and [Tap] | Baseline — every JD-Xi | OM p.6 |
-| B09-S06 – B09-S08 | Shuffle | **1.50 and later only** | v1.50 p.2 |
+| B09-S06 – B09-S08 | Shuffle | System version **1.50** | v1.50 p.2 |
 
-**B09 has no version precondition and needs none.** B09-S06 states the requirement in
-learner-facing text before anything is attempted, tells the learner to skip to the last
-step if their instrument is older, and says explicitly that nothing else in the tutorial
-is affected. B09-S08's `recoveryHelp` treats "nothing appears on the display" as the
-expected symptom of a pre-1.50 instrument rather than a fault, after first ruling out
-the two ordinary mistakes (pattern not playing, Enter not held). B09-S09's summary is
-written so it reads correctly whether or not the shuffle steps were performed.
+**Reconciled 2026-08-31: the version is no longer mentioned in learner-facing text.**
+Previously the summary said "on a JD-Xi at system version 1.50 or later", a learning goal
+said "where your instrument supports it", `B09-S06` was titled "About shuffle (version 1.50
+or later)" and told the learner to skip ahead on an older instrument, and `B09-S08`'s
+recovery ended by suggesting their JD-Xi was too old. All of that is gone.
 
-The owner's own instrument is at 1.51 (`ROLAND-SOURCE-MAP.md` §4.8), so shuffle is
-available to them — but **B09 asserts nothing about what version any given JD-Xi runs**,
-and the learner is pointed at `N01` to read their own.
+The reason is the same one that applies to `B05`'s Transpose step: the master plan (§2) and
+the brief (§5) fix the target as **the owner's instrument at system 1.51**
+(`ROLAND-SOURCE-MAP.md` §4.8), on which every 1.50 addition is present. A conditional
+written into a beginner's step costs comprehension and buys nothing.
+
+Two things were deliberately preserved rather than deleted with the conditionals:
+
+- **The provenance above.** Shuffle *is* a 1.50 feature, and this table plus
+  `ROLAND-SOURCE-MAP.md` §11 remain the way to re-derive the feature set for a JD-Xi at
+  another version. The brief permits exactly this — source notes may record a version fact
+  that learner-facing content does not carry.
+- **The three real checks in `B09-S08`'s recovery.** Removing the version sentence left the
+  ordinary mistakes it used to trail: pattern not playing, `[Enter]` not held, wrong knob.
+  Those are what actually goes wrong, and they now stand on their own rather than as a
+  preamble to a firmware theory.
 
 A second consequence of §11.2 is honoured in B09-S07's `whyItMatters`: because both
 published shortcut lists predate the supplements, a learner who has been told "[Shift]
