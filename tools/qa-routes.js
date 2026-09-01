@@ -70,7 +70,7 @@ const pw = require('playwright');
 
   const routes = await page.evaluate(() => {
     const out = [
-      '#home', '#favorites', '#progress', '#settings',
+      '#home', '#bookmarks', '#progress', '#settings',
       '#reference', '#specialty', '#explorer',
     ];
     const tut = window.JDXI_TUTORIALS || {};
@@ -112,6 +112,12 @@ const pw = require('playwright');
        target that fails to render is invisible until someone clicks it. */
     (exp.views || []).forEach((v) => out.push('#explorer/view/' + v.id));
     Object.keys(hw.targets).forEach((tid) => out.push('#explorer/control/' + tid));
+
+    /* Every completion surface. These are reachable only by pressing Finish,
+       so nothing else in the suite would ever render them - and the level and
+       course capstones each take a different shape. */
+    Object.keys(tut).sort().forEach((id) => out.push('#complete/' + id));
+    sp.order.forEach((sid) => out.push('#complete/' + sid));
 
     return out;
   });

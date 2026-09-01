@@ -38,7 +38,7 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
 
   const routes = await p.evaluate(() => {
     const out = [
-      '#home', '#favorites', '#progress', '#settings',
+      '#home', '#bookmarks', '#progress', '#settings',
       '#reference', '#specialty', '#explorer',
     ];
     const T = window.JDXI_TUTORIALS, C = window.JDXI_COLLECTIONS;
@@ -54,6 +54,10 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
     SP.order.forEach((id) => out.push('#specialty/' + id));
     (EX.views || []).forEach((v) => out.push('#explorer/view/' + v.id));
     Object.keys(HW.targets).forEach((id) => out.push('#explorer/control/' + id));
+    /* Completion surfaces, including the two level capstones and the course
+       capstone, which each render differently. */
+    Object.keys(T).sort().forEach((id) => out.push('#complete/' + id));
+    SP.order.forEach((id) => out.push('#complete/' + id));
     return out;
   });
 

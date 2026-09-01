@@ -31,6 +31,9 @@
 
   /* ------------------------------------------------------------------ data */
 
+  /* Shown in Settings > About. Bumped deliberately, not derived. */
+  const APP_VERSION = 'v1.0 beta';
+
   const LEVELS = ['beginner', 'novice', 'intermediate'];
   const LEVEL_LABEL = {
     beginner: 'Beginner',
@@ -128,7 +131,7 @@
    *                          #tutorial/<id>/step/<n>
    *   discovery surfaces     #level/<level>             derived from the catalog
    *                          #topic/<collection-id>     js/collections.js
-   *                          #favorites #progress #settings
+   *                          #bookmarks #progress #settings
    *
    * Nothing is hardcoded per tutorial or per collection: adding either needs
    * only a data entry.
@@ -143,9 +146,13 @@
   const TOPIC_ROUTE = /^#topic\/([a-z0-9-]+)$/;
   const SPECIALTY_ROUTE = /^#specialty\/([a-z0-9-]+)(?:\/step\/(\d+))?$/;
   const REFERENCE_ROUTE = /^#reference\/([a-z0-9-]+)$/;
+  const COMPLETE_ROUTE = /^#complete\/([A-Za-z0-9-]+)$/;
   const EXPLORER_VIEW_ROUTE = /^#explorer\/view\/([a-z0-9-]+)$/;
   const EXPLORER_CONTROL_ROUTE = /^#explorer\/control\/([A-Za-z0-9]+)$/;
-  const PLAIN_ROUTES = ['#favorites', '#progress', '#settings', '#reference', '#specialty', '#explorer'];
+  const PLAIN_ROUTES = ['#bookmarks', '#progress', '#settings', '#reference', '#specialty', '#explorer'];
+  /* The app feature was renamed Bookmarked; the old hash still resolves so a
+     link someone saved before the rename does not dead-end. */
+  const LEGACY_ROUTES = { '#favorites': '#bookmarks' };
 
   function fixture(routeKey) {
     const all = window.JDXI_TUTORIAL_FIXTURES || {};
@@ -213,6 +220,7 @@
   function parse(hash) {
     if (!hash || hash === '#' || hash === '#home') return { view: 'home' };
 
+    if (LEGACY_ROUTES[hash]) return { view: 'home', redirect: LEGACY_ROUTES[hash] };
     if (PLAIN_ROUTES.indexOf(hash) >= 0) {
       return { view: 'catalog', surface: hash.slice(1) };
     }
@@ -229,6 +237,18 @@
       const c = routableCollection(m[1]);
       return c
         ? { view: 'catalog', surface: 'topic', collection: c }
+        : { view: 'home', redirect: '#home' };
+    }
+
+    m = COMPLETE_ROUTE.exec(hash);
+    if (m) {
+      const lsn = canonical(m[1])
+        ? lesson('tutorial', m[1])
+        : specialtyLesson(m[1])
+        ? lesson('specialty', m[1])
+        : null;
+      return lsn
+        ? { view: 'catalog', surface: 'complete', lesson: lsn }
         : { view: 'home', redirect: '#home' };
     }
 
@@ -276,6 +296,29 @@
       asked = parseInt(m[2], 10);
     } else if ((m = TUTORIAL_ROUTE.exec(hash))) {
       lsn = lesson('tutorial', m[1]);
+      if (!lsn) return { view: 'home', redirect: '#home' };
+      /*
+       * The BARE tutorial route is a decision point rather than a step.
+       *
+       *   completed          -> the review overview, where steps may be
+       *                         jumped freely (master plan sec 23)
+       *   part-way through   -> Continue / Start over, never chosen silently
+       *   otherwise          -> step 1, exactly as before
+       *
+       * An explicit /step/N always goes straight there, so every deep link in
+       * the app, in search results and in Quick Reference still lands on the
+       * step it names.
+       */
+      if (m[2] === undefined) {
+        const P = progress();
+        if (P.isComplete(m[1])) {
+          return { view: 'catalog', surface: 'review', lesson: lsn };
+        }
+        const at = P.stepIndexFor(m[1]);
+        if (at !== null && at > 0) {
+          return { view: 'catalog', surface: 'resume-choice', lesson: lsn, stepIndex: at };
+        }
+      }
       asked = m[2] === undefined ? 1 : parseInt(m[2], 10);
     } else {
       return { view: 'home', redirect: '#home' };
@@ -319,7 +362,7 @@
     const top = el('div', 'tc-top');
     top.appendChild(el('span', 'tc-id', id));
     const marks = el('span', 'tc-top');
-    if (P.isFavorite(id)) {
+    if (P.isBookmarked(id)) {
       const star = el('span', 'tc-star', '★');
       star.setAttribute('aria-hidden', 'true');
       marks.appendChild(star);
@@ -340,13 +383,13 @@
     card.setAttribute(
       'aria-label',
       `${t.title}. ${id}, ${t.estimatedMinutes} minutes, ${t.steps.length} steps.` +
-        (done ? ' Completed.' : '') + (P.isFavorite(id) ? ' Favorite.' : '')
+        (done ? ' Completed.' : '') + (P.isBookmarked(id) ? ' Bookmarked.' : '')
     );
     card.addEventListener('click', () => go('#tutorial/' + id));
     return card;
   }
 
-  /* A compact row, for unbounded lists: Favorites and Progress (up to 30). */
+  /* A compact row, for unbounded lists: Bookmarked and Progress (up to 30). */
   function tutorialRow(id, currentId) {
     const t = tutorials()[id];
     const P = progress();
@@ -476,19 +519,38 @@
       'A topic gathers tutorials from any level. Each one lives in exactly one place.';
   }
 
-  function renderFavorites() {
+  /* A compact row for a Specialty lesson, so Bookmarked can hold both kinds. */
+  function specialtyRow(id) {
+    const l = specialty().lessons[id];
     const P = progress();
-    const favs = P.favorites();
-    cat.eyebrow.textContent = 'Saved';
-    cat.title.textContent = 'Favorites';
+    const done = P.isSpecialtyComplete(id);
+    const row = el('button', 'tut-row specialty' + (done ? ' done' : ''));
+    row.type = 'button';
+    row.appendChild(el('span', 'tr-id', 'SP'));
+    row.appendChild(el('span', 'tr-name', l.title));
+    row.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
+    row.setAttribute('aria-label', l.title + '. Specialty lesson.' + (done ? ' Completed.' : ''));
+    row.addEventListener('click', () => go('#specialty/' + id));
+    return row;
+  }
 
-    if (!favs.length) {
+  function bookmarkRow(id, currentId) {
+    return specialty().lessons[id] ? specialtyRow(id) : tutorialRow(id, currentId);
+  }
+
+  function renderBookmarks() {
+    const P = progress();
+    const marks = P.bookmarks();
+    cat.eyebrow.textContent = 'Saved';
+    cat.title.textContent = 'Bookmarked';
+
+    if (!marks.length) {
       cat.desc.textContent = '';
       cat.body.appendChild(
         emptyState(
-          'Nothing saved yet',
-          'Open any tutorial and press Favorite next to its title to keep it here. ' +
-            'Favorites are stored in this browser only — there is no account and nothing leaves your computer.',
+          'Nothing bookmarked yet',
+          'Open any tutorial or specialty lesson and press Bookmark next to its title to keep it here. ' +
+            'Bookmarks are stored in this browser only — there is no account and nothing leaves your computer.',
           'Browse the Beginner path',
           '#level/beginner'
         )
@@ -498,23 +560,24 @@
     }
 
     cat.desc.textContent =
-      favs.length + (favs.length === 1 ? ' tutorial you have saved.' : ' tutorials you have saved.');
+      marks.length + (marks.length === 1 ? ' lesson you have bookmarked.' : ' lessons you have bookmarked.');
     const notice = storageNotice();
     if (notice) cat.body.appendChild(notice);
 
     const resume = P.resume();
     const currentId = resume ? resume.id : null;
-    /* Compact rows: a learner may favourite all thirty, and the stage never
-       scrolls, so this list has to stay inside a fixed height. */
+    /* Compact rows: a learner may bookmark all thirty and the three specialty
+       lessons, and the stage never scrolls, so this list stays inside a fixed
+       height. */
     const cols = el('div', 'cat-cols');
-    const per = Math.ceil(favs.length / 3);
+    const per = Math.ceil(marks.length / 3);
     for (let c = 0; c < 3; c++) {
       const col = el('div', 'cat-col');
-      favs.slice(c * per, (c + 1) * per).forEach((id) => col.appendChild(tutorialRow(id, currentId)));
+      marks.slice(c * per, (c + 1) * per).forEach((id) => col.appendChild(bookmarkRow(id, currentId)));
       cols.appendChild(col);
     }
     cat.body.appendChild(cols);
-    cat.hint.textContent = 'Press Favorite again on a tutorial to remove it from this list.';
+    cat.hint.textContent = 'Press Bookmark again on a lesson to remove it from this list.';
   }
 
   function renderProgress() {
@@ -522,7 +585,7 @@
     const all = tutorials();
     const total = Object.keys(all).length;
     const done = P.completed().length;
-    const resume = P.resume();
+    const resume = P.unfinishedResume();
     const currentId = resume ? resume.id : null;
 
     cat.eyebrow.textContent = 'Your progress';
@@ -533,7 +596,7 @@
     if (resume) {
       cat.actions.appendChild(
         actionButton(
-          'Resume ' + resume.id + ' · step ' + (resume.stepIndex + 1),
+          'Continue ' + resume.id + ' · step ' + (resume.stepIndex + 1),
           '#tutorial/' + resume.id + (resume.stepIndex ? '/step/' + (resume.stepIndex + 1) : '')
         )
       );
@@ -551,11 +614,89 @@
       const h = el('h2', null, LEVEL_LABEL[level]);
       h.appendChild(el('span', null, counts.done + '/' + counts.total));
       col.appendChild(h);
+      /* A bar per level as well as the overall one, so a learner can see
+         which path they are in the middle of. */
+      const m = el('div', 'meter small');
+      const i = el('i');
+      i.style.width = (counts.total ? (counts.done / counts.total) * 100 : 0) + '%';
+      m.appendChild(i);
+      col.appendChild(m);
       ids.forEach((id) => col.appendChild(tutorialRow(id, currentId)));
       cols.appendChild(col);
     });
     cat.body.appendChild(cols);
-    cat.hint.textContent = 'A tutorial counts as complete once you reach its last step.';
+
+    /*
+     * Specialty is reported SEPARATELY and never folded into x/30
+     * (master plan sec 22). It gets its own line rather than its own column,
+     * so the three guided levels keep the visual weight.
+     */
+    const S = specialty();
+    if (S.order.length) {
+      const spDone = P.specialtyCompleted().length;
+      const strip = el('div', 'topic-strip');
+      const cap = el('div', 'ts-cap', 'Specialty — optional, not counted above');
+      strip.appendChild(cap);
+      const list = el('div', 'ts-list');
+      S.order.forEach((id) => {
+        const chip = el('button', 'ts-chip' + (P.isSpecialtyComplete(id) ? ' done' : ''), 
+          S.lessons[id].title + (P.isSpecialtyComplete(id) ? ' ✓' : ''));
+        chip.type = 'button';
+        chip.addEventListener('click', () => go('#specialty/' + id));
+        list.appendChild(chip);
+      });
+      strip.appendChild(list);
+      const line = el('div', 'sp-count', spDone + ' of ' + S.order.length + ' specialty lessons complete');
+      strip.appendChild(line);
+      cat.body.appendChild(strip);
+    }
+
+    cat.hint.textContent =
+      'A tutorial counts as complete when you press Finish Tutorial on its last step.';
+  }
+
+  /*
+   * A reset control that needs two deliberate presses. The first arms and
+   * relabels; the second acts. A single click on a control that erases part of
+   * the learner's record is exactly the accident this guards against, and
+   * there are now three such controls rather than one.
+   */
+  function resetControl(label, warning, doneText, act) {
+    const wrap = el('div', 'row');
+    const btn = el('button', 'cat-btn danger', label);
+    btn.type = 'button';
+    const status = el('span', 'reset-status', '');
+    const cancel = el('button', 'cat-btn quiet', 'Cancel');
+    cancel.type = 'button';
+    cancel.hidden = true;
+
+    let armed = false;
+    const disarm = (msg) => {
+      armed = false;
+      btn.classList.remove('armed');
+      btn.textContent = label;
+      cancel.hidden = true;
+      status.textContent = msg || '';
+    };
+
+    btn.addEventListener('click', () => {
+      if (!armed) {
+        armed = true;
+        btn.classList.add('armed');
+        btn.textContent = 'Press again to confirm';
+        status.textContent = warning;
+        cancel.hidden = false;
+        return;
+      }
+      act();
+      disarm(doneText);
+    });
+    cancel.addEventListener('click', () => disarm('Nothing was changed.'));
+
+    wrap.appendChild(btn);
+    wrap.appendChild(cancel);
+    wrap.appendChild(status);
+    return wrap;
   }
 
   function renderSettings() {
@@ -564,10 +705,21 @@
     cat.title.textContent = 'Settings';
     cat.desc.textContent = 'The few things there are to set. There is nothing else here.';
 
+    /* Which instrument this course is written for. */
+    const target = el('div', 'cat-panel');
+    target.appendChild(el('h2', null, 'Tutorial target'));
+    const t = el('p', 'setting-value');
+    t.appendChild(el('b', null, 'JD-Xi System 1.51'));
+    target.appendChild(t);
+    target.appendChild(el('p', null,
+      'Every procedure in this course is written for a JD-Xi running system program 1.51. ' +
+      'Features added in versions 1.10 and 1.50 are simply present, so no tutorial asks you to check your version first.'));
+    cat.body.appendChild(target);
+
     const where = el('div', 'cat-panel');
     where.appendChild(el('h2', null, 'Where your progress is kept'));
     where.appendChild(el('p', null,
-      'Your completed tutorials, where you had got to, and your favourites are stored ' +
+      'Your completed tutorials, where you had got to, and your bookmarks are stored ' +
       'in this browser on this computer, and nowhere else. There is no account, nothing ' +
       'is sent anywhere, and nothing is shared between browsers or devices.'));
     where.appendChild(el('p', null,
@@ -580,57 +732,60 @@
       if (warn) cat.body.appendChild(warn);
     }
 
-    const reset = el('div', 'cat-panel');
-    reset.appendChild(el('h2', null, 'Reset progress and favourites'));
-    reset.appendChild(el('p', null,
-      'This clears every completed tutorial, your resume point and all your favourites. ' +
-      'It changes nothing about the tutorials themselves, and it cannot be undone.'));
-    const row = el('div', 'row');
-    const btn = el('button', 'cat-btn danger', 'Reset everything');
-    btn.type = 'button';
-    const status = el('span', null, '');
-    status.style.fontSize = '12px';
-    status.style.color = 'var(--muted)';
-
     /*
-     * Two deliberate presses, never one. The first arms and relabels; the
-     * second acts. A single click on a control that erases the learner's whole
-     * record is exactly the accident this guards against.
+     * Three separate resets. They destroy different things, and a learner may
+     * well want one without the other - clearing a stale resume point is not
+     * the same decision as throwing away thirty bookmarks.
      */
-    let armed = false;
-    btn.addEventListener('click', () => {
-      if (!armed) {
-        armed = true;
-        btn.classList.add('armed');
-        btn.textContent = 'Press again to reset';
-        status.textContent = 'This will clear everything. Press Cancel to keep it.';
-        cancel.hidden = false;
-        return;
-      }
-      P.reset();
-      armed = false;
-      btn.classList.remove('armed');
-      btn.textContent = 'Reset everything';
-      cancel.hidden = true;
-      status.textContent = 'Progress and favourites cleared.';
-    });
+    const reset = el('div', 'cat-panel');
+    reset.appendChild(el('h2', null, 'Reset'));
+    reset.appendChild(el('p', null,
+      'Each of these is separate, needs two presses, and cannot be undone. None of them changes anything on your JD-Xi.'));
 
-    const cancel = el('button', 'cat-btn quiet', 'Cancel');
-    cancel.type = 'button';
-    cancel.hidden = true;
-    cancel.addEventListener('click', () => {
-      armed = false;
-      btn.classList.remove('armed');
-      btn.textContent = 'Reset everything';
-      cancel.hidden = true;
-      status.textContent = 'Nothing was changed.';
-    });
+    reset.appendChild(el('h3', 'reset-head', 'Reset Progress'));
+    reset.appendChild(el('p', null,
+      'Clears every completed tutorial, your specialty completions and your resume point. Bookmarks are kept.'));
+    reset.appendChild(resetControl(
+      'Reset Progress',
+      'This clears all completions and your place. Bookmarks are kept.',
+      'Progress cleared.',
+      () => P.resetProgress()
+    ));
 
-    row.appendChild(btn);
-    row.appendChild(cancel);
-    row.appendChild(status);
-    reset.appendChild(row);
+    reset.appendChild(el('h3', 'reset-head', 'Reset Bookmarks'));
+    reset.appendChild(el('p', null,
+      'Clears everything you have bookmarked. Your progress is kept.'));
+    reset.appendChild(resetControl(
+      'Reset Bookmarks',
+      'This clears every bookmark. Progress is kept.',
+      'Bookmarks cleared.',
+      () => P.resetBookmarks()
+    ));
+
+    reset.appendChild(el('h3', 'reset-head', 'Reset Everything'));
+    reset.appendChild(el('p', null,
+      'Clears progress and bookmarks together, returning the app to how it was the first time you opened it.'));
+    reset.appendChild(resetControl(
+      'Reset Everything',
+      'This clears progress AND bookmarks. It cannot be undone.',
+      'Everything cleared.',
+      () => P.resetEverything()
+    ));
     cat.body.appendChild(reset);
+
+    const about = el('div', 'cat-panel');
+    about.appendChild(el('h2', null, 'About'));
+    const v = el('p', 'setting-value');
+    v.appendChild(el('b', null, 'JD-Xi Tutorial Hub · ' + APP_VERSION));
+    about.appendChild(v);
+    about.appendChild(el('p', null,
+      '30 guided tutorials, ' + (reference().order || []).length + ' quick-reference procedures, ' +
+      (specialty().order || []).length + ' optional specialty lessons, and every control on the instrument. ' +
+      'Runs from a file on this computer with no installation and no internet connection.'));
+    about.appendChild(el('p', null,
+      'Technical procedure follows Roland\u2019s official JD-Xi documentation. This is a learning tool and is not affiliated with Roland.'));
+    cat.body.appendChild(about);
+
     cat.hint.textContent = '';
   }
 
@@ -938,10 +1093,169 @@
     cat.hint.textContent = '';
   }
 
+  /* ---------------------------------- completion, review and resume choice */
+
+  /*
+   * What finishing a tutorial means depends on where it sits. The three level
+   * capstones close a level; I10 closes the course. Everything else simply
+   * hands over to the next guided tutorial.
+   *
+   * Derived from level and order, never from a hardcoded list of ids, so a
+   * renumbering cannot leave a stale celebration behind.
+   */
+  const LEVEL_AFTER = { beginner: 'novice', novice: 'intermediate', intermediate: null };
+
+  function completionShape(lsn) {
+    if (lsn.kind === 'specialty') {
+      return { kind: 'specialty', title: 'Specialty lesson complete' };
+    }
+    const t = lsn.tutorial;
+    const nxt = nextInLevel(lsn);
+    if (nxt) return { kind: 'tutorial', title: 'Tutorial complete', next: nxt };
+    const after = LEVEL_AFTER[t.level];
+    if (after) {
+      return {
+        kind: 'level',
+        title: LEVEL_LABEL[t.level] + ' complete',
+        nextLevel: after,
+      };
+    }
+    return { kind: 'course', title: 'Course complete' };
+  }
+
+  function renderComplete(route) {
+    const lsn = route.lesson;
+    const P = progress();
+    const shape = completionShape(lsn);
+    const t = lsn.tutorial;
+
+    cat.eyebrow.textContent = shape.kind === 'course' ? 'That is the whole course' : 'Finished';
+    cat.title.textContent = shape.title;
+
+    if (shape.kind === 'course') {
+      cat.desc.textContent =
+        'You can build a groove of your own on the JD-Xi, save it, and perform it. That was the whole point of the thirty.';
+    } else if (shape.kind === 'level') {
+      cat.desc.textContent =
+        'You have finished every tutorial in the ' + LEVEL_LABEL[t.level] + ' path.';
+    } else if (shape.kind === 'specialty') {
+      cat.desc.textContent =
+        t.title + ' is done. Specialty lessons are optional and do not count toward the thirty.';
+    } else {
+      cat.desc.textContent = t.title + ' is marked complete.';
+    }
+
+    /* The dominant action is always the obvious next thing to do. */
+    if (shape.kind === 'tutorial') {
+      cat.actions.appendChild(
+        actionButton('Next: ' + shape.next.id + ' · ' + shape.next.tutorial.title, '#tutorial/' + shape.next.id)
+      );
+    } else if (shape.kind === 'level') {
+      const firstOfNext = tutorialsInLevel(shape.nextLevel)[0];
+      cat.actions.appendChild(
+        actionButton('Next: ' + LEVEL_LABEL[shape.nextLevel], firstOfNext ? '#tutorial/' + firstOfNext : '#level/' + shape.nextLevel)
+      );
+    } else if (shape.kind === 'specialty') {
+      cat.actions.appendChild(actionButton('More Specialty', '#specialty', 'quiet'));
+    }
+
+    /* Where you are, overall. */
+    const total = Object.keys(tutorials()).length;
+    const done = P.completed().length;
+    cat.body.appendChild(meterRow(done, total));
+
+    if (shape.kind === 'course') {
+      const panel = el('div', 'cat-panel');
+      panel.appendChild(el('h2', null, 'Where to go from here'));
+      panel.appendChild(el('p', null,
+        'Nothing here expires. Every tutorial can be run again, and the reference surfaces are there whenever you need to look something up.'));
+      const row = el('div', 'row');
+      row.appendChild(actionButton('Hardware Explorer', '#explorer', 'quiet'));
+      row.appendChild(actionButton('Quick Reference', '#reference', 'quiet'));
+      row.appendChild(actionButton('Specialty', '#specialty', 'quiet'));
+      row.appendChild(actionButton('Replay a tutorial', '#progress', 'quiet'));
+      panel.appendChild(row);
+      cat.body.appendChild(panel);
+    } else {
+      const panel = el('div', 'cat-panel');
+      panel.appendChild(el('h2', null, 'Or go somewhere else'));
+      const row = el('div', 'row');
+      row.appendChild(actionButton('Review ' + (lsn.kind === 'specialty' ? t.title : lsn.key), (lsn.kind === 'specialty' ? '#specialty/' : '#tutorial/') + lsn.key, 'quiet'));
+      if (lsn.kind === 'tutorial') {
+        row.appendChild(actionButton(LEVEL_LABEL[t.level] + ' path', '#level/' + t.level, 'quiet'));
+      }
+      row.appendChild(actionButton('My Progress', '#progress', 'quiet'));
+      panel.appendChild(row);
+      cat.body.appendChild(panel);
+    }
+
+    cat.hint.textContent =
+      shape.kind === 'course'
+        ? 'Completed tutorials stay completed. Run any of them again whenever you like.'
+        : 'You can re-run a completed tutorial at any time.';
+  }
+
+  /*
+   * The review overview, shown when a COMPLETED tutorial is opened. Before
+   * completion the path is strictly sequential; after it, every step is one
+   * click away (master plan sec 23).
+   */
+  function renderReview(route) {
+    const lsn = route.lesson;
+    const t = lsn.tutorial;
+    cat.eyebrow.textContent = 'Completed · review';
+    cat.title.textContent = t.title;
+    cat.desc.textContent =
+      'You have finished this one. Jump straight to any step, or run it again from the beginning.';
+    cat.actions.appendChild(actionButton('Start from step 1', stepHash(lsn, 1)));
+
+    const grid = el('div', 'step-grid');
+    t.steps.forEach((st, i) => {
+      const b = el('button', 'step-chip');
+      b.type = 'button';
+      b.appendChild(el('span', 'sc-n', String(i + 1)));
+      b.appendChild(el('span', 'sc-t', st.title || 'Step ' + (i + 1)));
+      b.setAttribute('aria-label', 'Step ' + (i + 1) + ': ' + (st.title || ''));
+      b.addEventListener('click', () => go(stepHash(lsn, i + 1)));
+      grid.appendChild(b);
+    });
+    cat.body.appendChild(grid);
+    cat.hint.textContent = t.steps.length + ' steps. Free jumping is available because you have completed this tutorial.';
+  }
+
+  /*
+   * Continue / Start over. The master plan is explicit that this must not be
+   * chosen silently, so the bare tutorial route stops here rather than
+   * guessing which the learner meant.
+   */
+  function renderResumeChoice(route) {
+    const lsn = route.lesson;
+    const t = lsn.tutorial;
+    const at = route.stepIndex;
+    const step = t.steps[at];
+
+    cat.eyebrow.textContent = 'You were part-way through';
+    cat.title.textContent = t.title;
+    cat.desc.textContent =
+      'You left off at step ' + (at + 1) + ' of ' + t.steps.length +
+      (step && step.title ? ' — ' + step.title : '') + '.';
+
+    const panel = el('div', 'cat-panel');
+    panel.appendChild(el('h2', null, 'Where would you like to start?'));
+    panel.appendChild(el('p', null,
+      'Continuing picks up where you were. Starting over goes back to step 1 — which changes nothing on the JD-Xi, and nothing about what you have already completed.'));
+    const row = el('div', 'row');
+    row.appendChild(actionButton('Continue at step ' + (at + 1), stepHash(lsn, at + 1)));
+    row.appendChild(actionButton('Start over', stepHash(lsn, 1), 'quiet'));
+    panel.appendChild(row);
+    cat.body.appendChild(panel);
+    cat.hint.textContent = 'Your place is kept in this browser only.';
+  }
+
   const SURFACES = {
     level: renderLevel,
     topic: renderTopic,
-    favorites: renderFavorites,
+    bookmarks: renderBookmarks,
     progress: renderProgress,
     settings: renderSettings,
     reference: renderReference,
@@ -950,6 +1264,9 @@
     explorer: renderExplorer,
     'explorer-view': renderExplorerView,
     'explorer-control': renderExplorerControl,
+    complete: renderComplete,
+    review: renderReview,
+    'resume-choice': renderResumeChoice,
   };
 
   /*
@@ -960,6 +1277,7 @@
    */
   const DENSE_SURFACES = [
     'reference', 'reference-entry', 'explorer', 'explorer-view', 'explorer-control',
+    'settings', 'review',
   ];
 
   function renderCatalog(route) {
@@ -1250,32 +1568,70 @@
 
   /* ------------------------------------------------------------- favourites */
 
-  const favBtn = document.getElementById('lsn-fav');
+  const bookmarkBtn = document.getElementById('lsn-fav');
 
-  function paintFavButton(id) {
+  /*
+   * "Bookmarked" is the app feature; "Favorite" is the JD-Xi's own hardware
+   * feature and the word is reserved for it (master plan sec 16). The star
+   * icon stays, because the icon was never the confusing part.
+   */
+  function paintBookmarkButton(id) {
     if (!id) {
-      favBtn.hidden = true;
+      bookmarkBtn.hidden = true;
       return;
     }
-    const on = progress().isFavorite(id);
-    favBtn.hidden = false;
-    favBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    favBtn.querySelector('.favstar-ico').textContent = on ? '★' : '☆';
-    favBtn.querySelector('.favstar-txt').textContent = on ? 'Favorited' : 'Favorite';
-    favBtn.title = on ? 'Remove from Favorites' : 'Save to Favorites';
-    favBtn.setAttribute(
+    const on = progress().isBookmarked(id);
+    bookmarkBtn.hidden = false;
+    bookmarkBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    bookmarkBtn.querySelector('.favstar-ico').textContent = on ? '★' : '☆';
+    bookmarkBtn.querySelector('.favstar-txt').textContent = on ? 'Bookmarked' : 'Bookmark';
+    bookmarkBtn.title = on ? 'Remove from Bookmarked' : 'Save to Bookmarked';
+    bookmarkBtn.setAttribute(
       'aria-label',
-      (on ? 'Remove ' : 'Save ') + id + (on ? ' from Favorites' : ' to Favorites')
+      (on ? 'Remove ' : 'Save ') + id + (on ? ' from Bookmarked' : ' to Bookmarked')
     );
   }
 
-  favBtn.addEventListener('click', () => {
-    if (!currentLesson || currentLesson.kind !== 'tutorial') return;
-    progress().toggleFavorite(currentLesson.key);
-    paintFavButton(currentLesson.key);
+  bookmarkBtn.addEventListener('click', () => {
+    /* Both kinds of lesson can be bookmarked; only a development fixture cannot. */
+    if (!currentLesson || currentLesson.kind === 'dev') return;
+    progress().toggleBookmark(currentLesson.key);
+    paintBookmarkButton(currentLesson.key);
   });
 
   /* ----------------------------------------------------------------- render */
+
+  /*
+   * Home's Continue card. Canonical work only, and only when it is unfinished
+   * - a completed tutorial is not something to continue, and a specialty
+   * lesson is optional and never claims the guided path's prime position.
+   */
+  const continueCard = {
+    root: document.getElementById('continue-card'),
+    title: document.getElementById('continue-title'),
+    sub: document.getElementById('continue-sub'),
+  };
+
+  function paintContinueCard() {
+    if (!continueCard.root) return;
+    const r = progress().unfinishedResume();
+    if (!r) {
+      continueCard.root.hidden = true;
+      return;
+    }
+    const step = r.tutorial.steps[r.stepIndex];
+    continueCard.root.hidden = false;
+    continueCard.title.textContent = r.id + ' · ' + r.tutorial.title;
+    continueCard.sub.textContent =
+      'Step ' + (r.stepIndex + 1) + ' of ' + r.tutorial.steps.length +
+      (step && step.title ? ' — ' + step.title : '');
+    continueCard.root.setAttribute(
+      'aria-label',
+      'Continue ' + r.tutorial.title + ', step ' + (r.stepIndex + 1) +
+        ' of ' + r.tutorial.steps.length
+    );
+    continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, r.stepIndex + 1));
+  }
 
   function applyRoute() {
     const route = parse(window.location.hash);
@@ -1288,11 +1644,16 @@
 
     if (route.view === 'lesson') {
       showView('lesson');
+      const onLast = route.stepIndex === route.lesson.tutorial.steps.length - 1;
       window.JDXI_LESSON_RENDERER.render({
         tutorial: route.lesson.tutorial,
         stepIndex: route.stepIndex,
         canonical: route.lesson.kind === 'tutorial',
         nextTutorial: nextInLevel(route.lesson),
+        /* Reaching the last step is not finishing it. The label makes the
+           final action a deliberate one the learner takes. */
+        finishLabel:
+          onLast && route.lesson.kind !== 'dev' ? 'Finish Tutorial ✓' : null,
       });
       current = route.stepIndex;
       currentLesson = route.lesson;
@@ -1300,9 +1661,13 @@
          not a tutorial and must never appear in progress or favourites. */
       if (route.lesson.kind === 'tutorial') {
         progress().noteVisit(route.lesson.key, route.stepIndex);
-        paintFavButton(route.lesson.key);
+        paintBookmarkButton(route.lesson.key);
+      } else if (route.lesson.kind === 'specialty') {
+        /* Bookmarkable, but never a resume point: Specialty is optional and
+           outside the guided path, so it must not become the Continue card. */
+        paintBookmarkButton(route.lesson.key);
       } else {
-        paintFavButton(null);
+        paintBookmarkButton(null);
       }
     } else if (route.view === 'catalog') {
       showView('catalog');
@@ -1311,6 +1676,7 @@
       currentLesson = null;
     } else {
       showView('home');
+      paintContinueCard();
       current = null;
       currentLesson = null;
     }
@@ -1347,8 +1713,23 @@
       go(stepHash(currentLesson, current + 2));
       return;
     }
-    const nxt = nextInLevel(currentLesson);
-    go(nxt ? '#tutorial/' + nxt.id : '#home');
+    /*
+     * The last step's action FINISHES. This is the only thing that marks a
+     * canonical tutorial complete - not arriving here, and not deep-linking
+     * here (master plan sec 22).
+     */
+    if (currentLesson.kind === 'tutorial') {
+      progress().finish(currentLesson.key);
+      go('#complete/' + currentLesson.key);
+      return;
+    }
+    if (currentLesson.kind === 'specialty') {
+      progress().finishSpecialty(currentLesson.key);
+      go('#complete/' + currentLesson.key);
+      return;
+    }
+    /* A development fixture completes nothing and celebrates nothing. */
+    go('#home');
   });
 
   const R = window.JDXI_LESSON_RENDERER;

@@ -45,81 +45,187 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
    * failure surfaces four assertions later as "reset cleared progress", which
    * is nowhere near the cause.
    */
+  /* Read the completion count from the app rather than from rendered text:
+     "10 of 30" contains "0 of 30" as a substring, so a substring assertion
+     about an empty record passes on a full one. */
+  const doneCount = () => p.evaluate(() => window.JDXI_PROGRESS.completed().length);
+
   const lastStepHash = async (id) => {
     const n = await p.evaluate((t) => window.JDXI_TUTORIALS[t].steps.length, id);
     return `#tutorial/${id}/step/${n}`;
   };
 
-  /* --- favourite a tutorial from the lesson screen --- */
+  /* --- bookmark a tutorial from the lesson screen --- */
   await goto('#tutorial/B03');
-  ok(await p.isVisible('#lsn-fav'), 'favourite control visible on a canonical tutorial');
-  ok(await p.getAttribute('#lsn-fav', 'aria-pressed') === 'false', 'favourite starts off');
+  ok(await p.isVisible('#lsn-fav'), 'bookmark control visible on a canonical tutorial');
+  ok(await p.getAttribute('#lsn-fav', 'aria-pressed') === 'false', 'bookmark starts off');
   await p.click('#lsn-fav'); await p.waitForTimeout(120);
-  ok(await p.getAttribute('#lsn-fav', 'aria-pressed') === 'true', 'favourite toggles on');
-  ok((await p.textContent('#lsn-fav')).includes('Favorited'), 'favourite label updates');
+  ok(await p.getAttribute('#lsn-fav', 'aria-pressed') === 'true', 'bookmark toggles on');
+  ok((await p.textContent('#lsn-fav')).includes('Bookmarked'), 'bookmark label updates');
 
-  /* --- it shows up on the Favorites surface --- */
+  /* The app feature is "Bookmarked"; "Favorite" belongs to the JD-Xi's own
+     hardware feature and must not appear as an app control. */
+  ok(!/Favorit/i.test(await p.textContent('#lsn-fav')), 'lesson control never says Favorite');
+  ok(!/Favorit/i.test(await p.textContent('.topbar')), 'topbar never says Favorites');
+
+  /* --- it shows up on the Bookmarked surface --- */
+  await goto('#bookmarks');
+  ok((await p.textContent('#cat-title')) === 'Bookmarked', 'the surface is called Bookmarked');
+  ok((await p.textContent('#cat-body')).includes('Find sounds you like'), 'bookmark listed on #bookmarks');
+
+  /* --- the old hash still resolves rather than dead-ending --- */
   await goto('#favorites');
-  ok((await p.textContent('#cat-body')).includes('Find sounds you like'), 'favourite listed on #favorites');
+  ok((await hash()) === '#bookmarks', 'legacy #favorites redirects to #bookmarks');
 
-  /* --- and survives a full reload (persistence) --- */
-  await goto('#favorites');
-  ok((await p.textContent('#cat-body')).includes('Find sounds you like'), 'favourite survives reload');
-
-  /* --- unfavourite --- */
-  await goto('#tutorial/B03');
+  /* --- a specialty lesson can be bookmarked too --- */
+  await goto('#specialty/vocoder');
+  ok(await p.isVisible('#lsn-fav'), 'bookmark control visible on a specialty lesson');
   await p.click('#lsn-fav'); await p.waitForTimeout(120);
-  await goto('#favorites');
-  ok((await p.textContent('#cat-body')).includes('Nothing saved yet'), 'unfavourite empties the list');
+  await goto('#bookmarks');
+  ok((await p.textContent('#cat-body')).includes('Vocoder'), 'a specialty lesson lists on #bookmarks');
 
-  /* --- resume point --- */
+  /* --- unbookmark --- */
+  await goto('#tutorial/B03'); await p.click('#lsn-fav'); await p.waitForTimeout(120);
+  await goto('#specialty/vocoder'); await p.click('#lsn-fav'); await p.waitForTimeout(120);
+  await goto('#bookmarks');
+  ok((await p.textContent('#cat-body')).includes('Nothing bookmarked yet'), 'unbookmarking empties the list');
+
+  /* --- reaching the last step must NOT complete --- */
+  await goto(await lastStepHash('B04'));
+  ok((await p.textContent('#lsn-next')).includes('Finish'), 'the last step offers Finish Tutorial');
+  await goto('#progress');
+  ok((await doneCount()) === 0, 'reaching the last step completes nothing');
+
+  /* --- pressing Finish is what completes --- */
+  await goto(await lastStepHash('B04'));
+  await p.click('#lsn-next'); await p.waitForTimeout(300);
+  ok((await hash()) === '#complete/B04', 'Finish goes to the completion surface');
+  ok((await p.textContent('#cat-title')) === 'Tutorial complete', 'completion surface names the outcome');
+  await goto('#progress');
+  ok((await doneCount()) === 1, 'Finish is what counts');
+  await goto('#level/beginner');
+  ok((await p.textContent('#cat-body')).includes('1 of 10'), 'level page counts the finished tutorial');
+  ok(await p.$('.tut-card.done') !== null, 'finished tutorial is marked on its card');
+
+  /* --- a completed tutorial opens its review overview --- */
+  await goto('#tutorial/B04');
+  ok((await p.textContent('#cat-eyebrow')).includes('review'), 'a completed tutorial opens the review overview');
+  const chips = await p.evaluate(() => document.querySelectorAll('.step-chip').length);
+  const b04 = await p.evaluate(() => window.JDXI_TUTORIALS.B04.steps.length);
+  ok(chips === b04, 'the review overview offers every step for free jumping');
+  await p.evaluate(() => document.querySelectorAll('.step-chip')[2].click());
+  await p.waitForTimeout(250);
+  ok((await hash()) === '#tutorial/B04/step/3', 'a review chip jumps straight to its step');
+
+  /* --- an unfinished tutorial offers Continue / Start over --- */
   await goto('#tutorial/B05/step/4');
+  await goto('#tutorial/B05');
+  const choice = await p.textContent('#cat-body');
+  ok(choice.includes('Continue at step 4'), 'reopening offers Continue at the saved step');
+  ok(choice.includes('Start over'), 'reopening also offers Start over');
+  await p.evaluate(() => document.querySelectorAll('#cat-body .cat-btn')[1].click());
+  await p.waitForTimeout(250);
+  ok((await hash()) === '#tutorial/B05', 'Start over goes to step 1');
+
+  /* --- Home offers the Continue card --- */
+  await goto('#tutorial/B06/step/5');
+  await goto('#home');
+  ok(!(await p.evaluate(() => document.getElementById('continue-card').hidden)), 'Home shows a Continue card');
+  ok((await p.textContent('#continue-title')).includes('B06'), 'the Continue card names the tutorial');
+  await p.click('#continue-card'); await p.waitForTimeout(260);
+  ok((await hash()) === '#tutorial/B06/step/5', 'the Continue card returns to the right step');
+
+  /* --- progress offers the resume point --- */
   await goto('#progress');
   const prog = await p.textContent('#cat-actions');
-  ok(prog.includes('Resume B05') && prog.includes('step 4'), 'progress offers the resume point');
-  await p.click('#cat-actions .cat-btn'); await p.waitForTimeout(260);
-  ok((await hash()) === '#tutorial/B05/step/4', 'resume button returns to the right step');
+  ok(prog.includes('Continue B06') && prog.includes('step 5'), 'progress offers the resume point');
 
-  /* --- completing a tutorial marks it done --- */
-  await goto(await lastStepHash('B04'));
-  await goto('#level/beginner');
-  const lvl = await p.textContent('#cat-body');
-  ok(lvl.includes('1 of 10'), 'level page counts the completed tutorial');
-  ok(await p.$('.tut-card.done') !== null, 'completed tutorial is marked on its card');
+  /* --- level completion surfaces --- */
+  await p.evaluate(() => Object.keys(window.JDXI_TUTORIALS)
+    .filter((i) => i[0] === 'B').forEach((i) => window.JDXI_PROGRESS.finish(i)));
+  await goto('#complete/B10');
+  ok((await p.textContent('#cat-title')) === 'Beginner complete', 'B10 closes the Beginner level');
+  ok((await p.textContent('#cat-actions')).includes('Novice'), 'B10 points at Novice');
+  await goto('#complete/N10');
+  ok((await p.textContent('#cat-title')) === 'Novice complete', 'N10 closes the Novice level');
+  ok((await p.textContent('#cat-actions')).includes('Intermediate'), 'N10 points at Intermediate');
+  await goto('#complete/I10');
+  ok((await p.textContent('#cat-title')) === 'Course complete', 'I10 closes the course');
+  const courseLinks = await p.textContent('#cat-body');
+  ok(courseLinks.includes('Hardware Explorer'), 'course complete links to the Explorer');
+  ok(courseLinks.includes('Quick Reference'), 'course complete links to Quick Reference');
+  ok(courseLinks.includes('Specialty'), 'course complete links to Specialty');
+  ok(/Replay|replay/.test(courseLinks), 'course complete offers a replay route');
 
-  /* --- the level Continue action --- */
-  const act = await p.textContent('#cat-actions');
-  ok(/Continue|Start/.test(act), 'level page offers a start or continue action');
-
-  /* --- settings reset needs two presses --- */
-  await goto('#settings');
-  const danger = '#cat-body .cat-btn.danger';
-  ok((await p.textContent(danger)) === 'Reset everything', 'reset starts unarmed');
-  await p.click(danger); await p.waitForTimeout(120);
-  ok((await p.textContent(danger)) === 'Press again to reset', 'first press only arms');
-  await goto('#level/beginner');
-  ok((await p.textContent('#cat-body')).includes('1 of 10'), 'arming alone does not reset');
-  await goto('#settings');
-  await p.click(danger); await p.waitForTimeout(100);
-  await p.click(danger); await p.waitForTimeout(150);
-  ok((await p.textContent('#cat-body')).includes('cleared'), 'second press reports the reset');
+  /* --- specialty completion is tracked apart from x/30 --- */
   await goto('#progress');
-  ok((await p.textContent('#cat-body')).includes('0 of 30'), 'reset cleared progress');
-
-  /* --- cancel path --- */
-  await goto(await lastStepHash('B04'));
-  await goto('#settings');
-  await p.click(danger); await p.waitForTimeout(100);
-  await p.click('#cat-body .cat-btn.quiet'); await p.waitForTimeout(120);
-  ok((await p.textContent('#cat-body')).includes('Nothing was changed'), 'cancel reports no change');
+  const before = await p.textContent('#cat-body');
+  const beforeCount = (before.match(/(\d+) of 30/) || [])[1];
+  await goto('#specialty/auto-note');
+  const spLast = await p.evaluate(() => window.JDXI_SPECIALTY.lessons['auto-note'].steps.length);
+  await goto('#specialty/auto-note/step/' + spLast);
+  await p.click('#lsn-next'); await p.waitForTimeout(280);
+  ok((await hash()) === '#complete/auto-note', 'finishing a specialty lesson has its own surface');
   await goto('#progress');
-  ok((await p.textContent('#cat-body')).includes('1 of 30'), 'cancel really kept the progress');
+  const after = await p.textContent('#cat-body');
+  ok(((after.match(/(\d+) of 30/) || [])[1]) === beforeCount, 'a specialty lesson never changes x/30');
+  ok(after.includes('specialty'), 'progress reports specialty separately');
+
+  /* --- three separate resets --- */
+  await goto('#settings');
+  const btnText = async (n) => p.evaluate((i) =>
+    document.querySelectorAll('#cat-body .cat-btn.danger')[i].textContent, n);
+  const clickReset = async (n) => p.evaluate((i) =>
+    document.querySelectorAll('#cat-body .cat-btn.danger')[i].click(), n);
+  ok((await p.evaluate(() => document.querySelectorAll('#cat-body .cat-btn.danger').length)) === 3,
+    'settings offers three separate resets');
+  ok((await btnText(0)) === 'Reset Progress', 'the first reset is Reset Progress');
+
+  /* arming alone must not act */
+  await clickReset(0); await p.waitForTimeout(120);
+  ok((await btnText(0)) === 'Press again to confirm', 'first press only arms');
+  await goto('#progress');
+  ok((await doneCount()) > 0, 'arming alone does not reset');
+
+  /* Reset Bookmarks keeps progress. An explicit step route is used because by
+     this point B03 is complete, and a completed tutorial's bare route is its
+     review overview rather than its first step. */
+  await goto('#tutorial/B03/step/1'); await p.click('#lsn-fav'); await p.waitForTimeout(120);
+  await goto('#settings');
+  await clickReset(1); await p.waitForTimeout(110);
+  await clickReset(1); await p.waitForTimeout(150);
+  await goto('#bookmarks');
+  ok((await p.textContent('#cat-body')).includes('Nothing bookmarked yet'), 'Reset Bookmarks clears bookmarks');
+  await goto('#progress');
+  ok((await doneCount()) > 0, 'Reset Bookmarks keeps progress');
+
+  /* Reset Progress keeps bookmarks */
+  await goto('#tutorial/B03/step/1'); await p.click('#lsn-fav'); await p.waitForTimeout(120);
+  await goto('#settings');
+  await clickReset(0); await p.waitForTimeout(110);
+  await clickReset(0); await p.waitForTimeout(150);
+  await goto('#progress');
+  ok((await doneCount()) === 0, 'Reset Progress clears progress');
+  await goto('#bookmarks');
+  ok(!(await p.textContent('#cat-body')).includes('Nothing bookmarked yet'), 'Reset Progress keeps bookmarks');
+
+  /* Reset Everything clears both */
+  await goto('#settings');
+  await clickReset(2); await p.waitForTimeout(110);
+  await clickReset(2); await p.waitForTimeout(150);
+  await goto('#bookmarks');
+  ok((await p.textContent('#cat-body')).includes('Nothing bookmarked yet'), 'Reset Everything clears bookmarks');
+  await goto('#progress');
+  ok((await doneCount()) === 0, 'Reset Everything clears progress');
 
   /* --- fixtures must never touch learner state --- */
   await goto('#dev/lesson-renderer/step/1');
-  ok(!(await p.isVisible('#lsn-fav')), 'no favourite control on a development fixture');
+  ok(!(await p.isVisible('#lsn-fav')), 'no bookmark control on a development fixture');
   await goto('#progress');
-  ok((await p.textContent('#cat-body')).includes('1 of 30'), 'fixture did not become a resume point');
+  ok((await doneCount()) === 0, 'fixture did not become a resume point');
+  await goto('#home');
+  ok(await p.evaluate(() => document.getElementById('continue-card').hidden),
+    'fixture did not become the Continue card');
 
   /* --- browser Back / Forward across the new surfaces --- */
   await goto('#home');

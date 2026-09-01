@@ -23,7 +23,7 @@
           <button class="navbtn search" id="searchbtn" type="button" title="Search" aria-label="Search"
                   aria-expanded="false" aria-controls="searchpanel"><span class="iconline" aria-hidden="true">⌕</span></button>
           <button class="navbtn" type="button" title="My Progress" data-route="#progress"><span class="iconline" aria-hidden="true">▢</span><span>My Progress</span></button>
-          <button class="navbtn" type="button" title="Favorites" data-route="#favorites"><span class="iconline" aria-hidden="true">☆</span><span>Favorites</span></button>
+          <button class="navbtn" type="button" title="Bookmarked" data-route="#bookmarks"><span class="iconline" aria-hidden="true">☆</span><span>Bookmarked</span></button>
           <button class="navbtn settings" type="button" title="Settings" aria-label="Settings" data-route="#settings"><span class="iconline" aria-hidden="true">⚙</span></button>
         </nav>
       </header>
@@ -128,6 +128,21 @@
           </div>
         </section>
 
+        <!--
+          Continue card. Hidden unless there is unfinished canonical work, and
+          populated by app.js from the stored resume point - so an empty state
+          is genuinely empty rather than a placeholder.
+        -->
+        <button class="continue-card" id="continue-card" type="button" hidden>
+          <span class="cc-ico" aria-hidden="true">▸</span>
+          <span class="cc-text">
+            <span class="cc-cap">Continue where you left off</span>
+            <b id="continue-title"></b>
+            <span id="continue-sub"></span>
+          </span>
+          <span class="cc-go" aria-hidden="true">›</span>
+        </button>
+
         <section class="secondary-row" aria-label="Reference and extras">
           <button class="secondary" type="button" title="Explore the JD-Xi's controls" data-route="#explorer">
             <span class="sec-ico blue" aria-hidden="true">⌗</span>
@@ -156,7 +171,7 @@
             <div class="lesson-titlerow">
               <h1 class="lesson-title" id="lsn-title"></h1>
               <button class="favstar" id="lsn-fav" type="button" aria-pressed="false" hidden>
-                <span class="favstar-ico" aria-hidden="true">☆</span><span class="favstar-txt">Favorite</span>
+                <span class="favstar-ico" aria-hidden="true">☆</span><span class="favstar-txt">Bookmark</span>
               </button>
             </div>
           </div>
@@ -212,7 +227,7 @@
 
       <!--
         One catalog view renders every discovery surface: the three guided
-        levels, the topic collections, Favorites, Progress and Settings. They
+        levels, the topic collections, Bookmarked, Progress and Settings. They
         differ in what they list, not in how they are built, so adding a
         collection needs no new screen and no router change.
       -->

@@ -724,6 +724,47 @@ if (explorer) {
   errors.push('beta requires js/explorer.js (master plan sec 19)');
 }
 
+
+/* --------------------------------------------------- Bookmarked vs Favorite */
+
+/*
+ * The app feature is "Bookmarked"; "Favorite" is reserved for the JD-Xi's own
+ * hardware feature (master plan sec 16). The two are easy to conflate and the
+ * consequence is a learner who thinks pressing a star on a web page did
+ * something to their instrument.
+ *
+ * So the check is on the SHIPPED UI, not on tutorial prose: tutorial content
+ * uses "Favorite" correctly and often, because it is teaching the hardware.
+ */
+{
+  const uiFiles = ['index.html', 'js/app.js'];
+  uiFiles.forEach((rel) => {
+    const abs = path.join(ROOT, rel);
+    if (!fs.existsSync(abs)) return;
+    const text = fs.readFileSync(abs, 'utf8');
+    /* "Favorites"/"Favorited" are app-feature wordings and have no hardware
+       reading - Roland's feature is "Favorite", singular, and is registered
+       or recalled rather than "Favorited". */
+    ['Favorites', 'Favorited'].forEach((word) => {
+      const at = text.indexOf(word);
+      check(at < 0,
+        `${rel}: uses the app wording "${word}"; the app feature is Bookmarked ` +
+        `and "Favorite" is reserved for the JD-Xi hardware feature`);
+    });
+  });
+
+  /* And the reverse, so the hardware feature is not renamed by accident: the
+     tutorials that teach it must still call it a Favorite. */
+  const favTeachers = ['N02', 'N09', 'I09'];
+  favTeachers.forEach((id) => {
+    const t = (tutorials || {})[id];
+    if (!t) return;
+    const prose = JSON.stringify(t);
+    check(/Favorite/.test(prose),
+      `tutorial ${id}: teaches the JD-Xi hardware Favorite but never names it`);
+  });
+}
+
 /* ------------------------------------------------------------------ report */
 
 console.log(`checks run: ${checks}`);

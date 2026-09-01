@@ -623,6 +623,27 @@ The rules above are enforced rather than assumed: `tools/test-progress.js` provo
 failure mode — malformed JSON, wrong types, missing fields, stale tutorial and step ids,
 a record written by a newer build, and storage that throws on read or on write.
 
+> **Master-plan reconciliation postscript (schema 2).** Three things in this section
+> changed, and all three are learner-visible:
+>
+> - **Completion is explicit.** Reaching the last step no longer completes a tutorial;
+>   only pressing **Finish Tutorial** does, which is `JDXI_PROGRESS.finish()`. `noteVisit`
+>   records position and nothing else. Master plan §22.
+> - **`favoriteTutorialIds` became `bookmarkedIds`.** The app feature is **Bookmarked**;
+>   *Favorite* is reserved for the JD-Xi's own hardware feature (master plan §16), and
+>   `tools/validate-data.js` now fails the build if the shipped UI says otherwise — in
+>   either direction, so the hardware feature cannot be renamed by accident either.
+> - **Specialty completion is tracked separately**, in `completedSpecialtyIds`, and is
+>   never counted in x/30. Bookmarks are shared between the two kinds, because a learner
+>   bookmarks a lesson without caring which data model it lives in.
+>
+> Schema 1 records are **migrated, not discarded**. Existing completions are kept even
+> though they were earned under the old reach-the-last-step rule: erasing someone's record
+> because the rule changed underneath them would be the wrong trade.
+>
+> `resetProgress`, `resetBookmarks` and `resetEverything` replace the single reset, because
+> they destroy different things and a learner may well want one without the other.
+
 ## 13. Content-authority rule
 
 **No detailed JD-Xi technical procedure becomes authoritative merely because it sounds

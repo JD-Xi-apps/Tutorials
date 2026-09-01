@@ -646,6 +646,10 @@ window.JDXI_LESSON_RENDERER = (function () {
     var back = document.getElementById("lsn-back");
     var next = document.getElementById("lsn-next");
     back.textContent = n === 1 ? "‹ Home" : "‹ Back";
+    /* The last step's forward button is the completion action when the caller
+       supplies a label for it, which lets the app style it as the deliberate
+       act it is rather than as one more Next. */
+    next.classList.toggle("finish", n === total && !!ctx.finishLabel);
     /*
      * The last step's forward button depends on whether the guided path
      * continues. The renderer does not look that up - the caller resolves it
@@ -654,7 +658,9 @@ window.JDXI_LESSON_RENDERER = (function () {
      * Either way the last step keeps the completion styling.
      */
     next.textContent =
-      n === total ? (ctx.nextTutorial ? "Next tutorial ›" : "Return home") : "Next ›";
+      n === total
+        ? ctx.finishLabel || (ctx.nextTutorial ? "Next tutorial ›" : "Return home")
+        : "Next ›";
     next.classList.toggle("finish", n === total);
     document.getElementById("lsn-hint").textContent = step.nextHint || "";
   }
