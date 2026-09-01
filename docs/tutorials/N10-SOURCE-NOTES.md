@@ -8,7 +8,7 @@ Source reconciliation record for N10. Content lives in `js/tutorials.js`
 | Tutorial | **N10 — Getting unstuck** (novice, order 10, 14 steps, ~13 min) |
 | Short title | Getting unstuck |
 | Prerequisites | `["N09"]` — advisory, not a gate |
-| Kind | **Recovery and recognition.** Performs no state-changing action. |
+| Kind | **Recovery and recognition.** The required path (`N10-S01`–`N10-S12`) performs no state-changing action; the optional practice at `N10-S13`–`N10-S14` deliberately changes a sound and reverts it, after an explicit protect-your-work decision. |
 | Authored | 2026-08-31 |
 
 ## Master-plan reconciliation (2026-08-31)
@@ -96,7 +96,7 @@ already stuck is worse than no link.
 | **N10-S13** Optional practice: decide whether to try it | `cutoffKnob` | `full` | **No factual claim about the instrument.** The step is a protect-your-work decision covering the optional exercise that follows. | Nothing to source — it asserts nothing about the JD-Xi. Its content is the master plan's own requirement (§9): the exercise may be offered *only after an explicit protect-your-work decision*, the learner must be told to skip it if the loaded sound contains edits they want to keep, and it must not be required to complete N10. All three are met in this step's text. |
 | **N10-S14** Optional practice: change it, then put it back | `shiftButton`, `enterButton`, `display` | `full-plus-inset` | Turning Cutoff edits the loaded sound and the tone number disappears from the lower line; `[Shift]` + `[Enter]` returns the original sound and the number comes back. | OM p.5, both halves: "Sounds that don't show a tone number are sounds that have been edited for an individual program. If you want to return to the original sound after you've switched or edited the sound, hold down the [Shift] button and press the [Enter] button." The knob edit is OM p.6 ("The sound you create will change if you move a knob"). The step's scope note — that the move does not reach effects, pattern edits or saved data — is the same boundary `B07` and `N08` observe, and is the absence of any Roland statement extending it. |
 
-## N10 performs no state-changing action
+## N10's required recovery path performs no state-changing action
 
 This is the load-bearing design decision, and it is deliberate.
 
@@ -106,21 +106,39 @@ demonstrated its own recovery moves would destroy that work in the course of tea
 them: `[Shift]` + `[Enter]` discards sound edits, and selecting another program discards
 everything.
 
-So N10 teaches by recognition. Its instructions are *find*, *read*, *recognize*, plus the
-two genuinely safe actions — pressing Exit and pressing Play/Stop. N10-S03 says outright:
-"Do not press it now unless you actually want to abandon the sound you have loaded."
+So the required path teaches by recognition. `N10-S01` through `N10-S12` — the whole
+recovery toolkit, and everything the learner has to do to finish N10 — change nothing on
+the instrument beyond pressing Exit and pressing Play/Stop, which are safe in any state.
+Their instructions are *find*, *read*, *recognize*. `N10-S03` says outright: "Do not press
+it now unless you actually want to abandon the sound you have loaded."
 
-Two consequences follow, and both are intended:
+**The two optional steps after it are the deliberate exception.** `N10-S14` has the learner
+turn Cutoff and revert it with `[Shift]` + `[Enter]`, which really does change the loaded
+sound; the master plan (§9) asks for exactly that, so the move is practised once rather
+than only read about. It is reachable only through `N10-S13`, which is an explicit
+protect-your-work decision that tells the learner to skip if the loaded sound holds edits
+they want, and `N10-S14` is written so that skipping is a finish rather than a failure. The
+recognition-first guarantee is therefore a guarantee about the **required** path, and it is
+not weakened by an exercise the learner has to opt into after being told what it costs.
 
-- **N10 needs no protect-your-work preflight**, because there is nothing in it that can
-  lose the learner's work. It is safe to open at the worst possible moment, which is
-  exactly when it will be opened.
+Three consequences follow, and all three are intended:
+
+- **N10 needs no protect-your-work preflight of its own**, because nothing on the required
+  path can lose the learner's work. It is safe to open at the worst possible moment, which
+  is exactly when it will be opened. The optional exercise carries its own
+  protect-your-work decision at `N10-S13` instead, rather than pushing a preflight to the
+  front of the tutorial, where it would warn every learner about a step most of them will
+  skip.
+- The distinction is visible to `tools/validate-data.js` as well as to a reader: `N10-S13`
+  contemplates rather than operates ("Decide whether…") and `N10-S14` is conditional on
+  that decision ("If you decided to try it…"), so neither is classified as a step the
+  learner is *sent* into unwarned.
 - Every step still has an observable checkpoint, because recognising something *is*
   observable: the learner can point at the button, read the display, or say which message
-  means what.
+  means what — and `N10-S14`'s checkpoint accepts the skip as well as the exercise.
 
-The precedent is `N01-S13`, which teaches the two −/+ pairs apart by sight and
-deliberately presses neither.
+The precedent for the recognition steps is `N01-S13`, which teaches the two −/+ pairs apart
+by sight and deliberately presses neither.
 
 ## Recovery scope, and the house pattern
 

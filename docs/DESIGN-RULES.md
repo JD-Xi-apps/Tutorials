@@ -118,6 +118,10 @@ Two cases qualify:
 A tutorial that only *selects a part*, *plays the keys*, *navigates a menu without
 pressing Value*, or performs an action the same gesture reverses does not qualify, and
 does not carry one. `B01`, `B02`, `B04`, `B05`, `N01` and `N10` deliberately have none.
+`N10` is the case worth reading closely: its required recovery path changes nothing, so it
+needs no preflight, and the optional `N10-S14` sound edit that follows is gated on its own
+protect-your-work decision at `N10-S13` rather than on a whole-tutorial warning most
+learners would meet without ever reaching the step it describes.
 
 > **Updated by the master-plan reconciliation.** `N02` was on that list and no longer is.
 > The reconciliation made it the practical Program lesson — it now selects programs, jumps
@@ -132,11 +136,38 @@ strands them just the same.
 Where a tutorial creates an unsaved edit but cannot lose one, the honest handling is a
 step that says what happened to the change and what will lose it — not a preflight.
 
+### SYSTEM is a different risk and takes a different answer
+
+The preflight protects the loaded **program**. SYSTEM settings are not in it: the JD-Xi
+saves them automatically as the learner leaves the screen, with no confirmation and no
+undo, so neither `N09` nor a preflight is any help. The deterministic way back is a value
+the learner wrote down *before* changing it.
+
+A step that has the learner change a SYSTEM value therefore has to say four things — note
+the current value first, SYSTEM saves the change by itself on the way out, there is no
+confirmation and no undo, and the noted value is the way back — and it has to say them in
+`title`, `instruction` or `detail`. Those are the fields the lesson screen shows by
+default. `whyItMatters` sits behind *Why?* and `recoveryHelp` behind *I'm lost*, so a
+warning parked there reaches a learner following the primary procedure only after they have
+already changed the value. That is the `I09` failure above, in a different screen.
+
+`tools/validate-data.js` enforces it, in both directions: the four statements must be in
+the visible fields, and when they are found only in the hidden ones the failure says so.
+
 ### It is enforced, not reviewed
 
-`tools/validate-data.js` checks that any tutorial reaching a step which can lose unsaved
+`tools/validate-data.js` checks that any lesson reaching a step which can lose unsaved
 work carries a preflight, at or before that step. This is a check rather than a review
 item because a missing warning renders perfectly: nothing else in the QA suite can see it.
+
+**The check covers the Specialty lessons as well as the canonical thirty**, and Specialty
+has no exemption of its own. This rule is about the instrument, not about a lesson's
+status: Specialty is presented by the same guided renderer, on the same JD-Xi, to a learner
+who may have arrived directly with unsaved work in front of them. A third defect was found
+by hand for exactly this reason — the **Auto Note** Specialty lesson told the learner to
+"select any part and any tone you like" with no preflight in front of it, while the Vocoder
+and AutoPitch lessons beside it both carried one. It now carries one too, and the check runs
+over all three.
 
 Two tutorials were written without one and both were found by hand during the clean-room
 review, which is the argument for the check existing:
