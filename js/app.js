@@ -1649,6 +1649,7 @@
         tutorial: route.lesson.tutorial,
         stepIndex: route.stepIndex,
         canonical: route.lesson.kind === 'tutorial',
+        kind: route.lesson.kind === 'dev' ? 'fixture' : route.lesson.kind,
         nextTutorial: nextInLevel(route.lesson),
         /* Reaching the last step is not finishing it. The label makes the
            final action a deliberate one the learner takes. */

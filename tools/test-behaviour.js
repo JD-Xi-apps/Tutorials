@@ -227,6 +227,21 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok(await p.evaluate(() => document.getElementById('continue-card').hidden),
     'fixture did not become the Continue card');
 
+  /* --- the lesson badge tells the three kinds apart --- */
+  await goto('#tutorial/B03');
+  ok((await p.textContent('#lsn-badge')) === 'BEGINNER • TUTORIAL 3',
+    'a canonical tutorial is badged with its level and position');
+  await goto('#specialty/vocoder');
+  const spBadge = await p.textContent('#lsn-badge');
+  ok(/SPECIALTY/.test(spBadge), 'a specialty lesson is badged as Specialty');
+  /* Specialty is real learner content. Labelling it a development fixture,
+     which is what treating "not canonical" as "fixture" did, is worse than
+     no badge at all. */
+  ok(!/FIXTURE/i.test(spBadge), 'a specialty lesson is NOT badged a development fixture');
+  await goto('#dev/lesson-renderer/step/1');
+  ok(/FIXTURE/i.test(await p.textContent('#lsn-badge')),
+    'a development fixture keeps its warning badge');
+
   /* --- browser Back / Forward across the new surfaces --- */
   await goto('#home');
   await p.evaluate(() => { window.location.hash = '#level/novice'; }); await p.waitForTimeout(200);

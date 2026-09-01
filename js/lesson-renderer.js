@@ -583,7 +583,7 @@ window.JDXI_LESSON_RENDERER = (function () {
     var n = ctx.stepIndex + 1;
 
     document.getElementById("lsn-title").textContent = tut.title;
-    setBadge(!!ctx.canonical, tut);
+    setBadge(ctx.kind || (ctx.canonical ? "tutorial" : "fixture"), tut);
     document.getElementById("lsn-steptitle").textContent = step.title || "";
     document.getElementById("lsn-instruction").textContent = step.instruction || "";
 
@@ -666,18 +666,31 @@ window.JDXI_LESSON_RENDERER = (function () {
   }
 
   /*
-   * Lesson badge. The caller says whether it is rendering a canonical
-   * tutorial (ctx.canonical) or a development fixture (default). A fixture
-   * keeps the exact development-warning text and styling; a canonical
+   * Lesson badge. The caller names the kind it is rendering: "tutorial",
+   * "specialty" or "fixture". A fixture keeps the exact development-warning
+   * text and styling; a specialty lesson is marked optional; a canonical
    * tutorial shows its level and guided-path position, derived from the
    * Tutorial object - nothing tutorial-specific lives here.
    */
-  function setBadge(canonical, tut) {
+  function setBadge(kind, tut) {
     var badge = document.getElementById("lsn-badge");
     if (!badge) return;
-    badge.classList.toggle("canonical", canonical);
-    if (!canonical) {
+    badge.classList.toggle("canonical", kind !== "fixture");
+    badge.classList.toggle("specialty", kind === "specialty");
+
+    /*
+     * Three kinds, and the distinction matters. A development fixture must
+     * carry its warning. A specialty lesson is REAL learner content and must
+     * not - it is simply optional, and says so. Treating anything
+     * non-canonical as a fixture labelled the Specialty lessons
+     * "DEVELOPMENT FIXTURE - NOT A TUTORIAL", which was worse than useless.
+     */
+    if (kind === "fixture") {
       badge.textContent = "DEVELOPMENT FIXTURE — NOT A TUTORIAL";
+      return;
+    }
+    if (kind === "specialty") {
+      badge.textContent = "SPECIALTY \u2022 OPTIONAL";
       return;
     }
     var parts = [];

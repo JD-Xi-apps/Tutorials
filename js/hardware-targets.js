@@ -750,7 +750,10 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "control",
       region: { x: 0.0374, y: 0.0986, width: 0.0457, height: 0.1240 },
       group: null,
-      zoom: null,
+      // Derived crop, not a new measurement: the measured region plus ~30px of
+      // top-panel context on each side. Added so the Specialty lessons and the
+      // Explorer can magnify a control that is 144x166px on a 3153px image.
+      zoom: { x: 0.0279, y: 0.0762, width: 0.0647, height: 0.1688 },
       notes: "XLR on the top panel. Mic Sel=Attached feeds 5V — damage risk with non-supplied mics (OM p.15, p.17).",
     },
     autoNoteButton: {
@@ -759,7 +762,10 @@ window.JDXI_HARDWARE_TARGETS = {
       kind: "button",
       region: { x: 0.0495, y: 0.3114, width: 0.0184, height: 0.0523 },
       group: null,
-      zoom: null,
+      // Derived crop, as for micJack. This button is 58x70px on a 3153px
+      // image - the smallest control the course asks anyone to press - so the
+      // crop carries more surrounding context than the region alone.
+      zoom: { x: 0.0304, y: 0.2778, width: 0.0565, height: 0.1195 },
       notes: "Enter+[Auto Note] toggles Chord Edit Switch on 1.50+ (v1.50 p.2).",
     },
     rearPanel: {

@@ -160,6 +160,26 @@ Then compare the working tree against that directory. Rendering is
 deterministic for a given browser build, so an unchanged surface diffs to
 exactly zero pixels; anything else needs an explanation.
 
+## Excluded-content and terminology checks
+
+`validate-data.js` also guards two things the master plan settles and that a
+later edit could quietly undo.
+
+**Excluded guided content.** v1 leaves a specific list of subjects out of the
+guided course, and several of them were taught before the reconciliation, so
+this is a regression guard rather than a theoretical one. It reads **runtime
+data only** — `js/tutorials.js` and `js/specialty.js`. Source notes discuss the
+exclusions at length by design, and a check that failed because a document
+said "Realtime Recording is excluded" would be the crude check the brief warns
+against. `displayNote` is exempt, because the display house rule requires it to
+name its Roland source including a version supplement; B01, B02 and N01 are
+exempt as calibrated baselines.
+
+**Bookmarked versus Favorite.** The app feature is *Bookmarked*; *Favorite* is
+the JD-Xi's own hardware feature. The check runs on the shipped UI in both
+directions: `index.html` and `js/app.js` may not use the app wordings, and the
+three tutorials that teach the hardware feature must still name it.
+
 ## Playwright
 
 Playwright is not a dependency of this repository and is not installed by it.

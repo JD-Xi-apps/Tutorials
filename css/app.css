@@ -582,3 +582,7 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .setting-value { margin-bottom:6px !important; }
 .setting-value b { color:var(--ink); font-size:14px; }
 .tut-row.specialty .tr-id { color:var(--purple); }
+
+/* A specialty lesson is real learner content, marked optional - never the
+   development-fixture warning. */
+.fixture-badge.specialty { border-color:#d8c4f0; background:#f7f2fd; color:var(--purple); }

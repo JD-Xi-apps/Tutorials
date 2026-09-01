@@ -451,6 +451,89 @@ constraint §17 sets alongside the addition.
 
 Canonical image and logo bytes are unchanged throughout, as they have been since B01.
 
+### Second movement: learner state and completion
+
+The learner-state batch moved the baseline once more, and again every difference has a
+named cause. Measured against the `post-reconciliation` baseline, all 38 surfaces differ,
+from exactly three text changes:
+
+| Cause | Surfaces | Shape of the diff |
+|---|---|---|
+| Topbar: *Favorites* → *Bookmarked* | all 38 | one 244 × 15 box at x 1130, y 11 |
+| Lesson head: *Favorite* → *Bookmark* | 36 lesson steps | widens the same band to the lesson head, y 11–100 |
+| Last step: *Next ›* → *Finish Tutorial ✓* | 3 (B01, B02, N01 final steps) | the box spans the page height, because the button sits at the bottom |
+
+`home.png` carries **only** the topbar box — 1331 px, 0.10% — which is the evidence that
+Home's body is untouched by the learner-state work. Every non-final lesson step carries the
+same two-line band and nothing else; only the three final steps differ further, and only
+because their forward button was relabelled.
+
+Both renames are master-plan requirements (§16 and §22), not incidental edits, and
+`tools/validate-data.js` now fails the build if the app reverts to the word *Favorites*.
+
+Canonical image and logo bytes remain unchanged throughout.
+
+## Visual-mode audit (master-plan reconciliation)
+
+The brief (§19) asked for every non-`full` step to be audited after the curriculum
+reconciliation, and explicitly said **not** to chase a target percentage. So this is a
+rule that was applied, and the counts are what fell out of it.
+
+### The rule
+
+> An inset earns its place when the thing the learner must find or operate is too small
+> or too dense to identify in the full view, or when a display state has to be read.
+> **A step that operates no control uses `full`.**
+
+### Counts
+
+| Mode | Canonical (321 steps) | Specialty (22) | Total (343) |
+|---|---|---|---|
+| `full` | 77 | 7 | **84** |
+| `full-plus-inset` | 226 | 15 | **241** |
+| `display-focus` | 18 | 0 | **18** |
+| `control-closeup` | 0 | 0 | **0** |
+
+The inset share is 70%, down from the 76% the brief quoted. That number is a
+consequence, not a target.
+
+### What the audit actually found
+
+Measuring rather than eyeballing turned up two defects and one inconsistency.
+
+**Six steps asked for an inset that could not render.** `micJack` and `autoNoteButton`
+carried no `zoom`, so the Specialty steps using them fell back to the full view and
+silently dropped the magnification they asked for. This is precisely the silent-failure
+class `tools/validate-data.js` guards for canonical steps — and the Specialty checks added
+in the previous batch had not included that rule. Both were fixed: the registry gained a
+derived crop for each control, and the validator now applies the same inset and
+`display-focus` rules to Specialty that it applies to the thirty. Breaking it deliberately
+confirms it fails.
+
+The two crops are **derived, not measured**: each is the existing measured region plus
+surrounding context, in the same proportion the other 90-odd zooms use. Nothing about the
+controls' positions was re-measured or invented, and both were render-verified rather than
+trusted from arithmetic.
+
+**Nine steps used an inset while operating no control.** Five were protect-your-work
+preflights — a decision step, where magnifying a control the learner is being told *not*
+to press yet adds nothing. That was also an inconsistency rather than a design: 21 of the
+25 preflights already used `full`. The other four were read-only steps (*What you are
+building*, *Keeping an edit instead*, *What choosing a destination costs*, *The one screen
+that saves itself*, *One thing to know about recording*). All nine are now `full`.
+
+**Everything else was left alone**, and the measurement says why. Of the 241 remaining
+insets, every one magnifies something the full view cannot resolve. The largest is the
+16-button step row: 46% of the panel's width, but a strip in which each numbered button is
+about 26 px at rendered scale — and TR-REC requires the learner to press button 05 rather
+than button 06, so reading the printed numbers is the whole point. Where a step highlights
+both a large target and a small one — `[partSelectGroup, keys]`, say — the crop follows the
+first target that has a zoom, which is the small one, so the inset shows Part Select rather
+than a magnified photograph of the keyboard.
+
+`control-closeup` remains unused. It exists in the renderer and in the validator's mode
+list, and no step has yet needed a close-up without the full view beside it.
+
 ## Deferred
 
 - **(no longer deferred)** tutorial content: all thirty canonical tutorials are

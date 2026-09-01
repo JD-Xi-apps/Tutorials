@@ -197,13 +197,90 @@ Object.keys(ASSET_BASELINES).forEach((rel) => {
   ok(errors2.length === 0, `no errors when storage is blocked (saw ${errors2.slice(0, 2).join(' | ')})`);
 
   /* And that every route still works without storage. */
-  for (const h of ['#home', '#level/novice', '#favorites', '#settings', '#tutorial/B01/step/3']) {
+  for (const h of ['#home', '#level/novice', '#bookmarks', '#settings', '#tutorial/B01/step/3']) {
     await p2.evaluate((x) => { window.location.hash = x; }, h);
     await p2.waitForTimeout(120);
     const r = await p2.evaluate(() => !!document.querySelector('main:not([hidden])'));
     ok(r, `${h} still renders with storage blocked`);
   }
   ok(errors2.length === 0, 'still no errors after navigating without storage');
+
+  /* ------------------------------------------ cold file:// deep links ---- */
+
+  /*
+   * Every route FAMILY, opened cold from a file:// URL in a fresh context -
+   * not navigated to from the home screen, and not reached by changing the
+   * hash on an already-loaded page.
+   *
+   * This is a different test from the route sweep, which warms up on #home
+   * first. A cold deep link is what a bookmark, a shared link and the
+   * "Learn this in..." buttons all produce, and it is the case where a
+   * surface that depends on something the home screen happened to set up
+   * would fail.
+   */
+  const families = await (async () => {
+    const probe = await b.newContext({ viewport: { width: 1440, height: 900 } });
+    const pp = await probe.newPage();
+    await pp.goto(APP + '#home');
+    await pp.waitForTimeout(400);
+    const picked = await pp.evaluate(() => {
+      const T = window.JDXI_TUTORIALS, C = window.JDXI_COLLECTIONS;
+      const QR = window.JDXI_QUICK_REFERENCE, SP = window.JDXI_SPECIALTY;
+      const EX = window.JDXI_EXPLORER, HW = window.JDXI_HARDWARE_TARGETS;
+      const firstT = Object.keys(T).sort()[0];
+      const firstC = Object.keys(C).filter((c) => (C[c].tutorialIds || []).length)[0];
+      const firstSp = SP.order[0];
+      return [
+        ['#home', 'home'],
+        ['#level/beginner', 'level'],
+        ['#topic/' + firstC, 'topic'],
+        ['#tutorial/' + firstT, 'tutorial (bare)'],
+        ['#tutorial/' + firstT + '/step/3', 'tutorial step'],
+        ['#specialty/' + firstSp, 'specialty (bare)'],
+        ['#specialty/' + firstSp + '/step/2', 'specialty step'],
+        ['#reference', 'quick reference index'],
+        ['#reference/' + QR.order[0], 'quick reference entry'],
+        ['#explorer', 'explorer index'],
+        ['#explorer/view/' + EX.views[0].id, 'explorer view'],
+        ['#explorer/control/' + Object.keys(HW.targets)[0], 'explorer control'],
+        ['#complete/' + firstT, 'completion'],
+        ['#bookmarks', 'bookmarks'],
+        ['#progress', 'progress'],
+        ['#settings', 'settings'],
+        ['#dev/lesson-renderer/step/1', 'development fixture'],
+        ['#not-a-route', 'malformed route fallback'],
+        ['#tutorial/ZZ99', 'unknown tutorial fallback'],
+        ['#tutorial/' + firstT + '/step/999', 'out-of-range step fallback'],
+      ];
+    });
+    await probe.close();
+    return picked;
+  })();
+
+  for (const [hash, label] of families) {
+    const cctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+    const cp = await cctx.newPage();
+    const cerr = [];
+    cp.on('pageerror', (e) => cerr.push('pageerror ' + e.message));
+    cp.on('console', (m) => { if (m.type() === 'error') cerr.push('console ' + m.text()); });
+    cp.on('requestfailed', (r) => cerr.push('failed request ' + r.url().split('/').pop()));
+
+    await cp.goto(APP + hash);
+    await cp.waitForTimeout(420);
+
+    const st = await cp.evaluate(() => ({
+      protocol: window.location.protocol,
+      rendered: !!document.querySelector('main:not([hidden])'),
+      scrollX: document.documentElement.scrollWidth > window.innerWidth,
+      scrollY: document.documentElement.scrollHeight > window.innerHeight,
+    }));
+
+    ok(st.protocol === 'file:', `cold ${label}: served from file://`);
+    ok(st.rendered, `cold ${label}: renders a view`);
+    ok(!st.scrollX && !st.scrollY, `cold ${label}: no page scrollbar`);
+    ok(cerr.length === 0, `cold ${label}: clean console (${cerr.slice(0, 2).join('; ')})`);
+    await cctx.close();
+  }
 
   await b.close();
   report();

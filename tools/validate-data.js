@@ -634,6 +634,25 @@ if (specialty) {
       (st.hardwareTargets || []).forEach((tid) => {
         check(!!targets[tid], `${sat}: unknown hardware target "${tid}"`);
       });
+
+      /*
+       * The same silent-failure rules a canonical step gets. Specialty is
+       * rendered by the same renderer and fails in the same ways, and this
+       * check is here because it was missing: six specialty steps asked for
+       * an inset on targets with no zoom, so the magnification silently did
+       * not happen and nothing reported it.
+       */
+      const resolved = (st.hardwareTargets || []).map((tid) => targets[tid]).filter(Boolean);
+      if (INSET_MODES.indexOf(st.visualMode) >= 0) {
+        check(resolved.some((t) => t.zoom),
+          `${sat}: visualMode "${st.visualMode}" but no target carries a zoom - the inset would not render`);
+      }
+      if (st.visualMode === 'display-focus') {
+        check((st.hardwareTargets || []).indexOf('display') >= 0,
+          `${sat}: display-focus without the "display" target`);
+        check(Array.isArray(st.expectedDisplay) && st.expectedDisplay.length > 0,
+          `${sat}: display-focus with no expectedDisplay`);
+      }
     });
   });
 
@@ -762,6 +781,76 @@ if (explorer) {
     const prose = JSON.stringify(t);
     check(/Favorite/.test(prose),
       `tutorial ${id}: teaches the JD-Xi hardware Favorite but never names it`);
+  });
+}
+
+
+/* ------------------------------------------------ excluded guided content */
+
+/*
+ * v1 excludes a specific list of subjects from the GUIDED course
+ * (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 27, and the reconciliation brief
+ * sec 20). Several of them were taught by the pre-reconciliation candidate,
+ * so this is a regression guard rather than a theoretical one.
+ *
+ * Three deliberate scoping decisions, because a crude version of this check
+ * is worse than none:
+ *
+ * 1. It reads RUNTIME DATA ONLY - js/tutorials.js and js/specialty.js. Source
+ *    notes discuss the exclusions at length, by design: recording why a thing
+ *    was removed is the point of them. A check that failed because a document
+ *    said "Realtime Recording is excluded" would be exactly the crude check
+ *    the brief warns against.
+ * 2. `displayNote` is exempt. It carries the provenance of a reproduced
+ *    screen, and the display house rule REQUIRES it to name the Roland
+ *    document - including a version supplement.
+ * 3. B01, B02 and N01 are exempt. They are calibrated, owner-approved
+ *    baselines, and N01's menu-item list legitimately names screens the
+ *    course does not teach because it is teaching the Menu itself.
+ */
+{
+  const EXEMPT_TUTORIALS = ['B01', 'B02', 'N01'];
+  const EXEMPT_FIELDS = ['displayNote'];
+
+  const EXCLUDED = {
+    'Realtime Recording': /\breal\s?time rec\b|\brealtime record/i,
+    'Pattern Copy': /\bpattern copy\b/i,
+    'sequencer Scale': /\bscale setting\b|\bsequencer scale\b|\bsubdivision\b/i,
+    'velocity/accent': /\bvelocity\b|\baccent\b/i,
+    'USB/MIDI/DAW': /\bUSB\b|\bMIDI\b|\bDAW\b/i,
+    'Backup/Restore': /\bbackup\b|\bUTILITY\b/i,
+    'firmware update': /\bfirmware\b|\bsystem version\b/i,
+    'Interactive Chord': /\binteractive chord\b|\bchord edit\b/i,
+    'Side Chain Compressor': /\bside ?chain\b/i,
+    'Extra Banks': /\bextra bank/i,
+    'Startup Program': /\bstart prog\b|\bstartup program\b/i,
+    'external audio input': /\bguitar\b|\baudio player\b|\bexternal mic/i,
+    /* Music-theory vocabulary the master plan sec 3.3 rules out. "Scale
+       setting" is excluded above as a feature; here "scale" is the musical
+       one, so the negative lookahead keeps the two apart. */
+    'music-theory vocabulary': /\bchords?\b|\bintervals?\b|\bscales?\b(?! setting)|\bsemitones?\b|\bkey signature\b/i,
+  };
+
+  const lessons = [];
+  Object.keys(tutorials || {}).forEach((id) => {
+    if (EXEMPT_TUTORIALS.indexOf(id) >= 0) return;
+    lessons.push([id, tutorials[id].steps || []]);
+  });
+  if (specialty) {
+    (specialty.order || []).forEach((id) => lessons.push([id, specialty.lessons[id].steps || []]));
+  }
+
+  lessons.forEach(([id, steps]) => {
+    steps.forEach((st) => {
+      Object.keys(st).forEach((field) => {
+        if (typeof st[field] !== 'string') return;
+        if (EXEMPT_FIELDS.indexOf(field) >= 0) return;
+        Object.keys(EXCLUDED).forEach((subject) => {
+          check(!EXCLUDED[subject].test(st[field]),
+            `${id} ${st.id}.${field}: teaches "${subject}", which v1 excludes from the guided course`);
+        });
+      });
+    });
   });
 }
 

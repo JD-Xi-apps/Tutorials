@@ -394,7 +394,7 @@ window.JDXI_SPECIALTY = {
           detail:
             "Roland documents a specific consequence: a pattern recorded with Auto Note has its Pitch Bend Range fixed at 24. If you turn Auto Note off and play that pattern back, the pitch changes may not match what you recorded unless the Pitch Bend Range is also set to 24.",
           hardwareTargets: ["autoNoteButton"],
-          visualMode: "full-plus-inset",
+          visualMode: "full",
           whyItMatters:
             "It looks like the pattern has been recorded wrongly, and it has not. Knowing the cause saves you re-recording something that was fine.",
           checkpoint:

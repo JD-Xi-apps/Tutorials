@@ -17,35 +17,55 @@ plan decides what is taught, Roland decides what is true. See
 
 ## Current baseline
 
-The home-screen visual baseline is complete and frozen.
+**All thirty canonical tutorials are authored, and reconciled against the master plan.**
+B01–B10 run as one guided sequence, from *Meet your JD-Xi* to a *First 15-minute
+challenge*; N01–N10 continue from *Learn the menu controls* through building patterns and
+sounds to *Save your work* and *Getting unstuck*; I01–I10 go from *Build a bass sound* to
+a *Performance challenge* played on a groove you built and saved yourself.
 
-**All thirty canonical tutorials are authored.** B01–B10 run as one guided sequence,
-from *Meet your JD-Xi* through to the *First 15-minute challenge*; N01–N10 continue it
-from *Learn the menu controls* through building patterns and sounds to *Save your work*
-and *Getting unstuck*; I01–I10 go from *Build a bass sound* to a *Performance
-challenge*.
+The count is exactly thirty and the ids never move. Everything else is a reference to
+them.
 
-Every control on the home screen now goes somewhere. The level tiles open guided level
-pages, the topic cards open their collections, and My Progress, Favorites and Settings
-are real surfaces. Anything can also be reached by direct link —
-`index.html#level/novice`, `index.html#topic/making-beats`, `index.html#tutorial/B05`,
-or `index.html#tutorial/B05/step/8` for a specific step.
-
-Completed tutorials, where you had got to, and your favourites are kept in the browser's
-own local storage and nowhere else. There is no account and nothing is sent anywhere. If
-storage is unavailable the app stays fully usable and says so; only persistence is lost.
-
-The home screen offers two ways in, and both now work:
+### The six ways in
 
 - **Guided learning path** — Beginner, Novice and Intermediate, each a level page listing
   its ten tutorials in order with your progress against them.
-- **A la carte** — ten topic collections, from *Getting started* to *Mini challenges*,
-  each gathering tutorials from any level. Four further collections (*Sound design*,
+- **Topics** — ten collections on the home screen, from *Getting started* to *Mini
+  challenges*, each gathering tutorials from any level. Four more (*Sound design*,
   *Arpeggiator*, *Troubleshooting*, *Performance*) are reachable from the *Other topics*
   strip on any topic page.
+- **Hardware Explorer** — every control on the instrument, top panel and rear, with what
+  it does in plain language and which tutorial teaches it. Controls the course does not
+  teach are shown too, marked *Not covered in the guided course*.
+- **Quick Reference** — 21 short procedures for looking something up rather than learning
+  it. Destructive ones carry their warning above the procedure.
+- **Specialty** — three optional lessons for the microphone that came with the JD-Xi:
+  Vocoder, AutoPitch and Auto Note. Optional throughout, and never counted toward the
+  thirty.
+- **Search** — one magnifying glass in the topbar, over everything above. Results are
+  grouped, and a step-level hit links to that exact step.
 
-Every tutorial belongs to exactly one guided level and to any number of topics. The
-content itself exists once; levels, topics and Favorites are all references to it.
+Anything can also be reached by direct link — `index.html#level/novice`,
+`index.html#topic/making-beats`, `index.html#tutorial/B05/step/8`,
+`index.html#reference/save-program`, `index.html#explorer/control/cutoffKnob`.
+
+### Progress, and what counts
+
+A tutorial is complete when you press **Finish Tutorial** on its last step. Reaching the
+last step, or deep-linking to it, does not complete anything.
+
+Reopening a tutorial you were part-way through offers **Continue** or **Start over**
+rather than choosing for you. Reopening a completed one gives you a review overview where
+any step is one click away. Finishing B10, N10 and I10 closes the Beginner path, the
+Novice path and the course.
+
+Completions, your place, and your **Bookmarked** lessons are kept in this browser's local
+storage and nowhere else. There is no account and nothing is sent anywhere. If storage is
+unavailable the app stays fully usable and says so; only persistence is lost.
+
+> **Bookmarked is the app feature. Favorite is the JD-Xi's.** The instrument has its own
+> Favorite buttons, which several tutorials teach; the app never uses that word for
+> itself, and `tools/validate-data.js` fails the build if it starts to.
 
 ## Running it
 
@@ -61,14 +81,20 @@ Firefox is the primary target; it is also verified in Chromium.
 Everything in [`tools/`](tools/) is development-only and is never loaded by the app.
 
 ```
-node tools/validate-data.js --beta     # catalog, registry and collections (no dependencies)
-node tools/test-progress.js            # local-state failure modes (no dependencies)
-node tools/qa-runtime.js               # the runtime contract, statically and on file://
+node tools/validate-data.js --beta     # catalog, registry, collections, Quick Reference,
+                                       # Specialty and the Explorer (no dependencies)
+node tools/test-progress.js            # local-state failure modes and the schema-1
+                                       # migration (no dependencies)
+node tools/qa-runtime.js               # the runtime contract, plus a cold file:// load of
+                                       # every route family
 node tools/qa-routes.js --strict-routes --viewports
 node tools/test-behaviour.js           # what the learner experiences, end to end
 node tools/qa-accessibility.js
 node tools/frozen-surfaces.js --out <dir> --compare <baseline>
 ```
+
+Add `--browser firefox` to `qa-routes.js`, or a `firefox` argument to `test-behaviour.js`
+and `qa-accessibility.js`, to run the same suites in the owner's default browser.
 
 The first two need nothing installed. The rest need Playwright, which the repository does
 not depend on and does not install.
@@ -77,4 +103,19 @@ not depend on and does not install.
 
 The app uses a 1440 × 900 reference canvas and scales the entire canvas proportionally to fit the current desktop browser window. There should be no page-level horizontal or vertical scrollbars. Height is the preferred limiting dimension; width limits scale only when required to prevent clipping.
 
-See [`docs/DESIGN-RULES.md`](docs/DESIGN-RULES.md) for the authoritative visual and interaction rules, and [`docs/TUTORIAL-ARCHITECTURE.md`](docs/TUTORIAL-ARCHITECTURE.md) for the authoritative design of the tutorial system. Every technical claim a tutorial makes is reconciled against official Roland documentation in [`docs/ROLAND-SOURCE-MAP.md`](docs/ROLAND-SOURCE-MAP.md) and, per tutorial, in [`docs/tutorials/`](docs/tutorials/).
+See [`docs/DESIGN-RULES.md`](docs/DESIGN-RULES.md) for the authoritative visual and
+interaction rules, and [`docs/TUTORIAL-ARCHITECTURE.md`](docs/TUTORIAL-ARCHITECTURE.md)
+for the authoritative design of the tutorial system.
+
+Every technical claim traces to official Roland documentation:
+
+| Where | What it records |
+|---|---|
+| [`docs/ROLAND-SOURCE-MAP.md`](docs/ROLAND-SOURCE-MAP.md) | which Roland document governs which procedure |
+| [`docs/tutorials/`](docs/tutorials/) | a per-step evidence table for every tutorial, and for the Specialty lessons |
+| [`docs/QUICK-REFERENCE-SOURCES.md`](docs/QUICK-REFERENCE-SOURCES.md) | the source behind each of the 21 procedures |
+| [`docs/HARDWARE-EXPLORER-SOURCES.md`](docs/HARDWARE-EXPLORER-SOURCES.md) | the source behind every control description |
+| [`docs/HARDWARE-TARGETS.md`](docs/HARDWARE-TARGETS.md) | the measured hardware registry |
+
+No Roland PDF is committed to this repository — only links, page references and our own
+reconciliation notes.

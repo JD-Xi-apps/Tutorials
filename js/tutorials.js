@@ -898,11 +898,11 @@ window.JDXI_TUTORIALS = {
         displayNote:
           "Roland's illustration from the Version 1.50 supplementary manual. The number is whatever you set, and the lower line shows your own part and tone name.",
         expectedSound:
-          "Everything you play is a semitone higher than before, keys included.",
+          "Everything you play is very slightly higher than before, keys included — a much smaller move than the OCTAVE buttons make.",
         whyItMatters:
           "Octave steps are big jumps. Transpose moves things by the smallest step there is, which is how you match a sound to a song without learning to play in a different key.",
         checkpoint:
-          "The display briefly shows a TRANSPOSE value, and what you play sounds a semitone higher.",
+          "The display briefly shows a TRANSPOSE value, and what you play sounds slightly higher than it did.",
         recoveryHelp:
           "Hold Shift and press Octave Down once to bring it back to 0. If you have lost track of how far you have shifted, switching the power off and on clears it: Transpose is never saved, and always returns to 0 with the power.",
         nextHint: "Last step: leave things tidy.",
@@ -1159,7 +1159,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "Effect settings belong to the program. The knobs in this tutorial change them, and those changes are not saved until you deliberately save the program. If you have been building something on this program and have not saved it, stop and save it first.",
         hardwareTargets: ["effectsSection"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "Unlike the sound edits in B06, there is no documented one-button way back from an effect change. That makes it worth pausing here rather than afterwards.",
         checkpoint:
@@ -1478,7 +1478,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "The tempo belongs to the program, and so does the shuffle setting. Changing them here replaces whatever this program is currently set to. If you have been building something and have not saved it, save it first.",
         hardwareTargets: ["tempoSection"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "It is a smaller loss than a sound or a pattern, but it is the same kind of loss, and it happens the moment you turn the knob rather than at some later point you could stop at.",
         checkpoint:
@@ -1553,7 +1553,7 @@ window.JDXI_TUTORIALS = {
         title: "About shuffle",
         instruction: "Keep the pattern playing and read this before the next two steps.",
         detail:
-          "Shuffle changes the timing inside the beat rather than the speed of it. Roland describes 50% as notes spaced at equal intervals; raising it gives an increasingly bouncy feel.",
+          "Shuffle changes the timing inside the beat rather than the speed of it. Roland describes 50% as notes spaced evenly; raising it gives an increasingly bouncy feel.",
         hardwareTargets: ["playStopButton"],
         visualMode: "full",
         whyItMatters:
@@ -3190,7 +3190,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "Arpeggio settings are saved within each program, so changing them changes the loaded program. Turning the arpeggiator on and editing its style are both changes of that kind.",
         hardwareTargets: ["arpeggioSection"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "Roland states plainly that arpeggio settings belong to the program. That puts them in the same category as a knob move: not written anywhere, but replacing what is loaded until you save or switch away.",
         checkpoint:
@@ -3587,7 +3587,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "If you do, edit it the way you just practised and then save the program — that is the only way a JD-Xi sound is kept. There is no way to save a sound by itself.",
         hardwareTargets: ["display"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "You now have a method: name what you want, then move one control at a time toward it. What you do not have yet is anywhere to put the result. That is the whole of N09.",
         checkpoint:
@@ -3739,7 +3739,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "You are about to pick one of the JD-Xi's storage slots. If that slot already holds a program, saving replaces it and the previous data is erased. Roland gives one signal and only one: if the destination already holds data, its name appears on the lower line. There is no message that tells you a slot is free, and this tutorial cannot promise you one is. Choose a slot you are willing to overwrite.",
         hardwareTargets: ["programValueButtons", "display"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "This is the only step in the whole Novice path that can destroy something that was not yours to lose. If this JD-Xi is shared, or was bought second hand, one of those slots may hold work someone else cares about.",
         checkpoint:
@@ -3971,7 +3971,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "Everything else on this instrument holds your changes loosely, and loses them when you switch program or power off. The system settings are the exception: the JD-Xi saves them automatically as you leave that screen. There is no confirmation and no undo.",
         hardwareTargets: ["menuWriteButton"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "It reverses the usual advice. Everywhere else, experimenting is cheap because nothing is written. In the system settings, experimenting is written the moment you walk out.",
         checkpoint:
@@ -5217,7 +5217,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "Effect settings belong to the program, and this tutorial will move all four knobs repeatedly. If you have been building something here, save it first.",
         hardwareTargets: ["effectsSection"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "Unlike sound edits, there is no documented one-button way back from an effect change. That makes the decision to go on worth making before you start rather than after.",
         checkpoint:
@@ -5322,7 +5322,7 @@ window.JDXI_TUTORIALS = {
         id: "I06-S07",
         title: "Different sounds want different amounts",
         instruction:
-          "Play a low note, then a held chord high up, then a single bright note, against the same effect settings.",
+          "Play a low note, then hold two or three keys high up, then a single bright note, against the same effect settings.",
         detail:
           "Listen to how the same reverb sounds on each. A bass usually wants almost none of it — reverb on low sounds turns to mud faster than anything. A pad usually wants a lot. A lead wants somewhere in between, and often prefers delay.",
         hardwareTargets: ["keys", "reverbKnob"],
@@ -5446,7 +5446,7 @@ window.JDXI_TUTORIALS = {
         detail:
           "Four parts, chosen to work together: drums to carry the rhythm, a bass to hold the bottom, something in the middle to fill it out, and something on top to play. That set covers most of what music needs, and the JD-Xi gives you exactly four.",
         hardwareTargets: ["partSelectGroup"],
-        visualMode: "full-plus-inset",
+        visualMode: "full",
         whyItMatters:
           "Choosing four sounds you like separately usually produces four sounds that fight. Choosing them for the job each has to do is what makes a program sound like one thing.",
         checkpoint: "You know which of the four parts is going to do which job.",
