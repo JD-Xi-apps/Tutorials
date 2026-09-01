@@ -5,84 +5,106 @@ Source reconciliation record for I10. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **I10 — Performance challenge** (intermediate, order 10, 10 steps, ~20 min) |
+| Tutorial | **I10 — Performance challenge** (intermediate, order 10, 11 steps, ~18 min) |
 | Short title | Performance challenge |
-| Prerequisites | `["I09"]` — advisory, not a gate |
-| Kind | **Challenge.** Composes `I01`–`I09` and the levels below; introduces no new procedure. |
+| Prerequisites | `["I09"]` — advisory; I10 works with any program that has a pattern |
+| Kind | **Course capstone.** Performs an existing saved program; builds and writes nothing. |
 | Authored | 2026-08-31 |
+| Reconciled | 2026-08-31, against `PRODUCT-CURRICULUM-MASTER-PLAN.md` §11 |
+
+## Master-plan reconciliation (2026-08-31)
+
+The brief's verdict: *current candidate wrongly rebuilds the project and backs it up.* Both are
+accurate, and both are gone.
+
+The previous I10 spent six of its ten steps rebuilding a bass, a pad, a lead, a pattern, a
+balance and an effects setup from nothing — repeating `I01`–`I08` in miniature — then saved, then
+performed for one step, then took a backup. The master plan's role for I10 is the opposite:
+**use the saved I07–I09 creation.** No rebuilding, no Backup.
+
+| Master-plan requirement | Before | Now |
+|---|---|---|
+| **load** the saved creation | rebuilt it instead | `I10-S01` |
+| start pattern | yes | `I10-S02` |
+| mute/unmute Parts | one step, among others | `I10-S03` |
+| Tempo / Tap Tempo | **absent** | `I10-S04` |
+| play one selected Part over the pattern | yes | `I10-S05` |
+| Pitch | **absent** | `I10-S06` |
+| Mod | **absent** | `I10-S06` |
+| Octave/Transpose where useful | **absent** | `I10-S07` |
+| Arpeggiator if suitable | **absent** | `I10-S08` |
+| adjust an effect live | **absent** | `I10-S09` |
+| use several tools, **not every control** | **absent** | `I10-S10` |
+| stop cleanly | **absent** | `I10-S11` |
+
+So nine of the eleven performance behaviours the master plan lists were missing from the
+tutorial named *Performance challenge*, because its time went on construction.
+
+**`I10-S10` deserves naming.** The master plan says "use several appropriate performance tools,
+not every control regardless of fit", which is a judgement rather than a procedure. The step
+makes it explicit: play the groove once more using only the two or three controls that actually
+suited it. Without it, a capstone that walks through eight controls in order teaches the
+opposite of what the plan asks.
+
+**Transpose is offered only where useful.** `I10-S07` covers register with the OCTAVE buttons and
+does not reach for Transpose, which shifts in semitones and is rarely what a performance needs
+mid-loop. The master plan's wording is "Octave/Transpose where suitable", and octave is the one
+that suits.
 
 ## Sources consulted
 
-**I10 introduces no source of its own**, on the same principle as `B10`: a challenge that
-re-argued its sources would be a second place for the same claim to drift. Every action it
-asks for was taught and reconciled earlier, and this table records where.
+| Source | Where it is used |
+|---|---|
+| Owner's Manual `eng07` | **p.5** *Choosing a Program*, *Choosing a Part to Play* and its MEMO, *Selecting a Favorite*; **p.6** *Changing the Tempo* and its MEMO, *Changing the Keyboard Range in Octave Units*, *Applying Pitch Bend or Vibrato*, *Playing an Arpeggio* and *Using the Hold function*; **p.8** FILTER; **p.9** the Reverb knob; **p.10** *Basic Operation of the Pattern Sequencer*, *Muting a specific part (Part Mute)* |
+| Parameter Guide `e01` | **p.6** arpeggio settings saved within each program |
+| `docs/ROLAND-SOURCE-MAP.md` | §7 rows 3 (program selection), 5 (parts), 22 (tempo), 26 (part mute), 41–43 (octave, pitch/mod, favorites); §9 the I10 row |
 
-| Step | Action | Where it was taught and sourced |
-|---|---|---|
-| **I10-S01** Start somewhere you can afford to lose | Choosing a program slot; the user banks | `I09` — `docs/tutorials/I09-SOURCE-NOTES.md` (OM p.4); `N09` for saving |
-| **I10-S02** Build a bass | Analog oscillator, Sub OSC, filter, short envelope | `I01` — `docs/tutorials/I01-SOURCE-NOTES.md` (OM p.5, p.8; PG p.4 for the upper-range caveat) |
-| **I10-S03** Build a pad | Digital part, slow attack and long release, slow movement | `I02` — `docs/tutorials/I02-SOURCE-NOTES.md` (PG p.7, pp.17–18) |
-| **I10-S04** Build a lead | Bright starting point, immediate envelope | `I03` — `docs/tutorials/I03-SOURCE-NOTES.md` (OM p.8; PG p.15, p.18) |
-| **I10-S05** Make a pattern | The recording methods and their overwrite behaviour | `N04`, `N05` and `I08` (OM pp.11–12; PG p.3) |
-| **I10-S06** Balance and place the parts | Per-part Level and Pan; the OFFSET group | `N06` and `I07` (PG p.10, p.11) |
-| **I10-S07** Set up the effects | Effect types, Part Output, send levels; the shared-effects constraint | `I06` — `docs/tutorials/I06-SOURCE-NOTES.md` (PG p.8, p.10, p.26); `B07` for the not-applied list (OM p.17) |
-| **I10-S08** Save it before you perform | The WRITE sequence and choosing a destination | `N09` — `docs/tutorials/N09-SOURCE-NOTES.md` (OM p.9) |
-| **I10-S09** Perform it | Part mute; the Pitch and Mod controls; one playable part at a time | `B08`, `N06` (OM p.10) and `B05` (OM p.6) |
-| **I10-S10** Keep it, and keep a copy | Saving again; Backup and Roland's whole-folder instruction | `N09` and `I09` (OM p.9, p.14) |
+## Per-step reconciliation
 
-No claim in I10 goes beyond the tutorial it points at. Where a fact is repeated — the
-analog part's upper-range limit, the shared set of effects, brightness before volume — it
-is repeated with the same hedges as its source tutorial.
-
-## A challenge, not an exam
-
-The architecture gives I10 the intent "assemble, save, and play a complete personalized
-setup", and the production brief adds that it should integrate skills without creating a
-new hidden curriculum. As authored:
-
-- **nothing new is introduced.** Not one control, gesture, menu or display state appears
-  that `B01`–`I09` did not already teach, and I10 shows no `expectedDisplay` at all;
-- no step is scored, timed or gated, and none can be failed;
-- instructions name the outcome rather than the button ("build a bright, immediate sound
-  on the other digital part"), which is what makes it a challenge — but the target
-  highlights still show the controls, so a learner who has forgotten is not stranded;
-- every `recoveryHelp` names the tutorial that taught the action, plus the single most
-  likely concrete stumble from it;
-- no result is called better, correct or professional;
-- the twenty minutes are an expectation, not a limit, and the learner may stop at any
-  point.
-
-## The order is the argument
-
-I10's steps are deliberately in build order rather than tutorial order: foundation
-(bass), background (pad), foreground (lead), rhythm, balance, space, save, perform. That
-is the order the Intermediate tutorials teach in, and it is also the order the work
-actually has to happen in — you cannot balance parts that do not exist, and you cannot
-route effects for parts you have not placed.
-
-**Saving comes before performing, not after**, and I10-S08 says why in its
-`whyItMatters`: performing means pressing things, and pressing things is how unsaved work
-disappears. That is a deliberate inversion of the obvious order, and it is the single most
-useful habit this level can leave a learner with.
+| Step | Targets | Mode | Learner-facing factual claims | Support |
+|---|---|---|---|---|
+| **I10-S01** Protect anything unsaved, and load your groove | `favoriteButton`, `programValueButtons` | `full-plus-inset` | A Favorite button or the Value buttons recall a stored program; loading discards whatever is loaded and unsaved. | OM p.5 *Selecting a Favorite* and *Choosing a Program*; OM p.6/p.9/p.12 for the discard. The recovery gives the bank walk (`[Shift]` + Value, OM p.5) and says the tutorial works on any program with a pattern. |
+| **I10-S02** Start the pattern | `playStopButton` | `full-plus-inset` | The transport plays the pattern. Muted parts stay muted. | OM p.10 for both. |
+| **I10-S03** Take parts out and bring them back | `shiftButton`, `partSelectGroup` | `full-plus-inset` | `[Shift]` + Part Select mutes; the same combination unmutes; several parts can be muted; nothing stored changes. | OM p.10 *Muting a specific part*, quoted in substance. That the stored program is untouched is the absence of any documented write for muting. |
+| **I10-S04** Push the tempo | `tempoKnob`, `tapButton` | `full-plus-inset` | The tempo knob sets the tempo; `[Tap]` pressed three or more times sets it by tapping; the tempo is saved per program and shared with the pattern. | OM p.6 *Changing the Tempo* and its MEMO. **Roland's "at quarter-note intervals" is not quoted** — the step says "at the speed you want", per master plan §3.3, the same handling `B09-S04` uses. |
+| **I10-S05** Play a part over the top | `partSelectGroup`, `keys` | `full` | The keys play one selected part while the pattern sounds the rest. | OM p.5 *Choosing a Part to Play* and its MEMO: "you can make multiple parts be heard simultaneously by recording them to a pattern." |
+| **I10-S06** Bend and shake what you play | `pitchControl`, `modControl` | `full-plus-inset` | Pitch returns to the centre on release; Mod stays where it is left and applies nothing when fully toward you. | OM p.6 *Applying Pitch Bend or Vibrato*, both wheels. |
+| **I10-S07** Move the keyboard to suit the part | `octaveButtons` | `full-plus-inset` | The OCTAVE buttons shift the keyboard in octave steps; both together reset to 0; they have no effect on the Drums part. | OM p.6, all three facts, including "The OCTAVE [Down][Up] buttons don't affect the Drums part." |
+| **I10-S08** Let the arpeggiator play, if it suits | `arpeggioOnButton`, `keys` | `full-plus-inset` | ARPEGGIO `[ON]` turns the function on; holding notes plays an arpeggio; it runs at the program's tempo; `[Key Hold]` can leave notes sounding. | OM p.6 *Playing an Arpeggio* steps 1–2 and *Using the Hold function*; the shared tempo follows from OM p.6's tempo MEMO and the absence of any arpeggio tempo in PG p.29's parameter table. Marked as suiting some grooves and not others, per "Arpeggiator if suitable". |
+| **I10-S09** Move something while it plays | `cutoffKnob`, `reverbKnob` | `full-plus-inset` | Cutoff and Reverb change the sound while the pattern runs; none of it is written unless you save. | OM p.8 and p.9 for the controls; OM p.6/p.9 for the not-written-unless-saved fact, which is what makes this step safe on a program the learner has just stored. |
+| **I10-S10** Use what fits, not everything | `partSelectGroup`, `tempoSection`, `pitchControl` | `full` | No new claim. | A judgement step; every control referenced is documented above. |
+| **I10-S11** Stop cleanly | `playStopButton`, `modControl` | `full-plus-inset` | The transport stops the pattern; the Mod control stays where left; the arpeggiator and Key Hold stay on until switched off. | OM p.10 for the transport; OM p.6 for the Mod wheel and the arpeggio buttons. That the saved program is untouched by the session is the absence of any write in the whole tutorial. |
 
 ## Direct-entry safety
 
-**I10-S01 is the protect-your-work step**, and it takes a different shape from the usual
-preflight because I10's whole premise is building over a program. Rather than asking the
-learner to protect the loaded program, it asks them to *choose* one they are willing to
-rebuild — which is the honest framing when the tutorial's first action is to replace all
-four parts.
+**`I10-S01` is the preflight and the load, combined.** That is deliberate and is the shape
+`tools/validate-data.js` explicitly permits — the comment in its preflight check names I10 as
+the case where "the preflight IS the step that has the learner choose a program", so the warning
+and the choice are one act.
 
-Nothing in I10 assumes the learner arrived through `I09` or through any prerequisite: each
-step names the tutorial that covers it, so a learner entering I10 first has a route into
-every action it asks for.
+The tutorial is written to work for a learner who never completed `I07`–`I09`: `I10-S01`'s
+recovery says that if no saved groove exists, any preset program with a good pattern will do, and
+no later step reads anything specific to the learner's own program.
+
+## Destructive-risk handling
+
+**I10 writes nothing and destroys nothing** beyond the discard at `I10-S01`, which is unavoidable
+in a step whose purpose is to load a program.
+
+That is the source of the tutorial's unusual freedom, and it is stated to the learner at
+`I10-S09` and again at `I10-S11`: because the groove is already saved, every knob sweep, mute and
+tempo change during the performance is free, and the stored program is exactly as I09 left it.
+This is the first time in the course a learner can experiment with nothing at stake, and the
+capstone says so.
 
 ## Deliberate omissions
 
-- **Saving is performed, and Restore is not.** I10-S10 points at `I09` for backing up and
-  never suggests restoring.
-- **No display state is reproduced.** Every screen I10 might have shown belongs to a
-  tutorial that already shows it with its provenance.
-- **No firmware-gated feature is required.** Shuffle, Transpose, the side-chain
-  compressor, Startup Program and the export features are all absent from I10, so the
-  challenge is completable on a baseline instrument.
+- **Rebuilding anything.** Excluded by the brief. I10 is a performance, not a construction.
+- **Backup** (OM p.15). Excluded from v1, and removed from the previous closing step along with
+  the USB connection it needed.
+- **Transpose.** Available and documented (v1.50 p.2), and not used — see *Master-plan
+  reconciliation*. The master plan's wording permits either.
+- **Recording the performance.** Realtime Recording is excluded from v1, so a performance here
+  is played and not captured. The tutorial does not suggest otherwise.
+- **New procedure of any kind.** Every control I10 uses was taught by an earlier tutorial, which
+  is what makes it a challenge rather than a lesson.

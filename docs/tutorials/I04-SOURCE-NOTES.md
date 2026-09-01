@@ -8,62 +8,98 @@ Source reconciliation record for I04. Content lives in `js/tutorials.js`
 | Tutorial | **I04 — Filter and envelope shaping** (intermediate, order 4, 10 steps, ~12 min) |
 | Short title | Filter and envelope |
 | Prerequisites | `["I03"]` — advisory, not a gate |
-| Kind | **Conceptual, with hands on.** Names the two tools the learner has been using. |
+| Kind | **Comparative lab.** Edits one sound repeatedly, restoring between experiments. |
 | Authored | 2026-08-31 |
+| Reconciled | 2026-08-31, against `PRODUCT-CURRICULUM-MASTER-PLAN.md` §10 |
+
+## Master-plan reconciliation (2026-08-31)
+
+This is the largest single rewrite in the Intermediate path. The brief lists five exclusions
+for I04 — *no ADSR diagram lesson, no filter-frequency theory, no velocity-sensitivity
+curriculum, no drum TVF/TVA architecture, no taxonomy for its own sake* — and the previous
+tutorial contained four of the five.
+
+| Old step | What it was | Which exclusion |
+|---|---|---|
+| old S03 | Roland's four filter types, stepped through and named | taxonomy for its own sake |
+| old S04–S08 | Attack, Decay, Sustain and Release set individually, then both envelopes compared | ADSR diagram lesson |
+| old S09 | the amp's level velocity sensitivity | velocity-sensitivity curriculum |
+| old S10 | the same envelope ideas applied to the Drums part | drum TVF/TVA architecture |
+
+What the master plan actually asks for is a **comparative practical lab**: one existing sound,
+roughly three contrasting versions, Cutoff / Resonance / Envelope, restoring or reselecting
+between experiments, and choosing controls deliberately to solve a stated sound goal. None of
+that requires a menu, and the reconciled tutorial opens none.
+
+The new shape is three versions from one tone — soft, plucky, biting — with `[Shift]` +
+`[Enter]` restoring between each, followed by a step that names which control did which job and
+a step that sets a goal and makes the learner choose for themselves.
+
+**The restore is taught before it is needed** (`I04-S03`), on a sound that has not been edited,
+so the learner has pressed the combination once before it matters. That is the difference
+between a lab that works and one where every version is built on the last.
+
+<!-- removed-steps:begin -->
+
+No id vanished — I04 still has ten steps — but eight of them are new content. The ids were
+reused by the rewrite, so the old steps are named above by position rather than by id.
+
+<!-- removed-steps:end -->
 
 ## Sources consulted
 
 | Source | Where it is used |
 |---|---|
-| Owner's Manual `eng07` | **p.8** *Adjusting the Brightness and Thickness (FILTER)* — the four digital filter types, the analog restriction, the Cutoff and Resonance knobs and the Type button; *Adjusting the Loudness and Envelope (AMP/ENV)* — the envelope diagram and the A/D/S/R definitions; **p.5** the `[Shift]` + `[Enter]` revert |
-| Parameter Guide `e01` | **pp.17–18** the digital tone's FILTER and AMP groups — the filter envelope's Depth ("Specifies the direction and depth"), the four amp envelope stages, and Level V-Sens; **pp.12–13** the analog equivalents; **pp.23–25** the Drum Kit's TVF and TVA |
-| `docs/ROLAND-SOURCE-MAP.md` | §7 rows 18 (filter), 19 (AMP/ENV); §9 the I04 row |
+| Owner's Manual `eng07` | **p.5** *Choosing a Tone*, and `[Shift]` + `[Enter]` returning to the original sound, with the tone-number signal; **p.6** *Saving*; **p.8** FILTER (`[Cutoff]`, `[Resonance]`) and AMP/ENV (`[Envelope]`, with Roland's left/right sentence); **p.9** *Saving a Sound (Program) (WRITE)*; **p.10** the transport |
+| `docs/ROLAND-SOURCE-MAP.md` | §7 rows 11–12 (filter, amp/envelope), 34 (recovery scope); §8.2 losing unsaved work; §9 the I04 row; Q10 (no general undo) |
 
 ## Per-step reconciliation
 
 | Step | Targets | Mode | Learner-facing factual claims | Support |
 |---|---|---|---|---|
-| **I04-S01** Protect any work you want to keep | `display` | `full-plus-inset` | Editing replaces what is loaded; `[Shift]` + `[Enter]` returns to the original sound. | OM p.6, p.9; OM p.5 for the revert, in scope because these are sound edits. |
-| **I04-S02** Get a bright, steady sound | `digitalSynth1Button`, `toneButtons` | `full-plus-inset` | A filter can only remove what is present. | The plain meaning of OM p.8's filter description and its diagrams, which draw cut regions rather than added content. |
-| **I04-S03** The four filter types | `filterTypeButton`, `cutoffKnob` | `full-plus-inset` | Digital parts offer low-pass, high-pass, band-pass and peaking; the lit indicator shows which; the Analog Synth part has low-pass only. | OM p.8: "Digital Synth/Drums part — You can use Digital LPF (Low Pass Filter), HPF (High Pass Filter), BPF (Band Pass Filter), or PKG (Peaking Filter)", "The filter whose indicator is lit is selected", "Analog Synth part — Only Analog LPF is available." The plain-language gloss of what each removes follows OM p.8's own diagrams, which draw the cut region for each type. |
-| **I04-S04** Depth decides direction as well as amount | `menuWriteButton`, `programValueButtons` | `full-plus-inset` | The filter envelope's Depth specifies the direction as well as the depth of the change; a negative value closes the filter as the envelope rises. | PG p.17: "Depth −63–+63 — Specifies the direction and depth to which the cutoff frequency will change." The sign convention is Roland's range; the audible consequence is stated as what the learner will hear, and the step has them try both. |
-| **I04-S05** Attack and decay | `shiftButton`, `programValueButtons` | `full-plus-inset` | Attack is the time to reach maximum level; decay is the fall from maximum to the sustain level. | OM p.8's A and D definitions, quoted almost intact. |
-| **I04-S06** Sustain is a level, not a time | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Sustain is the volume held while the key is down; the other three are times. | OM p.8: "S: Sustain time — Volume at which the sound will be sustained while you hold down the key." Roland's own label says *time* while its definition says *volume*; I04 follows the definition, and says plainly that sustain is a level. See *One place Roland's label and definition disagree*. |
-| **I04-S07** Release is what happens after you | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Release is the time from releasing the key until the sound decays. | OM p.8's R definition. |
-| **I04-S08** Two envelopes, one sound | `shiftButton`, `cursorRightButton` | `full-plus-inset` | The amp envelope shapes loudness and the filter envelope shapes brightness; they are separate. | PG pp.17–18: two separate envelopes in two separate groups. |
-| **I04-S09** Make it respond to your hands | `cursorRightButton`, `programValueButtons` | `full-plus-inset` | Level velocity sensitivity decides how much the volume varies with playing strength, and runs both ways from zero. | PG p.18: "Level V-Sens (Amp Level Velocity Sense) −63–+63 — Specifies how the volume will vary according to the strength with which you play the keyboard." |
-| **I04-S10** The same idea on the Drums part | `drumsButton` | `full-plus-inset` | The Drums part has the same tools under different names — TVF and TVA — and each instrument has its own set. | PG p.8: "TVF (Time Variant Filter) — This specifies how the frequency components of the sound change over time. TVA (Time Variant Amplifier) — This creates volume changes and specifies the pan." PG p.7: a kit contains 26 partials of WAVE, TVF and TVA. That the panel knobs act on the most recently played drum instrument follows OM p.11's TR-REC behaviour and OM p.8's note that the Drums part can be edited individually for each instrument. |
-
-## One place Roland's label and definition disagree
-
-Roland's envelope diagram at OM p.8 labels the third stage **"S: Sustain time"** and then
-defines it as **"Volume at which the sound will be sustained while you hold down the
-key"** — a level, not a time. The Parameter Guide's own parameter is a level too.
-
-I04-S06 teaches the definition rather than the label, and makes the point explicitly
-("Sustain is a level, not a time"), because the mismatch is exactly what makes sustain the
-stage learners misunderstand. This is not a conflict between sources — both Roland
-documents describe a level — so it is not an escalation; it is a label that reads as a
-fourth time value when it is not, and the tutorial says so.
+| **I04-S01** Protect any work you want to keep | `filterSection`, `ampEnvSection` | `full` | The tutorial edits one sound repeatedly and discards each version. | OM p.6 and p.9 for the discard. The unusual emphasis is a property of this tutorial, not a Roland claim. |
+| **I04-S02** Choose one sound and stay with it | `digitalSynth1Button`, `toneButtons` | `full-plus-inset` | Part Select and Tone `[-]` `[+]` choose the sound. | OM p.5. "Bright and sustained gives you the most room" is a teaching judgement, written as one. |
+| **I04-S03** Learn the way back first | `shiftButton`, `enterButton` | `full-plus-inset` | `[Shift]` + `[Enter]` returns the original sound after you have switched or edited it. It reaches the sound only. | OM p.5: "If you want to return to the original sound after you've switched or edited the sound, hold down the [Shift] button and press the [Enter] button." The scope limit — not effects, not pattern — is the absence of any Roland statement extending that sentence, and is the same boundary `B07` and `N08` observe. |
+| **I04-S04** Version one: soft and distant | `cutoffKnob`, `resonanceKnob`, `envelopeKnob` | `full-plus-inset` | Cutoff down, Resonance low and the Envelope knob right give a soft, slow sound. | OM p.8 for all three controls, including "turning the knob toward the right makes the attack softer and the release longer". The combination is the tutorial's, the behaviour of each control is Roland's. |
+| **I04-S05** Version two: short and plucky | `shiftButton`, `enterButton`, `envelopeKnob` | `full-plus-inset` | Restoring first returns the starting sound; the Envelope knob left gives a shorter sound with a stronger attack. | OM p.5 for the restore and OM p.8 for the knob, verbatim in substance. The recovery's test — that the tone number reappears — is OM p.5's tone-number signal used as confirmation that the restore took. |
+| **I04-S06** Version three: bright and biting | `shiftButton`, `cutoffKnob`, `resonanceKnob` | `full-plus-inset` | Resonance emphasises the sound around the cutoff point and the peak follows Cutoff. | OM p.8. The loudness warning is gain behaviour, given as advice with Master Volume named. |
+| **I04-S07** Which control did which job | `cutoffKnob`, `resonanceKnob`, `envelopeKnob` | `full` | Recap only: Cutoff decided brightness, Resonance decided edge, the Envelope knob decided the shape in time. | The three sentences are compressions of OM p.8's own descriptions. No new claim. |
+| **I04-S08** Now solve a real goal | `cutoffKnob`, `resonanceKnob`, `envelopeKnob` | `full` | No new procedural claim — the learner chooses the controls. | Same three controls, same page. The step deliberately gives no settings, which is the master plan's "choose controls deliberately for a practical sound goal". |
+| **I04-S09** Test it against the pattern | `playStopButton`, `keys` | `full` | No new claim. | OM p.10 for the transport. |
+| **I04-S10** Keep it or put it back | `shiftButton`, `enterButton` | `full-plus-inset` | Saving keeps the version; `[Shift]` + `[Enter]` restores the original and discards it. | OM p.9 WRITE and OM p.5 for the restore. The recovery states plainly that a restored version cannot be recovered, which is true — no redo is documented anywhere. |
 
 ## Direct-entry safety
 
-**I04-S01 is the protect-your-work preflight**, and it names the documented revert in the
-same breath, because I04 is a tutorial of deliberate experiments and the learner will want
-a way back repeatedly.
+**I04 carries its preflight at `I04-S01`**, before the tone selection at `I04-S02`.
 
-I04 assumes nothing about which filter type is currently selected, what any envelope stage
-is set to, or which part was selected on entry. I04-S03's `recoveryHelp` covers the case
-where the Type button offers only one type — the learner is on the analog part — and
-I04-S05's covers hearing no decay because sustain is at maximum.
+The preflight is worded more strongly here than in the other sound-design tutorials, and
+deliberately: I04's *method* is to destroy edits repeatedly. Most tutorials risk the learner's
+work by accident; this one restores over its own work three times as the exercise.
+
+I04 assumes nothing about which program or tone is loaded or how the panel knobs are set.
+`I04-S02` chooses the sound and `I04-S03` establishes the way back before anything is changed.
+
+## Destructive-risk handling
+
+`[Shift]` + `[Enter]` is used four times, and every use is on an edit the learner made moments
+earlier as part of the exercise. That is the safest possible framing for a destructive move: the
+thing destroyed is always the thing the tutorial just asked them to create.
+
+The tutorial never claims the combination is a general undo. `I04-S03` states its scope up
+front, and `I04-S10`'s recovery says that a restored version cannot be recovered — followed by
+the honest and useful consolation that the learner knows exactly which three controls made it.
 
 ## Deliberate omissions
 
-- **Filter slope** (OM p.8: "You can change the slope of the filter") is named nowhere.
-  It is real and documented, but it is a refinement on a distinction the learner has only
-  just met.
-- **Key follow** (PG p.18's Level KF) is not taught, although it sits beside velocity
-  sensitivity. One responsiveness parameter is enough for one step.
-- **The filter envelope's own velocity sensitivity** is omitted for the same reason.
-- **Drum TVF/TVA parameters** are named as existing (I04-S10) but not opened. Editing one
-  instrument of a kit is a level of detail beyond this tutorial's purpose.
+- **The four filter types.** Roland names Digital LPF, HPF, BPF and PKG and gives diagrams
+  (OM p.8). Naming them is the taxonomy the brief excludes. `B06` already teaches the Type
+  button as an ear-first control, and the Hardware Explorer carries the list.
+- **A/D/S/R as stages.** OM p.8 prints a labelled diagram defining all four. It is not used, and
+  the stage names appear nowhere in I04. This is the exclusion the previous tutorial most
+  clearly broke.
+- **Velocity sensitivity.** Excluded by name, and velocity/accent instruction is outside v1
+  entirely (master plan §13).
+- **Drum TVF/TVA architecture.** Excluded by name. `N04` teaches the one drum-sound edit v1
+  wants, on the panel.
+- **Filter-frequency theory.** No frequency, slope or curve is mentioned; every instruction is
+  a direction and a listening test.

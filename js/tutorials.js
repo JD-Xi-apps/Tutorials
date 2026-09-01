@@ -4073,7 +4073,7 @@ window.JDXI_TUTORIALS = {
         checkpoint:
           "You would recognize that screen and know which button answers no.",
         recoveryHelp:
-          "Press Exit. If you have already answered yes, the saved programs are gone and there is nothing on the instrument that brings them back — which is the argument for keeping a backup on a computer, and for saving to slots you have chosen deliberately.",
+          "Press Exit. If you have already answered yes, the saved programs are gone and there is nothing on the instrument that brings them back. That is the whole argument for saving deliberately, to slots you chose, and for never pressing Enter on a screen you do not recognise.",
         nextHint: "Last step: the honest summary.",
       },
       {
@@ -4139,192 +4139,203 @@ window.JDXI_TUTORIALS = {
     title: "Build a bass sound",
     shortTitle: "Bass sound",
     summary:
-      "Use the Analog Synth part and build a bass from its raw waveform up: pick the oscillator, add weight underneath it, then shape the attack with the filter and amp envelopes.",
-    estimatedMinutes: 13,
+      "Start from a bass the JD-Xi already has and make it yours: darker, tighter, with more or less growl. The aim is a solid low sound you would actually use, not a recipe.",
+    estimatedMinutes: 12,
     prerequisites: ["N09"],
     learningGoals: [
-      "Choose the Analog Synth's oscillator waveform on purpose.",
-      "Add weight with the sub-oscillator.",
-      "Shape a bass with the filter and its envelope.",
-      "Know the analog part's documented limits.",
+      "Start from an existing bass tone and reshape it.",
+      "Use Cutoff and Resonance to set weight and growl.",
+      "Shape how each note starts and stops.",
+      "Judge a bass by how it sits under a pattern.",
     ],
     // Source record: docs/tutorials/I01-SOURCE-NOTES.md
-    // The Analog Synth part is chosen deliberately: its oscillator, sub
-    // oscillator and pulse width have real front-panel controls (OM p.5), so
-    // the learner builds from the waveform up with their hands rather than
-    // through a menu. Two documented limits are taught rather than left to be
-    // discovered: analog offers LPF only (OM p.8), and the square wave and
-    // Sub OSC may not sound in the upper range (PG p.4).
+    // I01 RESHAPES AN EXISTING TONE (PRODUCT-CURRICULUM-MASTER-PLAN.md
+    // sec 10). It is deliberately not an oscillator-up build: waveform
+    // controls appear only as an optional step, "only as needed".
+    //
+    // Every shaping control is on the panel. Tone Edit is not opened -- the
+    // per-stage envelope work belongs to I04's comparative lab.
+    //
+    // There is no save requirement. The closing step is an offer.
     steps: [
       {
         id: "I01-S01",
         title: "Protect any work you want to keep",
         instruction: "Decide whether this program holds work you have not saved.",
         detail:
-          "You will select a tone and edit it. Both replace what is loaded. If you have something here you want, save it first.",
-        hardwareTargets: ["programValueButtons", "toneButtons"],
+          "You will select a tone and then edit it. Both replace what is loaded. If you have something here you want, save it first.",
+        hardwareTargets: ["toneButtons"],
         visualMode: "full",
-        checkpoint: "You have decided: either there is nothing to keep, or you have saved it.",
+        whyItMatters:
+          "Selecting a tone discards an unsaved edit, and this tutorial starts by selecting one. That makes the first step of the sound-design path the same as every other risky moment on this instrument.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. A missing tone number on the lower line of the display means the loaded sound has already been edited.",
-        nextHint: "Now go to the part with its own oscillator controls.",
+          "N09 Save your work teaches saving. If you would rather work somewhere disposable, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now find a bass to start from.",
       },
       {
         id: "I01-S02",
-        title: "Select the Analog Synth",
-        instruction: "Press Analog Synth, and play a low key.",
+        title: "Start from a bass the JD-Xi already has",
+        instruction:
+          "Press Analog Synth, then use Tone − and Tone + until you find something low and solid.",
         detail:
-          "This part has real analog circuits for its oscillator, sub-oscillator and filter, and it is the only part with waveform controls on the panel.",
-        hardwareTargets: ["analogSynthButton"],
+          "Play a key near the left end after each change. You are not looking for the finished sound — you are looking for a reasonable starting point with weight to it.",
+        hardwareTargets: ["analogSynthButton", "toneButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A single synth sound, played low.",
+        expectedSound:
+          "A low, weighty synth sound. Some will be buzzy, some rounder; any of them will do.",
         whyItMatters:
-          "Building a bass here means you can reach for the waveform with your hand instead of walking a menu, which makes the effect of each choice immediate.",
-        checkpoint: "The keys play the Analog Synth part.",
+          "Starting from a tone that already works is faster and more useful than starting from nothing. Roland's own bass sounds have had decisions made about them that you can then disagree with, which is a much better way to learn than an empty patch.",
+        checkpoint: "You have a low sound you would be happy to work on.",
         recoveryHelp:
-          "If it is silent, check the Category dial is not set to Vocoder/AutoPitch — Roland notes the Analog Synth part becomes unavailable while one of those is selected.",
-        nextHint: "Start at the beginning of the signal: the raw waveform.",
+          "The Analog Synth part has no Category dial — Tone − and + are the only way through its sounds, and there are not many, so you can step through the lot in a minute. If you hear nothing, check Master Volume and that Analog Synth is selected.",
+        nextHint: "Now take the top off it.",
       },
       {
         id: "I01-S03",
-        title: "Choose the oscillator waveform",
-        instruction: "Press the Oscillator button and listen to each waveform.",
+        title: "Take the top off",
+        instruction:
+          "Hold a low key and turn Cutoff to the left until the buzz goes, then back a little.",
         detail:
-          "It steps between a sawtooth, a triangle and a square wave; the lit indicator shows which is selected. For a bass, the sawtooth is bright and full and the square is hollower.",
-        hardwareTargets: ["oscillatorButton"],
+          "You are looking for the point where it stops being bright and starts being weight. Go too far first so you know where too far is, then come back.",
+        hardwareTargets: ["cutoffKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "Three clearly different raw tones — buzzy, soft and rounded, and hollow.",
+          "The fizz and buzz coming off the top, leaving something round and low.",
         whyItMatters:
-          "Everything downstream shapes this. Choosing the waveform first is choosing what the filter and envelope will have to work with.",
-        checkpoint: "You have heard all three and chosen one.",
+          "Almost every bass sound on any synthesizer is a bright sound with the top taken off. This one knob does most of the work, and doing it by ear beats any number you could be given.",
+        checkpoint: "The sound is round and low rather than buzzy.",
         recoveryHelp:
-          "Keep pressing to step round to the one you want. Nothing here is written until you save the program.",
-        nextHint: "Now add weight underneath it.",
+          "Turn Cutoff back to the right to undo it by ear. If the sound disappears entirely you have closed the filter all the way — come back right until it returns.",
+        nextHint: "Now decide how much growl you want.",
       },
       {
         id: "I01-S04",
-        title: "Add the sub-oscillator",
-        instruction: "Press the Sub OSC button and play a low key again.",
+        title: "Add growl, carefully",
+        instruction: "Turn Resonance up a small amount, then move Cutoff again.",
         detail:
-          "This layers an extra square wave below what you already have. Roland gives two settings — one octave down when the indicator is lit, and two octaves down when it blinks.",
+          "A little adds bite around the low end. A lot starts to whistle, and it can get loud — turn Master Volume down before you explore the top of this knob.",
+        hardwareTargets: ["resonanceKnob", "cutoffKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "An edge or growl appearing around the bottom of the sound, following Cutoff as you move it.",
+        whyItMatters:
+          "Brightness and bite are different things. A bass usually wants little of the first and some of the second, which is why these two knobs are worth separating in your head.",
+        checkpoint:
+          "There is some character around the low end that was not there before.",
+        recoveryHelp:
+          "Turn Resonance back down if it has become a whistle. Bass sounds usually want less of this than you first think.",
+        nextHint: "Now how each note starts and stops.",
+      },
+      {
+        id: "I01-S05",
+        title: "Make it start and stop cleanly",
+        instruction:
+          "Turn the AMP/ENV Envelope knob to the left, then play two notes one after the other.",
+        detail:
+          "Left gives a shorter sound with a stronger attack. A bass usually wants to arrive the instant you press and get out of the way before the next note, rather than running into it.",
+        hardwareTargets: ["envelopeKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "Notes that land immediately and end cleanly, instead of blurring into each other.",
+        whyItMatters:
+          "This is what separates a bass that works under a beat from one that turns into mud. Two notes close together is the test — if you cannot hear the gap, the envelope is too long.",
+        checkpoint:
+          "You can play two notes in a row and hear both of them distinctly.",
+        recoveryHelp:
+          "Turn the knob back toward the middle if it has become too clipped to hear properly. There is no correct setting — the test is whether two quick notes stay separate.",
+        nextHint: "One optional extra, if it needs more weight.",
+      },
+      {
+        id: "I01-S06",
+        title: "Optional: add weight underneath",
+        instruction:
+          "If the sound is not heavy enough, press the Sub OSC button and play a low key again.",
+        detail:
+          "This layers an extra square wave below what you already have. Roland gives two settings: one octave down when the indicator is lit, and two octaves down when it blinks. Press again to step between them and off.",
         hardwareTargets: ["subOscButton"],
         visualMode: "full-plus-inset",
         expectedSound: "The same note, noticeably heavier and deeper underneath.",
         whyItMatters:
-          "This is the fastest way to make a bass sound big. The sub does not change the note you are playing; it adds weight below it.",
-        checkpoint: "The sound has more low end than it did.",
+          "This is the one control on the Analog Synth part that is genuinely about being a bass. If a sound is nearly right but feels thin, this is usually the fastest fix.",
+        checkpoint:
+          "You have either added weight underneath the sound, or decided it did not need any.",
         recoveryHelp:
-          "Press Sub OSC again to step through its settings and off. If a low note has gone strangely quiet, see the last step of this tutorial — Roland documents a real limit here.",
-        nextHint: "If you chose the square wave, one knob is now live.",
-      },
-      {
-        id: "I01-S05",
-        title: "Shape the square wave",
-        instruction:
-          "With the square wave selected, turn the pulse width knob and listen.",
-        detail:
-          "This sets how wide the upper part of the wave is. Roland describes the effect directly: lower values narrow it toward a square wave, and raising it widens it into a more distinctive sound.",
-        hardwareTargets: ["pulseWidthKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The tone thins and gets more nasal, then fills out again.",
-        checkpoint: "You can hear the character of the square wave change as you turn.",
-        recoveryHelp:
-          "This knob does its job on the square wave. If nothing changes, press the Oscillator button until the square wave indicator is the one lit.",
-        nextHint: "Now take the top off it.",
-      },
-      {
-        id: "I01-S06",
-        title: "Close the filter down",
-        instruction: "Turn Cutoff to the left until the sound is dark, then back a little.",
-        detail:
-          "On the Analog Synth part only a low-pass filter is available, so Cutoff always works the same way here: turning left removes the top of the sound.",
-        hardwareTargets: ["cutoffKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The buzz comes off and what is left is round and low.",
-        whyItMatters:
-          "A bass usually lives under everything else. Taking the top off is what stops it competing with the parts above it.",
-        checkpoint: "The sound is dark and round rather than bright.",
-        recoveryHelp:
-          "If it disappeared, you have closed the filter completely — turn Cutoff back to the right. Pressing the FILTER Type button will not offer you other filter types on this part, and that is expected.",
-        nextHint: "A little emphasis gives it an edge.",
+          "Keep pressing Sub OSC to step through the settings until the indicator is off again. There is no separate off switch.",
+        nextHint: "Another optional one, if you want more or less buzz.",
       },
       {
         id: "I01-S07",
-        title: "Add resonance carefully",
-        instruction: "Turn Resonance up a small amount.",
+        title: "Optional: change the raw waveform",
+        instruction:
+          "If you want a different character underneath everything, press the Oscillator button and listen.",
         detail:
-          "Resonance emphasizes the sound around the cutoff point. On a bass, a little adds bite; a lot starts to whistle and can get loud.",
-        hardwareTargets: ["resonanceKnob"],
+          "It steps between three raw waveforms and the lit indicator shows which is selected. Broadly: one is buzzy and full, one is soft and rounded, one is hollow. You do not need to know which is which — press and listen.",
+        hardwareTargets: ["oscillatorButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "A bit of edge or growl appearing around the low end.",
-        checkpoint: "The bass has more character without whistling.",
+        expectedSound:
+          "Three clearly different raw tones underneath the shaping you have already done.",
+        whyItMatters:
+          "This is the deepest control on this part, and it is last on purpose. Changing it usually means redoing the filter, which is why reshaping an existing sound gets you further than starting from a waveform.",
+        checkpoint:
+          "You have either settled on a waveform you prefer, or left it where it was.",
         recoveryHelp:
-          "Turn Resonance back to the left if it becomes piercing, and turn Master Volume down first if it jumped in level.",
-        nextHint: "Now make it behave like a plucked note.",
+          "Keep pressing to step on round to where you started. If the sound has stopped working, go back to Cutoff — a different waveform usually needs the filter set differently.",
+        nextHint: "Two documented limits worth knowing about this part.",
       },
       {
         id: "I01-S08",
-        title: "Give the filter its own envelope",
-        instruction:
-          "Open Tone Edit from the Menu, reach the FILTER group, and set the filter envelope's Depth and Decay.",
+        title: "What this part will and will not do",
+        instruction: "Play your bass high up the keyboard, then low again.",
         detail:
-          "Raise Depth so the filter moves when you play, then set a short Decay. The filter now opens on each note and closes again immediately.",
-        hardwareTargets: ["menuWriteButton", "shiftButton"],
+          "Roland documents two things about the Analog Synth part. Only one kind of filter is available, so the FILTER Type button has almost nothing to offer here. And because of the analog circuitry, the square wave and the sub-oscillator may not produce sound in the upper range of the keyboard.",
+        hardwareTargets: ["analogSynthButton", "keys"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "Each note starts bright and closes down within a moment — the classic plucked synth bass.",
+          "Your bass working well low down, and possibly thinning out or dropping away high up.",
         whyItMatters:
-          "This is the difference between a bass that sits still and one that speaks. The attack is where a bass is recognisable, and the filter envelope is what makes it.",
-        checkpoint: "Each note has a bright front edge that closes quickly.",
+          "Both of these look like faults and are not. Knowing them means you will not spend twenty minutes trying to fix silence at the top of the keyboard on a sound that was only ever meant to live at the bottom.",
+        checkpoint:
+          "You know where on the keyboard this sound is meant to be played.",
         recoveryHelp:
-          "If nothing moves, the envelope depth is probably still at zero — nothing else in the filter envelope has any effect until Depth is above zero. Hold Shift and press Cursor to move between the Tone Edit groups; N08 covers this navigation.",
-        nextHint: "Now the note's overall shape.",
+          "If the top of the keyboard is silent, play lower — that is the documented behaviour, not a fault. If you need a bass that plays high as well, build it on a digital part instead, where these limits do not apply.",
+        nextHint: "Now the only test that matters.",
       },
       {
         id: "I01-S09",
-        title: "Tighten the amp envelope",
-        instruction:
-          "Move to the AMP group and shorten the Decay and Release.",
+        title: "Hear it under a pattern",
+        instruction: "Press Play/Stop and play your bass along with the pattern.",
         detail:
-          "A bass usually wants to stop when you stop. Shortening these two keeps notes from running into each other.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "Notes end cleanly instead of overlapping into a blur.",
-        checkpoint: "Playing several notes in a row gives you separate notes rather than a wash.",
+          "A bass is judged underneath other things, never on its own. Listen for whether it holds the bottom without covering everything else up.",
+        hardwareTargets: ["playStopButton", "keys"],
+        visualMode: "full",
+        expectedSound:
+          "Your bass sitting under the pattern — present and solid, but not swamping the drums.",
+        whyItMatters:
+          "A bass that sounds enormous on its own is usually too much in context, and one that sounds thin alone is often exactly right. Only this test tells you which you have.",
+        checkpoint:
+          "You have heard your bass against a pattern and know whether it needs more or less of anything.",
         recoveryHelp:
-          "If notes stop too abruptly, lengthen Release slightly. If the sound vanished, raise Sustain and AMP Level.",
-        nextHint: "Two documented limits are worth knowing before you go.",
+          "Too muddy: close Cutoff further, or shorten the envelope. Too thin: turn Sub OSC on, or open Cutoff a little. Lost entirely: check the pattern is not simply louder than you are playing.",
+        nextHint: "Last step, and it is an offer rather than an instruction.",
       },
       {
         id: "I01-S10",
-        title: "What the analog part will and will not do",
-        instruction: "Play your bass high up the keyboard, then low again.",
+        title: "Keep it, if you want it",
+        instruction: "If you want this bass again, save the program.",
         detail:
-          "Roland documents two things about this part. Only the low-pass filter is available, so the FILTER Type button offers nothing else. And because of the analog circuitry, the square wave and the sub-oscillator may not produce sound in the upper range of the keyboard.",
-        hardwareTargets: ["analogOscSection"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "Both look like faults and neither is. Knowing them saves you hunting for a broken setting when your bass goes quiet at the top.",
-        checkpoint:
-          "You know why the top of the keyboard may behave differently on this part.",
-        recoveryHelp:
-          "Play in the range a bass actually lives in. If you need the sound high up, switch the oscillator away from the square wave, or use a digital part instead.",
-        nextHint: "Last step: keep it.",
-      },
-      {
-        id: "I01-S11",
-        title: "Keep the bass you built",
-        instruction: "Save the program if you want this sound again.",
-        detail:
-          "The sound belongs to the program, so saving the program is the only way to keep it. Give it a name you will recognize.",
+          "The sound belongs to the program, so saving the program is the only way to keep it. If you were only practising, there is nothing to do — this tutorial does not need you to save anything.",
         hardwareTargets: ["shiftButton", "menuWriteButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "Your bass is stored, or you have decided you do not need it.",
+        whyItMatters:
+          "I07 builds a four-part program from scratch and does not depend on this bass existing. Saving here is for you, not for the course.",
+        checkpoint:
+          "You have a bass sound you made, and you have decided whether to keep it.",
         recoveryHelp:
-          "N09 Save your work has the full sequence, including choosing a destination you are willing to overwrite. If you would rather abandon the sound, hold Shift and press Enter to return to the original.",
+          "N09 Save your work has the full procedure, including choosing a destination you are willing to overwrite. If you do not save, the sound is lost when you change program or switch off — which is fine if you were practising.",
         nextHint:
-          "You can build a bass. Next, build something at the other end of the scale.",
+          "You can build a bass. Next, the opposite: something wide and slow.",
       },
     ],
   },
@@ -4335,170 +4346,204 @@ window.JDXI_TUTORIALS = {
     title: "Build a pad sound",
     shortTitle: "Pad sound",
     summary:
-      "Build a wide, slow, sustained sound on a digital part — the opposite of a bass in almost every setting, and the best way to learn what the envelope really does.",
+      "Build something wide and slow that sits behind everything else. A pad is the opposite of a bass in almost every setting, and it is the easiest way to hear what the envelope really does.",
     estimatedMinutes: 12,
     prerequisites: ["I01"],
     learningGoals: [
-      "Use a digital part's layered structure.",
-      "Build a slow attack and a long release deliberately.",
-      "Add slow movement so the sound never sits still.",
-      "Place a pad behind other sounds rather than in front of them.",
+      "Start from a sustained tone and make it slower and softer.",
+      "Choose where a pad sits on the keyboard.",
+      "Add movement and space so it never sits still.",
+      "Judge a pad by what it does behind other sounds.",
     ],
     // Source record: docs/tutorials/I02-SOURCE-NOTES.md
-    // A digital synth tone contains three partials, each with its own OSC,
-    // FILTER, AMP and LFO (PG p.7, p.15). I02 uses that structure as the
-    // reason a digital part suits a pad, and teaches the envelope by building
-    // the exact opposite of I01's bass -- the same four parameters, moved the
-    // other way.
+    // I02 starts INDEPENDENTLY from a suitable existing Digital tone
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 10). It does not depend on
+    // I01's bass surviving, saved or otherwise.
+    //
+    // No partials curriculum: the three-partial structure of a digital tone
+    // is never mentioned. No chord language -- "hold several keys".
+    // No save requirement.
     steps: [
       {
         id: "I02-S01",
         title: "Protect any work you want to keep",
         instruction: "Decide whether this program holds work you have not saved.",
         detail:
-          "If your bass from I01 is loaded and saved, you can build the pad on another part of the same program and keep them together. If it is loaded and not saved, save it first.",
-        hardwareTargets: ["programValueButtons", "toneButtons"],
+          "You will select a tone and edit it, and both replace what is loaded. If you built a bass in I01 and want it, save it before you carry on — this tutorial does not need it and will change whatever part you point it at.",
+        hardwareTargets: ["toneButtons"],
         visualMode: "full",
-        checkpoint: "You have decided: nothing to keep, saved already, or deliberately building on this program.",
+        whyItMatters:
+          "This tutorial starts from scratch on purpose. Nothing here depends on I01, so there is no reason to be carrying an unsaved bass into it.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Building both sounds into one program is the more useful outcome, and I07 is the tutorial about doing that deliberately.",
-        nextHint: "Now choose a part built for layered sounds.",
+          "N09 Save your work teaches saving. If you would rather build the pad somewhere else entirely, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now find something that holds.",
       },
       {
         id: "I02-S02",
-        title: "Choose a digital part",
-        instruction: "Press Digital Synth 1, and hold a chord of two or three keys.",
+        title: "Start from something sustained",
+        instruction:
+          "Press Digital Synth 1, then use the Category dial and Tone buttons to find a sound that keeps going while you hold it.",
         detail:
-          "A digital synth tone is made of three layers that Roland calls partials, each with its own oscillator, filter, amp and LFO. That is why the digital parts can sound wide in a way the analog part cannot.",
-        hardwareTargets: ["digitalSynth1Button"],
+          "You are looking for something that holds steadily rather than plucking and dying away. It does not have to be a pad already — anything sustained will do.",
+        hardwareTargets: ["digitalSynth1Button", "categoryDial", "toneButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A sustained sound you can hold with several keys at once.",
+        expectedSound:
+          "A sound that keeps sounding for as long as you hold the key down.",
         whyItMatters:
-          "A pad is mostly width and time. Three layers gives you width for free, and the envelope gives you the time.",
-        checkpoint: "You can hold several notes together and hear them sustain.",
+          "Everything in this tutorial makes a sound slower and softer. Starting from something that already sustains means you are refining rather than fighting the tone you picked.",
+        checkpoint: "You have a sustained sound you can hold and hear clearly.",
         recoveryHelp:
-          "If the sound stops as soon as you press, press Tone + to step to something that holds — a sustained starting point saves a lot of work here.",
-        nextHint: "Now find something in the right family to start from.",
+          "If everything you find stops immediately, turn the Category dial to a different position and try again — strings and pad-like categories are the easiest place to find something that holds.",
+        nextHint: "Now make it arrive slowly and leave slowly.",
       },
       {
         id: "I02-S03",
-        title: "Start from something sustained",
-        instruction: "Use the Category dial and the Tone buttons to find a sustained sound.",
+        title: "Make it slow at both ends",
+        instruction:
+          "Turn the AMP/ENV Envelope knob to the right, then play a key and let go.",
         detail:
-          "You are looking for something that keeps going while you hold it, rather than something that plucks or decays away. It does not have to be a pad already.",
-        hardwareTargets: ["categoryDial", "toneButtons"],
+          "Right makes the attack softer and the release longer — both of the things a pad wants, from one knob. Go far enough that the sound swells in rather than landing, and carries on after you let go.",
+        hardwareTargets: ["envelopeKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "A sound that holds steadily for as long as you hold the keys.",
-        checkpoint: "You have a starting sound that sustains.",
+        expectedSound:
+          "The sound fading in over a moment, then carrying on and fading away after your hands have left.",
+        whyItMatters:
+          "This is the single biggest difference between a pad and everything else, and it is the same knob you turned the other way for the bass in I01. One control, two opposite sounds.",
+        checkpoint:
+          "The sound arrives gradually and continues after you release the key.",
         recoveryHelp:
-          "Starting from something that already sustains saves you fighting the envelope later. If everything you find plucks, pick the longest one and the next steps will stretch it.",
-        nextHint: "Now stretch the front of the note.",
+          "Turn the knob back toward the middle if the attack has become so slow that short notes never sound at all. That is the usual sign of going too far.",
+        nextHint: "Now soften the tone itself.",
       },
       {
         id: "I02-S04",
-        title: "Make it arrive slowly",
+        title: "Make it smoother and darker",
         instruction:
-          "Open Tone Edit, reach the AMP group, and raise the Attack.",
+          "Hold some keys and turn Cutoff down until the sound stops being bright, keeping Resonance low.",
         detail:
-          "Attack is the time from pressing the key until the sound reaches full volume. For a pad, you want it long enough that the sound swells rather than lands.",
-        hardwareTargets: ["menuWriteButton", "programValueButtons"],
+          "A pad wants to be felt rather than noticed. Take enough top off that it stops competing for attention, and leave Resonance alone — edge is the last thing this sound needs.",
+        hardwareTargets: ["cutoffKnob", "resonanceKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The sound fades in over a moment instead of starting immediately.",
+        expectedSound:
+          "Something softer and further away, without the bright edge it had.",
         whyItMatters:
-          "This is exactly the parameter I01 kept short. Same control, opposite direction, completely different instrument — which is most of what sound design is.",
-        checkpoint: "Pressing a key gives you a sound that swells in.",
+          "The reason pads sit behind other things is mostly that they are darker than them. Brightness is what pulls a sound forward, so taking it away is what pushes a sound back.",
+        checkpoint:
+          "The sound is noticeably softer and less bright than the tone you started from.",
         recoveryHelp:
-          "If the attack is so long the note never really arrives, bring it back down. N08 covers moving around Tone Edit if you are unsure of the navigation.",
-        nextHint: "Now stretch the back of it.",
+          "Open Cutoff back up if it has gone so dark that it disappears. If it sounds hollow or whistly rather than soft, Resonance is too high — turn it down.",
+        nextHint: "Now decide where on the keyboard it lives.",
       },
       {
         id: "I02-S05",
-        title: "Let it hang on",
-        instruction: "Raise the Release, then play a chord and let go.",
+        title: "Choose where it sits",
+        instruction:
+          "Play your pad low, then high, then use the OCTAVE buttons to move the keyboard to wherever it sounds best.",
         detail:
-          "Release is the time from letting go of the keys until the sound disappears. A pad usually keeps sounding well after your hands have left.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Pads usually work in the middle and upper middle. Too low and they turn to mud; too high and they thin out. Move the keyboard rather than your hands.",
+        hardwareTargets: ["octaveButtons", "keys"],
         visualMode: "full-plus-inset",
-        expectedSound: "The chord carries on and fades away slowly after you release the keys.",
+        expectedSound:
+          "The same pad sounding muddy low down, thin high up, and full somewhere in between.",
         whyItMatters:
-          "A long release is what lets one chord blend into the next instead of stopping dead between them.",
-        checkpoint: "The sound continues for a noticeable time after you let go.",
+          "Register is a sound-design decision, not just a playing one. The same tone can be unusable in one octave and exactly right in another, and moving the whole keyboard is quicker than remembering to play somewhere else.",
+        checkpoint:
+          "You have found a register where the pad sounds full rather than muddy or thin.",
         recoveryHelp:
-          "If notes pile up into mud, shorten the release. If you cannot tell whether the release is working, play one chord, let go, and count.",
-        nextHint: "Now make the filter move as slowly as the amp does.",
+          "Press both OCTAVE buttons together to return the keyboard to 0 if you have lost track. The octave setting belongs to the program, so it is part of what a save keeps.",
+        nextHint: "Now stop it sitting perfectly still.",
       },
       {
         id: "I02-S06",
-        title: "Open the filter slowly too",
+        title: "Add slow movement",
         instruction:
-          "Move to the FILTER group, raise the envelope Depth, and give it a long Attack.",
+          "Hold some keys, turn the LFO Rate down low, then bring Depth up a small amount.",
         detail:
-          "The filter now opens over time rather than instantly, so the sound gets brighter as it swells.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "You want movement slow enough that you notice it only after a few seconds. Fast movement makes it an effect; slow movement makes it feel alive.",
+        hardwareTargets: ["lfoRateKnob", "lfoDepthKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "The sound arrives dark and gradually brightens while you hold it.",
+          "The held sound drifting gently rather than sitting perfectly still.",
         whyItMatters:
-          "Two envelopes moving at once, on volume and on brightness, is what makes a pad feel like it is going somewhere rather than just being loud.",
-        checkpoint: "The tone changes over the course of a held chord, not just its volume.",
+          "A completely static sound gets boring within seconds when it is held for a long time — which is exactly what a pad is for. A small amount of slow movement is what stops that happening.",
+        checkpoint:
+          "There is movement in the sound that takes a few seconds to notice.",
         recoveryHelp:
-          "If nothing happens, check the envelope Depth is above zero — nothing else in the filter envelope matters until it is. Lower Cutoff if the sound is already fully bright and has nowhere to open to.",
-        nextHint: "One more layer of movement.",
+          "Turn Depth back to zero to remove it entirely. If it wobbles obviously rather than drifting, either Depth is too high or Rate is too fast — try Rate first.",
+        nextHint: "Now put it in a big space.",
       },
       {
         id: "I02-S07",
-        title: "Add slow movement",
-        instruction: "Turn the LFO Rate down low and the Depth up a little.",
+        title: "Push it back with reverb",
+        instruction:
+          "Turn Reverb up further than you would for a bass, and add a little Delay if you like it.",
         detail:
-          "You want movement slow enough that you notice it only after a few seconds. Fast movement makes it a effect; slow movement makes it feel alive.",
-        hardwareTargets: ["lfoRateKnob", "lfoDepthKnob"],
+          "This is the one sound where a lot of reverb is usually right. It is what puts the pad behind everything else rather than beside it.",
+        hardwareTargets: ["reverbKnob", "delayKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The held chord drifts gently rather than sitting perfectly still.",
-        checkpoint: "The sound moves slowly while you hold it.",
+        expectedSound:
+          "The pad moving away from you into a larger space, its edges blurring.",
+        whyItMatters:
+          "Effects settings are shared by the whole program, so a lot of reverb here affects everything. That is worth knowing now, because it is exactly the conflict I06 is about.",
+        checkpoint: "The pad sounds further away than it did.",
         recoveryHelp:
-          "Turn Depth back to zero to remove it entirely. If it sounds seasick rather than alive, the rate is too fast or the depth too high — I05 goes into the LFO properly.",
-        nextHint: "Now put it in a space.",
+          "Press Effects On/Off to hear it without any effects and check you have not overdone it. Turning the Reverb knob down is the other way back.",
+        nextHint: "Now hear what it does with several keys.",
       },
       {
         id: "I02-S08",
-        title: "Push it back with reverb",
-        instruction: "Turn Reverb up further than you would for a bass.",
-        hardwareTargets: ["reverbKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The pad moves behind you rather than sitting in front of you.",
+        title: "Hold several keys",
+        instruction: "Hold two or three keys down together and let them ring.",
+        detail:
+          "A pad is usually played this way rather than one note at a time. Keys close to each other tend to blend; keys far apart tend to sound like two separate things.",
+        hardwareTargets: ["keys"],
+        visualMode: "full",
+        expectedSound:
+          "A wide, sustained wash that fills out considerably compared with a single note.",
         whyItMatters:
-          "A pad is a background. Reverb is what puts it there, which is why a pad usually takes more of it than any other sound in a program.",
-        checkpoint: "The pad sounds further away than the other parts.",
+          "Most of a pad's width comes from holding several keys, not from the sound itself. Judging one from a single note will always undersell it.",
+        checkpoint:
+          "You have held several keys and heard the sound fill out.",
         recoveryHelp:
-          "Effect settings belong to the program and are shared by everything in it, so a lot of reverb here also affects your other parts. I06 covers routing effects per part.",
-        nextHint: "Now check it against something else.",
+          "If it turns muddy with several keys down, that usually means the register is too low or the filter is too open — go back a couple of steps and adjust either.",
+        nextHint: "Now the test that matters.",
       },
       {
         id: "I02-S09",
-        title: "Hear it in context",
-        instruction: "Start the pattern and hold your pad over the top of it.",
+        title: "Hear it behind a pattern",
+        instruction: "Press Play/Stop and hold your pad over the top of the pattern.",
         detail:
-          "A pad is judged by what it does behind other things, not on its own.",
+          "A pad is judged by what it does behind other things, not on its own. Listen for whether it fills the space without getting in the way.",
         hardwareTargets: ["playStopButton", "keys"],
         visualMode: "full",
-        expectedSound: "The pad filling the space behind the pattern.",
+        expectedSound:
+          "The pattern with a bed of sound behind it — noticeably fuller, without the pad drawing attention.",
+        whyItMatters:
+          "If you can pick the pad out easily it is probably too bright or too loud. A good one is most obvious when you take it away, which is worth trying.",
         checkpoint:
-          "The pad supports what is already playing instead of covering it.",
+          "You have heard the pad behind a pattern, and can say whether it needs more or less of anything.",
         recoveryHelp:
-          "If it swamps everything, lower its level in Program Edit rather than turning down the sound itself — N06 covers per-part levels.",
-        nextHint: "Last step: keep it.",
+          "Too obvious: close Cutoff further, or turn its Level down in the mix. Inaudible: open Cutoff a little, or check the pad's part is not muted — hold Shift and press its Part Select button.",
+        nextHint: "Last step, and it is an offer rather than an instruction.",
       },
       {
         id: "I02-S10",
-        title: "Keep the pad",
-        instruction: "Save the program if you want this sound again.",
+        title: "Keep it, if you want it",
+        instruction: "If you want this pad again, save the program.",
+        detail:
+          "The sound belongs to the program, so saving the program is the only way to keep it. If you were only practising, there is nothing to do.",
         hardwareTargets: ["shiftButton", "menuWriteButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "Your pad is stored, or you have decided you do not need it.",
+        whyItMatters:
+          "I07 builds its own program from scratch and does not depend on this pad existing. Saving here is for you, not for the course.",
+        checkpoint:
+          "You have a pad you made, and you have decided whether to keep it.",
         recoveryHelp:
-          "N09 Save your work has the full sequence. To abandon the sound instead, hold Shift and press Enter to return to the original.",
+          "N09 Save your work has the full procedure. If you do not save, the sound is lost when you change program or switch off — which is fine if you were practising.",
         nextHint:
-          "You have something underneath and something behind. Next, something in front.",
+          "You can build something that sits behind. Next, something that sits in front.",
       },
     ],
   },
@@ -4509,21 +4554,26 @@ window.JDXI_TUTORIALS = {
     title: "Build a lead sound",
     shortTitle: "Lead sound",
     summary:
-      "Build something that sits in front of everything else: bright, cutting, and expressive enough to be worth playing a line on. Then make it slide between notes.",
+      "Build something that sits in front of everything else — bright, immediate, and worth playing a line on. Then play it, with the Pitch and Mod controls doing the expression.",
     estimatedMinutes: 12,
     prerequisites: ["I02"],
     learningGoals: [
-      "Build a sound that cuts through a busy pattern.",
-      "Use portamento so notes slide into each other.",
-      "Use the JD-Xi's own character controls on a digital tone.",
+      "Start from a bright tone and make it more focused.",
+      "Make notes arrive the instant you press a key.",
       "Play a line expressively with the Pitch and Mod controls.",
+      "Check that a lead cuts through a busy pattern.",
     ],
     // Source record: docs/tutorials/I03-SOURCE-NOTES.md
-    // Portamento is taught through the panel shortcut (long-press
-    // [Menu/Write], where [Tap] toggles it and the tempo knob sets the time --
-    // OM p.6) rather than through the analog tone's Porta Sw parameter, so
-    // the step works whichever part the learner has chosen. Ring Switch, Wave
-    // Shape and Analog Feel are digital-tone COMMON parameters (PG p.15).
+    // I03 reshapes an existing bright Tone (PRODUCT-CURRICULUM-MASTER-PLAN.md
+    // sec 10): brighter/focused filter, faster envelope, Pitch/Mod, tasteful
+    // Delay/Reverb, and a playable result.
+    //
+    // Portamento is ONE optional step pointing at Quick Reference, per the
+    // master plan sec 12. Analog Feel and Ring Mod are deliberately absent --
+    // the brief rules out making either the lesson, and neither is needed for
+    // a lead.
+    //
+    // No save requirement.
     steps: [
       {
         id: "I03-S01",
@@ -4531,155 +4581,179 @@ window.JDXI_TUTORIALS = {
         instruction: "Decide whether this program holds work you have not saved.",
         detail:
           "As before: selecting a tone and editing it replaces what is loaded. If your pad from I02 is here and unsaved, save it first.",
-        hardwareTargets: ["programValueButtons", "toneButtons"],
+        hardwareTargets: ["toneButtons"],
         visualMode: "full",
-        checkpoint: "You have decided: nothing to keep, saved already, or deliberately building on this program.",
-        recoveryHelp: "N09 Save your work teaches saving.",
-        nextHint: "Choose a part with room to be bright.",
+        whyItMatters:
+          "This tutorial uses the second digital part, so a pad on the first one survives — but the program as a whole is still what a save keeps, and an unsaved pad is still an unsaved pad.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
+        recoveryHelp:
+          "N09 Save your work teaches saving. Nothing in this tutorial needs your pad to exist, so you can also simply move to another program with Value + — which discards anything unsaved here.",
+        nextHint: "Now find something bright to start from.",
       },
       {
         id: "I03-S02",
-        title: "Choose a part and a bright starting point",
+        title: "Start from something bright",
         instruction:
-          "Press Digital Synth 2, then use the Category dial and Tone buttons to find something bright.",
+          "Press Digital Synth 2, then use the Category dial and Tone buttons to find a forward, bright sound.",
         detail:
-          "Using the second digital part leaves Digital Synth 1 free if your pad is there. You want a starting sound with plenty of top end — a lead has to be heard over everything else.",
-        hardwareTargets: ["digitalSynth2Button", "categoryDial"],
+          "Using the second digital part leaves the first one free, in case your pad is there. You want a starting sound with plenty of top end — a lead has to be heard over everything else.",
+        hardwareTargets: ["digitalSynth2Button", "categoryDial", "toneButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A bright, forward sound rather than a soft one.",
+        expectedSound: "A bright, forward sound rather than a soft or distant one.",
         whyItMatters:
-          "A lead is defined by being audible above a full arrangement. Starting bright is much easier than trying to make a dull sound cut through later.",
-        checkpoint: "You have a bright sound on a part that is not already busy.",
+          "You can make a bright sound duller far more easily than you can make a dull one cut through. Starting bright leaves you room to move in the direction that works.",
+        checkpoint: "You have a bright sound you would be happy to play a line on.",
         recoveryHelp:
-          "If everything sounds dull, open Cutoff up — a preset may simply have its filter closed down.",
-        nextHint: "Now tighten its shape.",
+          "Turn the Category dial to another position if everything in this one is soft. Lead and synth categories are the obvious places to look.",
+        nextHint: "Now make it respond the instant you play.",
       },
       {
         id: "I03-S03",
-        title: "Make it respond immediately",
+        title: "Make it immediate",
         instruction:
-          "Open Tone Edit, reach the AMP group, and set the Attack low and Sustain high.",
+          "Turn the AMP/ENV Envelope knob to the left, then play a short line.",
         detail:
-          "A lead should arrive the moment you press a key and hold its level while you keep the key down. This is the pad's envelope in reverse at the front, and the same at the back.",
-        hardwareTargets: ["menuWriteButton", "programValueButtons"],
+          "Left gives a shorter sound with a stronger attack. A lead has to arrive the moment your finger lands — any delay and the line stops feeling like playing.",
+        hardwareTargets: ["envelopeKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "Notes that start instantly and hold steady while you hold the key.",
+        expectedSound:
+          "Notes that start the instant you press, with no swell at the front.",
         whyItMatters:
-          "A slow attack makes a lead feel late, and it will always sound behind the beat no matter how well you play.",
-        checkpoint: "Notes start immediately and hold at a constant level.",
+          "This is the same knob that made the pad slow in I02, turned the other way. Attack time is most of what decides whether a sound feels like an instrument you are playing or a texture you are holding.",
+        checkpoint: "Notes arrive immediately when you press a key.",
         recoveryHelp:
-          "If the sound dies while you hold a key, raise Sustain. N08 covers moving around Tone Edit if the navigation is unfamiliar.",
-        nextHint: "Now the JD-Xi's own character controls.",
+          "If notes have become so short that a held key does not sustain, come back toward the middle — you want a fast start, not necessarily a short note.",
+        nextHint: "Now sharpen it up.",
       },
       {
         id: "I03-S04",
-        title: "Add instability on purpose",
+        title: "Make it brighter and more focused",
         instruction:
-          "Reach the COMMON group and raise Analog Feel.",
+          "Open Cutoff up, then add a small amount of Resonance and move Cutoff again.",
         detail:
-          "Roland describes this as applying a kind of natural instability found in many natural systems, to create the sort of slight unsteadiness an analog synthesizer has.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "Brightness gets it heard; a little resonance gives it a focus point so it sounds like one thing rather than a wash. A little goes a long way here.",
+        hardwareTargets: ["cutoffKnob", "resonanceKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The sound stops being perfectly steady and gains a slight life to it.",
+        expectedSound:
+          "A sharper, more pointed sound with a clear character to it.",
         whyItMatters:
-          "A digital sound that is too perfect can sound lifeless as a lead. This is Roland's own control for exactly that problem.",
-        checkpoint: "The sound is a little less mechanical than it was.",
+          "A lead competes with everything else for the same attention. Brightness and focus are what win that competition — turning it up louder mostly just makes everything worse.",
+        checkpoint:
+          "The sound has an edge to it that it did not have when you started.",
         recoveryHelp:
-          "Turn it back down if it becomes unsteady rather than alive. Nothing here is written until you save the program.",
-        nextHint: "Two more character controls sit beside it.",
+          "Back Resonance off if it has started to whistle, and watch the volume — high resonance with an open filter can get loud suddenly. Turn Master Volume down before exploring the top of either knob.",
+        nextHint: "Now give it somewhere to be.",
       },
       {
         id: "I03-S05",
-        title: "Try the metallic one",
-        instruction: "Find Ring Switch in the same group and turn it on.",
+        title: "Add a little space",
+        instruction:
+          "Turn Delay up a little, and add just enough Reverb to stop it sounding bare.",
         detail:
-          "This multiplies two of the tone's layers together, producing a complex, bell-like, metallic sound. Roland notes the effect is more obvious when those two layers are set to different pitches.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Less than you gave the pad. A lead wants to stay in front, and both of these push a sound backward if you use too much.",
+        hardwareTargets: ["delayKnob", "reverbKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "A hard, metallic, bell-like edge — or something quite unmusical.",
+        expectedSound:
+          "Your line with repeats trailing behind it, sitting in a space rather than in a vacuum.",
         whyItMatters:
-          "It is the most extreme character control on the digital tone, and it is worth meeting deliberately so you recognize the sound when you meet it in a preset.",
-        checkpoint: "You have heard what Ring Switch does and decided whether you want it.",
+          "Delay suits leads better than heavy reverb does: it fills space between notes without blurring the note you are playing now. That distinction is most of what I06 is about.",
+        checkpoint:
+          "There is some space around the sound and it is still clearly in front.",
         recoveryHelp:
-          "Turn it back off if it is not what you want. Roland notes that with it on, some of the pulse-width and detune settings of those two layers cannot be used, so other parameters may stop responding while it is on.",
-        nextHint: "Now make the notes join up.",
+          "Press Effects On/Off to compare with none at all. If the line has started to smear, it is usually reverb rather than delay — turn Reverb down first.",
+        nextHint: "Now play it properly.",
       },
       {
         id: "I03-S06",
-        title: "Make notes slide into each other",
-        instruction: "Press and hold Menu/Write until the PORTAMENTO screen appears.",
+        title: "Bend into a note",
+        instruction:
+          "Hold a note and move the Pitch control away from you and back, then let it go.",
         detail:
-          "A long press opens this screen, which is a different gesture from the short press that opens the Menu. On this screen the Tap button turns portamento on and off, and the tempo knob sets how long the slide takes.",
-        hardwareTargets: ["menuWriteButton", "tapButton"],
+          "Bend up into a note, or bend one you are already holding. The control springs back to the centre on its own, so it is safe to be bold with.",
+        hardwareTargets: ["pitchControl"],
         visualMode: "full-plus-inset",
+        expectedSound: "The note sliding in pitch and returning when you let go.",
         whyItMatters:
-          "Portamento is the sound of a note sliding into the next instead of jumping. On a lead it is the single most recognisable expressive device there is.",
-        checkpoint: "The display is showing the PORTAMENTO screen.",
+          "This is the single most expressive thing on the instrument, and it costs nothing to try because it puts itself back. A lead line without any of it sounds typed rather than played.",
+        checkpoint: "You can bend a note deliberately, into and out of pitch.",
         recoveryHelp:
-          "If the Menu opened instead, your press was too short — hold it down longer. Press Exit to leave this screen.",
-        nextHint: "Now switch it on and hear it.",
+          "If the pitch does not move, make sure a key is held down at the same time — the control only affects notes that are already sounding.",
+        nextHint: "Now add movement to the long notes.",
       },
       {
         id: "I03-S07",
-        title: "Set the slide",
+        title: "Add vibrato to held notes",
         instruction:
-          "Press Tap to turn portamento on, turn the tempo knob a little, then play two notes one after the other.",
+          "Hold a long note and move the Mod control away from you, then bring it back before you let go.",
         detail:
-          "The tempo knob is doing a different job on this screen: it is setting the portamento time rather than the tempo. A short time gives a quick scoop; a long one glides.",
-        hardwareTargets: ["tapButton", "tempoKnob"],
+          "Unlike Pitch, this one stays where you leave it. Use it on the long notes and bring it back afterwards, or everything you play from then on will waver.",
+        hardwareTargets: ["modControl"],
         visualMode: "full-plus-inset",
-        expectedSound: "The second note slides up or down from the first instead of jumping to it.",
+        expectedSound:
+          "A held note that starts steady and begins to waver as you move the control.",
         whyItMatters:
-          "It is also a good example of something N01 warned about: what a control does depends on the screen you are in. The tempo knob is not the tempo knob here.",
-        checkpoint: "Notes slide into each other rather than stepping.",
+          "Held notes are where a lead sounds most artificial, because nothing is changing. Vibrato is the standard answer, and doing it by hand means you choose which notes get it.",
+        checkpoint:
+          "You can add a waver to a held note and take it away again.",
         recoveryHelp:
-          "Press Tap again to turn portamento off. If the slide is so long that notes never arrive, turn the tempo knob back down while you are still on this screen.",
-        nextHint: "Now come out and play it properly.",
+          "If everything is wobbling, the Mod control is still part-way up — move it fully toward yourself, which Roland describes as applying no effect.",
+        nextHint: "One optional extra, if you want notes to slide.",
       },
       {
         id: "I03-S08",
-        title: "Play it with both hands",
+        title: "Optional: make notes slide into each other",
         instruction:
-          "Press Exit, start the pattern, and play a line using the Pitch and Mod controls.",
+          "If you want a sliding lead, press and hold Menu/Write until the PORTAMENTO screen appears.",
         detail:
-          "Bend into a note with Pitch. Add vibrato with Mod on the long notes. This is what the lead was built for.",
-        hardwareTargets: ["pitchControl", "modControl"],
+          "A long press opens this screen — a different gesture from the short press that opens the Menu. On it, the Tap button turns portamento on and off, and the tempo knob sets how long the slide takes. Press Exit to leave. This step is optional and nothing later depends on it.",
+        hardwareTargets: ["menuWriteButton", "tapButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "A line that bends and wavers rather than sitting still.",
+        expectedSound:
+          "If you turn it on: the second note sliding up or down from the first instead of jumping to it.",
         whyItMatters:
-          "A lead sound is only half the job. The other half is the two controls beside the keys, and they are the reason a lead can sound played rather than programmed.",
-        checkpoint: "You have played a line with at least one bend and some vibrato.",
+          "It is a strong effect that suits some leads and ruins others, which is why it is offered rather than built in. Quick Reference has the procedure on its own if you want it again later without coming back here.",
+        checkpoint:
+          "Either you have heard notes slide into each other, or you skipped this step.",
         recoveryHelp:
-          "Remember the Mod control stays where you leave it — move it fully toward you when you are done, or every later sound will waver. B05 covers both controls.",
-        nextHint: "Check it does the job it was built for.",
+          "Press Tap again on that screen to turn portamento off, then Exit. If a long press opened the ordinary Menu instead, you released too early — hold it down longer. Note that the tempo knob is setting portamento time on this screen, not tempo.",
+        nextHint: "Now the test that matters.",
       },
       {
         id: "I03-S09",
         title: "Check it cuts through",
-        instruction: "Play your line over the full pattern and listen for whether you can hear it.",
+        instruction:
+          "Press Play/Stop and play your line over the full pattern.",
         detail:
-          "If it disappears, the answer is usually brightness rather than volume — open Cutoff before you reach for the level.",
-        hardwareTargets: ["cutoffKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The lead sitting clearly on top of everything else.",
+          "Listen for whether you can hear every note, including the quiet ones. If it disappears, the answer is usually brightness rather than volume.",
+        hardwareTargets: ["playStopButton", "cutoffKnob"],
+        visualMode: "full",
+        expectedSound:
+          "Your lead sitting clearly on top of the pattern rather than getting lost inside it.",
         whyItMatters:
-          "Turning a dull sound up makes the whole arrangement louder without making the lead any clearer. Brightness is what separates it.",
-        checkpoint: "You can hear the lead over the pattern without it being uncomfortably loud.",
+          "Reaching for volume when a sound is buried is the commonest mistake there is, and it usually makes the problem worse. Open Cutoff first and see whether the sound simply needed to be brighter.",
+        checkpoint:
+          "You can hear your line clearly against everything else that is playing.",
         recoveryHelp:
-          "If it still hides, try panning it slightly to one side so it is not competing with the pad in the middle — N06 covers pan.",
-        nextHint: "Last step: keep it.",
+          "Buried: open Cutoff, or add a little more Resonance for focus. Harsh: close Cutoff slightly. Still lost: mute the other parts one at a time with Shift and Part Select to find out what is covering it.",
+        nextHint: "Last step, and it is an offer rather than an instruction.",
       },
       {
         id: "I03-S10",
-        title: "Keep the lead",
-        instruction: "Save the program if you want this sound again.",
+        title: "Keep it, if you want it",
+        instruction: "If you want this lead again, save the program.",
+        detail:
+          "The sound belongs to the program, so saving the program is the only way to keep it. If you were only practising, there is nothing to do.",
         hardwareTargets: ["shiftButton", "menuWriteButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "Your lead is stored, or you have decided you do not need it.",
+        whyItMatters:
+          "That is a bass, a pad and a lead — the three sounds nearly every piece of music needs. I07 builds a program with all three kinds in it, and does not depend on any of these surviving.",
+        checkpoint:
+          "You have a lead you made, and you have decided whether to keep it.",
         recoveryHelp:
-          "N09 Save your work has the full sequence. Note that portamento settings belong to the sound and are kept by the same save.",
+          "N09 Save your work has the full procedure. If you do not save, the sound is lost when you change program or switch off — which is fine if you were practising.",
         nextHint:
-          "You have built three sounds. Next, the two tools they all had in common.",
+          "You have built three sounds. Next, compare filter and envelope settings side by side.",
       },
     ],
   },
@@ -4690,177 +4764,204 @@ window.JDXI_TUTORIALS = {
     title: "Filter and envelope shaping",
     shortTitle: "Filter and envelope",
     summary:
-      "The two tools you used in every sound so far, now on their own terms: what the filter types actually do, and how an envelope's four stages combine into a shape.",
+      "One sound, three versions. Make the same tone soft, then plucky, then biting, restoring it between each — and end up knowing which control to reach for when you want a particular result.",
     estimatedMinutes: 12,
     prerequisites: ["I03"],
     learningGoals: [
-      "Choose a filter type for a reason.",
-      "Use the filter envelope's depth and direction deliberately.",
-      "Read a sound as a shape in time.",
-      "Make a sound respond to how hard you play.",
+      "Make three clearly different versions of one sound.",
+      "Restore a sound cleanly between experiments.",
+      "Say which control did which job in each version.",
+      "Choose controls deliberately to solve a stated sound goal.",
     ],
     // Source record: docs/tutorials/I04-SOURCE-NOTES.md
-    // The transferable pair, now named. Everything here was used by ear in
-    // B06 and reached one parameter at a time in N08; I04's job is to make
-    // the vocabulary earned rather than assumed. The Drums part's TVF and TVA
-    // are named as the same idea under different letters (PG pp.23-25).
+    // I04 is a COMPARATIVE LAB (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 10):
+    // one existing sound, roughly three contrasting versions, Cutoff /
+    // Resonance / Envelope, restoring between experiments, then choosing
+    // controls for a practical goal.
+    //
+    // Explicitly NOT here: an ADSR diagram lesson, filter-frequency theory,
+    // a velocity-sensitivity curriculum, drum TVF/TVA architecture, or any
+    // taxonomy for its own sake. Roland's four filter type names are never
+    // listed. Every control used is on the panel.
     steps: [
       {
         id: "I04-S01",
         title: "Protect any work you want to keep",
         instruction: "Decide whether this program holds work you have not saved.",
-        detail: "This tutorial edits the loaded sound throughout.",
-        hardwareTargets: ["display"],
-        visualMode: "full-plus-inset",
-        checkpoint: "You have decided: nothing to keep, or you have saved it.",
+        detail:
+          "This tutorial edits one sound repeatedly and throws each version away. If there is something here you want, save it first — you will be deliberately destroying edits for the next half hour.",
+        hardwareTargets: ["filterSection", "ampEnvSection"],
+        visualMode: "full",
+        whyItMatters:
+          "Most tutorials risk your work by accident. This one does it on purpose, several times, as the method. That makes the preflight more important here than almost anywhere else.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Hold Shift and press Enter at any point to return to the original sound.",
-        nextHint: "Start with something plain to work on.",
+          "N09 Save your work teaches saving. If you would rather experiment somewhere disposable, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now pick one sound and stay with it.",
       },
       {
         id: "I04-S02",
-        title: "Get a bright, steady sound",
-        instruction: "Press Digital Synth 1 and find a bright sound that holds.",
+        title: "Choose one sound and stay with it",
+        instruction:
+          "Press Digital Synth 1 and find a bright sound that holds while you press a key.",
         detail:
-          "A filter can only remove what is there. Starting bright gives you something to work with.",
+          "One sound, for the whole tutorial. The point is to hear what the controls do, and that only works if the thing underneath them stops changing.",
         hardwareTargets: ["digitalSynth1Button", "toneButtons"],
         visualMode: "full-plus-inset",
         expectedSound: "A sustained sound with plenty of top end.",
-        checkpoint: "You have a bright sustained sound.",
-        recoveryHelp: "Open Cutoff fully to the right if the sound seems dull to start with.",
-        nextHint: "Now hear what each filter type removes.",
+        whyItMatters:
+          "Bright and sustained gives you the most room to work: you can always take brightness away and shorten a note, but you cannot add either to a sound that never had it.",
+        checkpoint:
+          "You have one sustained, bright sound and you are going to leave the Tone buttons alone from here.",
+        recoveryHelp:
+          "If everything is short or dull, keep stepping with Tone + or turn the Category dial. This choice matters more than usual — a bad starting sound makes every experiment below harder to hear.",
+        nextHint: "Before you change anything, learn the way back.",
       },
       {
         id: "I04-S03",
-        title: "The four filter types",
-        instruction:
-          "Hold a key, press the FILTER Type button, and move Cutoff after each press.",
+        title: "Learn the way back first",
+        instruction: "Hold down Shift and press Enter.",
         detail:
-          "On a digital part Roland offers four: a low-pass filter cuts the highs, a high-pass filter cuts the lows, a band-pass filter keeps a band and removes both ends, and a peaking filter emphasizes a band. The lit indicator shows which is selected.",
-        hardwareTargets: ["filterTypeButton", "cutoffKnob"],
+          "That returns the original sound after you have edited it. Nothing has changed yet, so this does nothing right now — which is exactly why it is worth doing once, before it matters.",
+        hardwareTargets: ["shiftButton", "enterButton"],
         visualMode: "full-plus-inset",
-        expectedSound:
-          "Cutoff removing a different part of the sound each time — darkening it, thinning it, narrowing it to a band, or emphasizing one.",
         whyItMatters:
-          "Most synthesizer sounds you know are a low-pass filter. The other three are what you reach for when low-pass is not the shape you want.",
-        checkpoint: "You have heard Cutoff behave differently under at least three types.",
+          "You are about to make three versions of this sound, and each one has to start from the same place or the comparison is worthless. This is the button that gets you back to that place.",
+        checkpoint:
+          "You have pressed the combination once and know where both buttons are without looking.",
         recoveryHelp:
-          "If the button offers you only one type, you are on the Analog Synth part, which has a low-pass filter only. Press a digital part to hear the rest.",
-        nextHint: "Now let the filter move on its own, in either direction.",
+          "Hold Shift down first, then press Enter. If a menu opened instead, you pressed Menu/Write — press Exit and try again. Remember this reaches the sound only: it does not undo effect settings or pattern work.",
+        nextHint: "Version one: make it soft.",
       },
       {
         id: "I04-S04",
-        title: "Depth decides direction as well as amount",
+        title: "Version one: soft and distant",
         instruction:
-          "In Tone Edit's FILTER group, set the envelope Depth positive, then set it negative.",
+          "Turn Cutoff well down, keep Resonance low, and turn the Envelope knob to the right. Then hold a key.",
         detail:
-          "Roland's Depth parameter runs both ways from zero, and specifies the direction as well as the depth of the change. Positive opens the filter as the envelope rises; negative closes it.",
-        hardwareTargets: ["menuWriteButton", "programValueButtons"],
+          "Three moves, all in the same direction: less top, no edge, slow at both ends. Listen to the result for a few seconds before moving on.",
+        hardwareTargets: ["cutoffKnob", "resonanceKnob", "envelopeKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With positive depth the note brightens as it starts; with negative depth it darkens instead.",
+          "Something soft and unhurried that swells in, sits behind you, and fades out after you let go.",
         whyItMatters:
-          "A negative filter envelope is how you get a sound that starts bright and dulls, which is a different instrument from one that opens up. Most people never find it because they assume depth only means amount.",
-        checkpoint: "You have heard the envelope move the filter in both directions.",
+          "This is the pad shape from I02, arrived at deliberately rather than by following steps. Naming the result — soft, distant, slow — is what lets you ask for it again later.",
+        checkpoint:
+          "You have a version you would describe as soft, and you could say which three controls made it so.",
         recoveryHelp:
-          "At zero depth nothing in the filter envelope has any effect, which is the usual reason it seems broken. Set Depth away from zero first, then adjust the stages.",
-        nextHint: "Now the four stages, as one shape.",
+          "If it has disappeared, Cutoff is too far down — bring it back until the sound returns. If short notes never sound at all, the Envelope knob is too far right.",
+        nextHint: "Now put it back and go the other way.",
       },
       {
         id: "I04-S05",
-        title: "Attack and decay: the front of the note",
-        instruction: "Set a slow Attack and a long Decay in the AMP group, and play one key.",
-        hardwareTargets: ["shiftButton", "programValueButtons"],
+        title: "Version two: short and plucky",
+        instruction:
+          "Hold Shift and press Enter to restore, then turn the Envelope knob well to the left and set Cutoff about halfway.",
+        detail:
+          "Restore first — otherwise you are editing version one rather than starting again. Then go to the opposite end of the same knob.",
+        hardwareTargets: ["shiftButton", "enterButton", "envelopeKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The note swells in, reaches a peak, and settles down to a lower level.",
+        expectedSound:
+          "Notes that land hard and stop quickly, with a definite point to each one.",
         whyItMatters:
-          "Attack is how long it takes to arrive; decay is the fall from that peak to wherever it settles. Together they are the front of every note you have ever heard.",
-        checkpoint: "You can hear a rise and then a fall while still holding the key.",
+          "Same sound, same knob, opposite end, completely different instrument. That is the thing worth taking away from this tutorial: a small number of controls covers an enormous range if you know which direction you want.",
+        checkpoint:
+          "You have a version you would describe as plucky, and it started from the same tone as version one.",
         recoveryHelp:
-          "If you hear no fall, sustain is probably at maximum — the note has nowhere to decay to. Lower Sustain and try again.",
-        nextHint: "Now the part you hold.",
+          "If it still sounds like version one, the restore did not take — hold Shift down first, then press Enter, and check the tone number reappears on the lower line of the display.",
+        nextHint: "Put it back once more, and go somewhere sharper.",
       },
       {
         id: "I04-S06",
-        title: "Sustain is a level, not a time",
-        instruction: "Move Sustain from high to low while holding a key.",
+        title: "Version three: bright and biting",
+        instruction:
+          "Restore again with Shift and Enter, then open Cutoff up, turn Resonance up a fair way, and move Cutoff slowly.",
         detail:
-          "The other three stages are times. Sustain is the level the sound holds at once the decay has finished, for as long as you keep the key down.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "This is the one that can get loud, so turn Master Volume down before you start. Move Cutoff slowly and listen to the peak following it.",
+        hardwareTargets: ["shiftButton", "cutoffKnob", "resonanceKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With sustain high the note holds strongly; with it low the note fades to something quiet and stays there.",
+          "A sharp, vocal, whistling character with a peak that sweeps as you move Cutoff.",
         whyItMatters:
-          "This is the one people get wrong, and it explains a lot: a sound that dies while you hold it does not have a short decay problem, it has a low sustain.",
-        checkpoint: "You can describe what sustain does differently from the other three.",
+          "Resonance is the control the other two versions barely used, and this is what it is for. Hearing it on its own terms is why the lab makes three versions rather than two.",
+        checkpoint:
+          "You have a version you would describe as biting, and you know which knob is responsible.",
         recoveryHelp:
-          "Set Sustain to maximum and the note holds at full level; set it to zero and the note always fades away even while held.",
-        nextHint: "And the part after you let go.",
+          "Turn Resonance down if it becomes painful or uncontrollably loud, and keep Master Volume low while you explore. Shift and Enter restores if you want to start over.",
+        nextHint: "Now line the three of them up.",
       },
       {
         id: "I04-S07",
-        title: "Release is what happens after you",
-        instruction: "Set a long Release, play a chord, and take your hands away.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The chord continues and fades after your hands have left the keys.",
+        title: "Which control did which job",
+        instruction:
+          "Without touching anything, say what each of the three controls actually changed.",
+        detail:
+          "Cutoff decided how bright. Resonance decided how much edge. The Envelope knob decided how the note started and ended. Three versions, three controls, and every version was a different combination of the same three decisions.",
+        hardwareTargets: ["cutoffKnob", "resonanceKnob", "envelopeKnob"],
+        visualMode: "full",
         whyItMatters:
-          "Release is the only stage that happens when you are not touching the instrument, which makes it the one that decides how a passage joins up.",
-        checkpoint: "The sound outlasts your hands.",
+          "Sound design stops being guesswork at the moment you can name the control that fixes a specific complaint. Too dull is Cutoff. Too bland is Resonance. Too slow is the Envelope knob.",
+        checkpoint:
+          "You can match each of the three complaints — too dull, too bland, too slow — to the control that fixes it.",
         recoveryHelp:
-          "If notes pile into mud, shorten it. A very long release is also the usual innocent explanation for notes that seem not to stop.",
-        nextHint: "Both envelopes at once is where this gets useful.",
+          "If any of them is not clear, go back and make that version again. Two passes over the same three controls is worth more than reading about a fourth.",
+        nextHint: "Now use that to solve something.",
       },
       {
         id: "I04-S08",
-        title: "Two envelopes, one sound",
+        title: "Now solve a real goal",
         instruction:
-          "Give the amp a slow attack and the filter a fast one, then swap them.",
+          "Restore the sound, then make it into something that could sit underneath a beat without covering it up.",
         detail:
-          "The amp envelope shapes loudness; the filter envelope shapes brightness. They are separate, and they do not have to agree.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
-        visualMode: "full-plus-inset",
+          "No instructions this time. You know what that needs: less brightness, a short envelope so notes get out of the way, and only as much edge as keeps it interesting.",
+        hardwareTargets: ["cutoffKnob", "resonanceKnob", "envelopeKnob"],
+        visualMode: "full",
         expectedSound:
-          "One way round, the sound arrives bright and gets louder. The other way, it arrives loud and gets brighter.",
+          "Something darker and shorter than you started with, that leaves room above it.",
         whyItMatters:
-          "Almost every interesting synth sound is these two envelopes disagreeing with each other in a controlled way.",
-        checkpoint: "You have heard the same two settings produce two different instruments.",
+          "This is the difference between knowing what a control does and knowing when to use it. The three versions were exercises; this one has a purpose, and the purpose decides the settings.",
+        checkpoint:
+          "You have made a sound to a stated brief, choosing the controls yourself.",
         recoveryHelp:
-          "If the two are hard to tell apart, exaggerate: put one attack at its shortest and the other near its longest.",
-        nextHint: "One more thing decides how the envelope behaves.",
+          "Stuck? Work backwards from what is wrong with it. If it covers everything up, it is too bright or too long. If you cannot hear it at all, it is too dark or too short. Shift and Enter restores if you want a clean start.",
+        nextHint: "Now find out whether it worked.",
       },
       {
         id: "I04-S09",
-        title: "Make it respond to your hands",
-        instruction: "Find the amp's level velocity sensitivity and raise it.",
+        title: "Test it against the pattern",
+        instruction: "Press Play/Stop and play your sound along with the pattern.",
         detail:
-          "This decides how much the volume varies with how hard you play. Roland's parameter runs both ways from zero, so it can also be set to work in reverse.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
-        visualMode: "full-plus-inset",
+          "This is the only opinion that counts. A sound that seemed right on its own often turns out to be too much or too little in company.",
+        hardwareTargets: ["playStopButton", "keys"],
+        visualMode: "full",
         expectedSound:
-          "A gentle press is now much quieter than a firm one, instead of the two being similar.",
+          "Your sound sitting with the pattern rather than fighting it or vanishing into it.",
         whyItMatters:
-          "This is what makes a sound feel played. B05 showed you the keys sense how hard you press; this is the setting that decides whether the sound cares.",
-        checkpoint: "Soft and firm presses now sound clearly different.",
+          "Judging a sound in isolation is how everything ends up too bright and too long. Context is the test, and it is available in one button press.",
+        checkpoint:
+          "You have heard your sound in context and know whether it needs another adjustment.",
         recoveryHelp:
-          "Set it back toward zero if the sound becomes hard to control. If firm presses are now too loud overall, lower AMP Level rather than undoing the sensitivity.",
-        nextHint: "One note about the drums.",
+          "Adjust and listen again — that loop is the whole method. If it is buried, open Cutoff a little rather than reaching for volume.",
+        nextHint: "Last step: decide what happens to it.",
       },
       {
         id: "I04-S10",
-        title: "The same idea on the Drums part",
-        instruction: "Press Drums and play a few keys.",
+        title: "Keep it or put it back",
+        instruction:
+          "Either save the program to keep this version, or hold Shift and press Enter to restore the original and leave nothing behind.",
         detail:
-          "The Drums part has the same two shaping tools under different names — Roland calls them TVF and TVA, a time-variant filter and a time-variant amplifier — and each of its instruments has its own set.",
-        hardwareTargets: ["drumsButton"],
+          "Both are reasonable endings. If you were practising, restoring is tidy; if you made something you like, saving keeps it.",
+        hardwareTargets: ["shiftButton", "enterButton"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "It means everything you just learned transfers to the drums, one instrument at a time. Shortening a snare's decay is the same operation as shortening a bass's.",
-        checkpoint: "You know the drum equivalents exist and what they are called.",
+          "Knowing you can walk away cleanly is what makes a lab like this safe to run. Nothing here has to be kept, and nothing here has to be lost.",
+        checkpoint:
+          "You have either saved your version or restored the original, on purpose.",
         recoveryHelp:
-          "The panel knobs work on the drum instrument you played most recently, so play the instrument you want to change before you turn anything.",
+          "N09 Save your work has the full saving procedure. If you restore and then wish you had kept it, the version cannot be recovered — but you know exactly which three controls made it.",
         nextHint:
-          "You can shape a sound in time now. Next, make it move by itself.",
+          "You can shape a sound to a brief. Next, make one move on its own.",
       },
     ],
   },
@@ -4871,180 +4972,212 @@ window.JDXI_TUTORIALS = {
     title: "LFO and movement",
     shortTitle: "LFO and movement",
     summary:
-      "Modulation as motion: choose the shape of the movement, lock it to the tempo, decide what it moves, and put some of it under your own hand.",
+      "Make a sound move on its own. Slow movement, fast movement, and the amount that is just enough — then put some of it under your own hand instead of leaving it always on.",
     estimatedMinutes: 11,
     prerequisites: ["I04"],
     learningGoals: [
-      "Choose an LFO waveform for the movement you want.",
-      "Lock the LFO to the tempo so it stays in time.",
-      "Send the LFO to pitch, filter or amp deliberately.",
-      "Put modulation under the Mod control instead of always on.",
+      "Set how much movement a sound has, and how fast.",
+      "Tell what slow movement is for and what fast movement is for.",
+      "Use movement sparingly rather than as an effect.",
+      "Combine automatic movement with the Mod control.",
     ],
     // Source record: docs/tutorials/I05-SOURCE-NOTES.md
-    // The panel LFO has one Depth and one Destination; the Tone Edit LFO
-    // group has separate Pitch, Filter and Amp depths (PG p.14, pp.18-19),
-    // which is the difference this tutorial exists to teach. The Mod depths
-    // in the same group are the payoff for B05's Mod control: they are what
-    // decides whether it does anything at all.
+    // I05 is a MOVEMENT LAB (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 10): one
+    // sound, Rate and Depth, slow versus fast, sparing use, combined with
+    // Mod, finishing with one moving texture.
+    //
+    // The brief names five things not to teach merely because the parameters
+    // exist -- exhaustive destinations, Tempo Sync, Sync Note, Fade Time and
+    // Key Trigger -- and none of them appears. Tone Edit is never opened;
+    // every control is on the panel.
+    //
+    // Roland's note that the LFO does not affect the Drums part is taught,
+    // because a learner who tries it there will otherwise assume it is broken.
     steps: [
       {
         id: "I05-S01",
         title: "Protect any work you want to keep",
         instruction: "Decide whether this program holds work you have not saved.",
-        hardwareTargets: ["display"],
-        visualMode: "full-plus-inset",
-        detail: "This tutorial edits the loaded sound throughout.",
-        checkpoint: "You have decided: nothing to keep, or you have saved it.",
+        detail:
+          "This tutorial edits the loaded sound. If there is something here you want, save it first.",
+        hardwareTargets: ["lfoSection"],
+        visualMode: "full",
+        whyItMatters:
+          "Movement settings belong to the sound, so they are unsaved edits like any other and are lost the moment you change program.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Hold Shift and press Enter at any point to return to the original sound.",
-        nextHint: "Choose a part where the LFO applies.",
+          "N09 Save your work teaches saving. If you would rather experiment somewhere disposable, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now pick a sound that will show movement.",
       },
       {
         id: "I05-S02",
-        title: "Choose a part the LFO can reach",
-        instruction: "Press Digital Synth 1 and hold a sustained note.",
+        title: "Choose a sound that holds",
+        instruction:
+          "Press Digital Synth 1 and find a sound you can hold steadily on a key.",
         detail:
-          "Roland is explicit that the LFO effect is not applied to the Drums part, so start on one where it is.",
-        hardwareTargets: ["digitalSynth1Button"],
+          "Movement needs something to happen to. A note that stops after half a second gives the LFO nothing to work with.",
+        hardwareTargets: ["digitalSynth1Button", "toneButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A note you can hold steadily.",
-        checkpoint: "You have a held note that sits still.",
+        expectedSound: "A note you can hold that stays steady while you hold it.",
+        whyItMatters:
+          "Every judgement in this tutorial is about a sound that is already going. The longer it holds, the easier every comparison below becomes.",
+        checkpoint: "You have a sustained sound and can hold it for several seconds.",
         recoveryHelp:
-          "If the sound fades on its own, raise Sustain in Tone Edit's AMP group, or pick a tone that holds — you need something steady to hear movement against.",
-        nextHint: "Now choose the shape of the movement.",
+          "If nothing holds, turn the Category dial to another position. Note that this tutorial will not work on the Drums part — Roland states the LFO effect is not applied there.",
+        nextHint: "Now turn the movement on.",
       },
       {
         id: "I05-S03",
-        title: "The waveform is the shape of the movement",
+        title: "How much movement",
         instruction:
-          "Turn the LFO Depth up, then turn the waveform knob through its positions.",
+          "Hold a key and turn the LFO Depth knob up from zero until the movement is obvious.",
         detail:
-          "Roland offers a triangle, a sine, a sawtooth, a square, a sample-and-hold and a random wave, and the lit indicator shows which is selected. A triangle glides up and down; a square jumps between two values; sample-and-hold steps to a new value at each cycle.",
-        hardwareTargets: ["lfoWaveformControl", "lfoDepthKnob"],
+          "Go too far deliberately. You are finding the top of the range so that you know where the useful part of it is.",
+        hardwareTargets: ["lfoDepthKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "Smooth wavering, then hard jumping between two states, then random stepping.",
+          "The held note going from perfectly still to obviously moving, and then to overdone.",
         whyItMatters:
-          "Depth and rate decide how much and how fast. The waveform decides what kind of movement it is, and it is the one that changes the character rather than the amount.",
-        checkpoint: "You have heard at least a smooth shape and a jumping one.",
+          "Depth is the control that decides whether movement is a texture or an effect. Hearing the extreme first makes the small settings meaningful rather than arbitrary.",
+        checkpoint: "You have heard the sound with far too much movement.",
         recoveryHelp:
-          "If you hear nothing at all, Depth is still at zero, or you are on the Drums part where the LFO is not applied.",
-        nextHint: "Now stop it drifting out of time.",
+          "Turn Depth back to zero to stop it entirely. If nothing happens at any setting, check that Drums is not the selected part — the LFO does not affect it.",
+        nextHint: "Now change how fast it happens.",
       },
       {
         id: "I05-S04",
-        title: "Lock the movement to the tempo",
+        title: "How fast",
         instruction:
-          "Open Tone Edit, reach the LFO group, and turn Tempo Sync on.",
+          "With Depth still up, turn the LFO Rate knob slowly from one end to the other.",
         detail:
-          "With it off, the LFO runs at whatever rate you set and drifts against the music. With it on, the rate becomes a note value relative to the tempo, set by a separate Sync Note parameter.",
-        hardwareTargets: ["menuWriteButton", "programValueButtons"],
+          "Listen to the whole range. At one end the sound barely drifts; at the other it flutters.",
+        hardwareTargets: ["lfoRateKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The movement lands in time with the pattern rather than sliding against it.",
+        expectedSound:
+          "The same amount of movement, happening slowly and then very fast.",
         whyItMatters:
-          "This is the difference between movement that sounds deliberate and movement that sounds like a wobble. Almost every rhythmic synth part you have heard uses it.",
-        checkpoint: "Tempo Sync is on and a Sync Note value is available.",
+          "Rate and Depth are easy to confuse because turning either one up makes a sound more obviously modulated. They do different jobs, and hearing them separately is what keeps them apart.",
+        checkpoint:
+          "You can hear the difference between changing Rate and changing Depth.",
         recoveryHelp:
-          "With Tempo Sync on, the plain Rate parameter no longer sets the speed — Sync Note does. If the speed will not change, check which of the two you are editing.",
-        nextHint: "Now choose a note value.",
+          "If it all sounds the same, turn Depth up further while you move Rate — with very little depth, speed is hard to hear.",
+        nextHint: "Now decide what each speed is for.",
       },
       {
         id: "I05-S05",
-        title: "Choose how fast, in beats",
-        instruction: "Find Sync Note and step through some values while the pattern plays.",
+        title: "What slow is for, and what fast is for",
+        instruction:
+          "Set Rate slow and listen for a few seconds. Then set it fast and listen again.",
         detail:
-          "The values are note lengths rather than numbers, so the movement stays locked however you change the tempo.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Slow movement takes several seconds to come round, and mostly makes a sound feel unfixed and alive. Fast movement is heard as a character of the sound itself — a wobble or a shimmer that is part of what it is.",
+        hardwareTargets: ["lfoRateKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "The movement changing speed in musical steps — once a bar, twice a bar, four times — rather than sliding continuously.",
-        checkpoint: "The movement is in time with the pattern at more than one speed.",
+          "Slow: a sound that never quite settles. Fast: a sound with a texture built into it.",
+        whyItMatters:
+          "These are two different tools that happen to share a knob. A pad usually wants the first; a lead or a special effect usually wants the second.",
+        checkpoint:
+          "You can say which speed you would use to make a held sound feel alive.",
         recoveryHelp:
-          "If it is hard to hear against everything else, hold Shift and press Part Select buttons to mute the other parts while you listen.",
-        nextHint: "Now decide what it moves.",
+          "If the difference is not obvious, hold the note longer at the slow setting — slow movement by definition takes time to reveal itself.",
+        nextHint: "Now use much less of it.",
       },
       {
         id: "I05-S06",
-        title: "Three destinations, separately",
+        title: "Now use far less",
         instruction:
-          "In the same group, find the Pitch, Filter and Amp depths and raise them one at a time.",
+          "Turn Depth down until you can only just tell the movement is there, then stop.",
         detail:
-          "Roland names the results: to pitch gives vibrato, to the filter gives a wah effect, and to the amp gives tremolo. In Tone Edit they are three separate depths rather than one destination, so you can use more than one at once.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "The target is the smallest amount that makes a difference. If you are not sure whether it is on, turn it to zero and back and listen for what you lost.",
+        hardwareTargets: ["lfoDepthKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The same movement wavering the pitch, sweeping the tone, or pulsing the volume.",
+        expectedSound:
+          "A sound that seems steady until you remove the movement and notice it go flat.",
         whyItMatters:
-          "The panel gives you one destination at a time. This is where you get all three, which is the whole reason to come in here rather than use the knob.",
-        checkpoint: "You have heard the same LFO produce vibrato, wah and tremolo.",
+          "This is the whole lesson. Almost every good use of an LFO is a small one, and almost every beginner's use is a large one. The way to find the right amount is to approach it from below rather than from above.",
+        checkpoint:
+          "The movement is barely noticeable on its own but clearly missed when you remove it.",
         recoveryHelp:
-          "Set each back to zero when you have heard it, so the next one is not masked by the last. Each of these runs both ways from zero, so a negative value moves it the other way.",
-        nextHint: "Two settings decide how the movement starts.",
+          "Toggle Depth between zero and your setting a few times. If you cannot hear a difference, you have gone too small — come up a little.",
+        nextHint: "Now change what is moving.",
       },
       {
         id: "I05-S07",
-        title: "Fade the movement in",
-        instruction: "Find Fade Time and raise it.",
+        title: "Change what moves",
+        instruction:
+          "Turn the LFO Destination knob to each position in turn, holding a key each time.",
         detail:
-          "This is the time from playing the note until the LFO reaches its full amount. The movement now grows in rather than being there from the first instant.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "The lit indicator shows which is selected. The same movement applied to different things gives you a waver in pitch, a sweep in tone, or a pulse in volume.",
+        hardwareTargets: ["lfoDestinationKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "A note that starts steady and begins to waver only after a moment.",
+        expectedSound:
+          "Three quite different results from the same Rate and Depth: wavering, sweeping, or pulsing.",
         whyItMatters:
-          "This is how a real player uses vibrato — not from the start of the note, but once it is established. One parameter buys you that.",
-        checkpoint: "The movement arrives after the note rather than with it.",
-        recoveryHelp: "Set Fade Time back to zero for movement that is present immediately.",
-        nextHint: "And whether every note starts the same way.",
+          "Depth and Rate decide how much and how fast; this decides what. It is the difference between a sound that shimmers and one that throbs, and it costs one knob turn to try all three.",
+        checkpoint:
+          "You have heard the same movement produce at least two clearly different effects.",
+        recoveryHelp:
+          "Turn Depth up temporarily if the differences are hard to hear, then bring it back down once you have chosen. Nothing here is destructive.",
+        nextHint: "Now put some of it under your own hand.",
       },
       {
         id: "I05-S08",
-        title: "Restart the cycle on each note",
-        instruction: "Find Key Trigger and turn it on.",
+        title: "Put some of it under your hand",
+        instruction:
+          "Leave a small amount of automatic movement, then hold a long note and bring the Mod control up.",
         detail:
-          "With it on, the LFO cycle restarts each time you press a key, so every note begins at the same point in the movement. With it off, the LFO runs continuously underneath and notes catch it wherever it happens to be.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "The LFO gives you movement that is always there. The Mod control gives you movement you ask for. Using both means the sound is quietly alive all the time and can be pushed further when you want it.",
+        hardwareTargets: ["modControl", "lfoDepthKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With it on, repeated notes sound identical. With it off, each one is caught at a slightly different point.",
+          "A sound that drifts gently on its own, and wavers much more strongly while you hold the Mod control up.",
         whyItMatters:
-          "It decides whether a part sounds tight and repeatable or loose and organic, and it is the setting to reach for when a rhythmic sound will not sit still.",
-        checkpoint: "You can hear the difference between repeated notes with it on and off.",
+          "Movement that is always at full strength stops being expressive within seconds. Keeping most of it on a control you operate means you decide which notes deserve it.",
+        checkpoint:
+          "You can hear a small constant movement, and a larger one you control by hand.",
         recoveryHelp:
-          "The difference is clearest with a fast, deep, obvious movement — exaggerate the settings while you compare, then put them back.",
-        nextHint: "Last: put some of it under your hand.",
+          "Bring the Mod control fully toward yourself when you have finished — it stays where you leave it, and everything you play afterwards will waver otherwise.",
+        nextHint: "Now commit to one setting.",
       },
       {
         id: "I05-S09",
-        title: "Give the Mod control something to do",
+        title: "Make one moving texture",
         instruction:
-          "Find the modulation depths in the same group and raise the one for pitch.",
+          "Settle Rate, Depth and Destination where you actually like them, and hold a long note.",
         detail:
-          "These are separate from the LFO depths above. They decide how much modulation the Mod control beside the keys can apply — to the pitch, the filter or the amp.",
-        hardwareTargets: ["cursorRightButton", "modControl"],
+          "One sound, one set of decisions. This is the thing you are taking away from the tutorial, so it is worth spending a minute on rather than accepting wherever the knobs happen to be.",
+        hardwareTargets: ["lfoRateKnob", "lfoDepthKnob", "lfoDestinationKnob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "Nothing changes until you move the Mod control, and then the note begins to waver.",
+          "A sustained sound with movement you chose deliberately — enough to be interesting, not so much that it distracts.",
         whyItMatters:
-          "This answers something B05 left open: whether the Mod control does anything depends on the sound. Now you know which setting decides, and you can build a sound where it does exactly what you want.",
+          "Three knobs, set on purpose, is what separates a moving texture from a sound that is merely wobbling. Being able to make one is the point of this tutorial.",
         checkpoint:
-          "Moving the Mod control adds movement, and leaving it toward you removes it.",
+          "You have a moving sound you would be happy to use, and you chose all three settings.",
         recoveryHelp:
-          "If nothing happens, check the Mod control is not already fully toward you, and that you raised the modulation depth rather than the LFO depth — they sit near each other and do different jobs.",
-        nextHint: "Now leave it somewhere sensible.",
+          "If it will not settle, turn Depth to zero and build up again from nothing — that is usually faster than adjusting from too much.",
+        nextHint: "Last step: hear it where it will live.",
       },
       {
         id: "I05-S10",
-        title: "Leave it under control",
+        title: "Hear it in context, then decide",
         instruction:
-          "Press Exit, move the Mod control fully toward you, and listen to the sound plain.",
+          "Press Play/Stop, hold your texture over the pattern, then either save the program or turn Depth back to zero.",
         detail:
-          "Movement is easy to overuse. A sound that wavers constantly is exhausting to listen to over several minutes.",
-        hardwareTargets: ["exitButton", "modControl"],
-        visualMode: "full-plus-inset",
-        checkpoint: "The sound is steady again, and you can add movement when you want it.",
+          "Movement that was subtle on its own often disappears entirely in company, and movement that seemed right can turn out to be far too much. Adjust, then decide whether to keep it.",
+        hardwareTargets: ["playStopButton", "lfoDepthKnob"],
+        visualMode: "full",
+        expectedSound:
+          "Your moving texture against a pattern, either sitting nicely or asking to be adjusted.",
+        whyItMatters:
+          "A busy pattern hides small movement and exaggerates large movement, so the setting that works alone is rarely the setting that works in a track. This is the check that catches it.",
+        checkpoint:
+          "You have heard your texture in context and decided whether to keep it.",
         recoveryHelp:
-          "If it still wavers with the Mod control toward you, an LFO depth is set rather than a modulation depth — go back and set that one to zero.",
+          "N09 Save your work has the saving procedure. To leave nothing behind, turn Depth to zero and move the Mod control fully toward yourself — that puts the sound back to still.",
         nextHint:
-          "Your sounds can move now. Next, the space they sit in.",
+          "You can make a sound move. Next, put the whole program in a space.",
       },
     ],
   },
@@ -5055,177 +5188,207 @@ window.JDXI_TUTORIALS = {
     title: "Effects and space",
     shortTitle: "Effects and space",
     summary:
-      "Effects with intent rather than by ear: choose types deliberately, understand the one set of effects a program has, and route each part to the effects you want it to have.",
+      "Effects judged in company rather than alone. Find the point where each one stops helping, hear why a bass and a pad want completely different amounts, and back the whole lot down until the groove is clear again.",
     estimatedMinutes: 13,
     prerequisites: ["I05"],
     learningGoals: [
-      "Edit an effect's own parameters rather than only its depth.",
-      "Understand why a program has one set of effects.",
-      "Route individual parts to different effects.",
-      "Use the send levels to control how much of each part is affected.",
+      "Find the line between too dry, useful and too much.",
+      "Hear why different sounds want different amounts of the same effect.",
+      "Understand that one set of effects serves the whole program.",
+      "Reduce effects when they start costing you clarity.",
     ],
     // Source record: docs/tutorials/I06-SOURCE-NOTES.md
-    // The constraint that makes this tutorial necessary is PG p.8: a program
-    // contains a single set of effect type selections and settings, so two
-    // parts cannot have different Effect 1 types -- but Part Output and the
-    // send levels let each part use a different subset of the chain. I06-S09
-    // is firmware-gated (side chain, v1.50) and written to be skippable.
+    // I06 is PRACTICAL BALANCING IN GROOVE CONTEXT
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 10): Reverb, Delay, Effect 1,
+    // Effect 2, the too dry / useful / too much judgement, comparing across
+    // bass, pad and lead, and backing effects down for clarity.
+    //
+    // Explicitly NOT here: algorithm taxonomy, a deep routing curriculum, or
+    // the Side Chain Compressor. Effects Edit is never opened and no send
+    // level or Part Output parameter is touched -- every control is on the
+    // panel. The shared-effects fact IS taught, because it is what makes the
+    // balancing problem real.
     steps: [
       {
         id: "I06-S01",
         title: "Protect any work you want to keep",
-        instruction: "Decide whether this program holds effect settings you have not saved.",
+        instruction:
+          "Decide whether this program holds effect settings you have not saved.",
         detail:
-          "Effect settings belong to the program, and this tutorial changes several of them.",
+          "Effect settings belong to the program, and this tutorial will move all four knobs repeatedly. If you have been building something here, save it first.",
         hardwareTargets: ["effectsSection"],
         visualMode: "full-plus-inset",
-        checkpoint: "You have decided: nothing to keep, or you have saved it.",
+        whyItMatters:
+          "Unlike sound edits, there is no documented one-button way back from an effect change. That makes the decision to go on worth making before you start rather than after.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it first.",
         recoveryHelp:
-          "N09 Save your work teaches saving. Unlike a sound edit, there is no documented one-button way back from an effect change.",
-        nextHint: "Now open the effects properly.",
+          "N09 Save your work teaches saving. If you would rather work somewhere disposable, step to another program with Value + first — that discards anything unsaved here, which is the choice you are making.",
+        nextHint: "Now get something playing with more than one part in it.",
       },
       {
         id: "I06-S02",
-        title: "Open Effects Edit",
-        instruction: "Press Menu/Write, use Cursor to select Effects Edit, and press Enter.",
+        title: "Get a groove going",
+        instruction:
+          "Press Play/Stop and find a program whose pattern has several parts playing.",
         detail:
-          "The four panel knobs set depth. This screen is where the effects themselves are configured.",
-        hardwareTargets: ["menuWriteButton", "display"],
+          "Everything in this tutorial is a judgement about how sounds fit together, so a single sound on its own will not do. Any preset program with a busy pattern works.",
+        hardwareTargets: ["playStopButton", "programValueButtons"],
         visualMode: "full-plus-inset",
-        checkpoint: "The display is showing an Effects Edit screen.",
+        expectedSound: "A pattern with drums and at least one or two other parts.",
+        whyItMatters:
+          "Effects sound better on a single sound played alone, always. That is exactly why they have to be judged in company — the solo impression is the one that misleads you.",
+        checkpoint: "A pattern with several parts is playing.",
         recoveryHelp:
-          "A long press of Menu/Write opens PORTAMENTO instead — press Exit and use a short press. Press Exit once to get back to the Menu list if you opened the wrong item.",
-        nextHint: "Move between the four effects.",
+          "B08 covers finding a program with a pattern. Remember that stepping programs discards anything unsaved, which you decided about in the last step.",
+        nextHint: "First, hear it with nothing at all.",
       },
       {
         id: "I06-S03",
-        title: "Move between the four effects",
-        instruction: "Hold down Shift and press Cursor ► to step through the groups.",
+        title: "Hear it completely dry",
+        instruction:
+          "Press the Effects On/Off button until as little as possible is switched on, and listen.",
         detail:
-          "Roland's own instruction for this screen: to move between Effect 1, Effect 2, Delay and Reverb, hold Shift and use the cursor buttons.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "This is your reference point. Bare, close, and probably a bit unglamorous — but every part is clearly separate and you can hear exactly what is playing.",
+        hardwareTargets: ["effectsOnOffButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "The group name on the upper line changes between the four effects.",
+        expectedSound:
+          "The groove sounding flat and close, with every part distinct and nothing blurred.",
+        whyItMatters:
+          "You cannot tell whether an effect is helping unless you know what the sound is without it. Starting dry means every later decision is a comparison rather than a guess.",
+        checkpoint:
+          "You have heard the groove with the effects out, and can hear each part separately.",
         recoveryHelp:
-          "If the group does not change, keep Shift held and press Cursor ◄ instead — you may be at the end of the list.",
-        nextHint: "Each one has a type, including an off setting.",
+          "Keep pressing to step on through the combinations — the indicators at the upper left of each knob show which effects are available. Nothing here is destructive; you are switching effects in and out, not deleting their settings.",
+        nextHint: "Now bring one back, and find where it stops helping.",
       },
       {
         id: "I06-S04",
-        title: "Type includes Thru",
-        instruction: "In the EFFECT1 group, find Type and step through its values.",
+        title: "Reverb: too little, useful, too much",
+        instruction:
+          "Bring the effects back, then turn Reverb up slowly from nothing to fully up, listening the whole way.",
         detail:
-          "Alongside Distortion, Fuzz, Compressor and Bit Crusher there is a Thru setting, which passes the sound through untouched. That is how an effect is switched out from in here.",
-        hardwareTargets: ["programValueButtons"],
+          "Somewhere in that travel it goes from adding nothing to making the groove sound finished, and then to washing it out. Find both of those points before you settle anywhere.",
+        hardwareTargets: ["reverbKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The character of the sound changing with each type, and going plain on Thru.",
+        expectedSound:
+          "The groove gaining depth, then losing definition as the drums smear and the parts run together.",
         whyItMatters:
-          "Thru is the setting that answers a question B07 could not: what to do when you want Effect 1 to do nothing at all rather than a very small amount of something.",
-        checkpoint: "You have found Thru and heard the effect drop out on it.",
+          "The useful range of this knob is much smaller than its travel, and the top half is almost never right in a mix. Finding where it stops helping is more useful than being told a number.",
+        checkpoint:
+          "You have heard the point at which more reverb starts making the groove worse.",
         recoveryHelp:
-          "Keep stepping to come back round to the type you want. Each type has its own parameters, which appear after Type on the same screen.",
-        nextHint: "Now the parameters behind the depth knob.",
+          "Turn it back down to where the drums are crisp again. If you cannot hear any change, the reverb may not be switched on — press Effects On/Off until its indicator lights.",
+        nextHint: "Now the same test on delay.",
       },
       {
         id: "I06-S05",
-        title: "Edit the effect itself",
-        instruction: "Press Cursor ► to walk through the selected effect's own parameters.",
+        title: "Delay: the same test",
+        instruction: "Turn Delay up slowly through its whole range, then back.",
         detail:
-          "Each type brings its own set. This is where an effect stops being one knob and becomes something you can shape.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Delay fills space differently from reverb: it repeats things rather than blurring them, so it goes wrong in a different way — as clutter rather than as fog.",
+        hardwareTargets: ["delayKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The chosen effect changing in ways the panel knob alone cannot produce.",
+        expectedSound:
+          "Repeats appearing behind the groove, then multiplying until they compete with the parts that are actually playing.",
         whyItMatters:
-          "One documented example is worth knowing: with the Flanger selected as Effect 2, setting its Feedback to zero turns it into a chorus. The type list is shorter than the range of sounds it can make.",
-        checkpoint: "You have changed at least one parameter that is not the depth.",
+          "Because delay repeats in time, a little of it makes a groove feel bigger without losing definition — which is often what you want when reverb would have smeared it.",
+        checkpoint:
+          "You can describe how too much delay goes wrong differently from too much reverb.",
         recoveryHelp:
-          "Note a value before you change it if you want to come back to it. There is no undo for effect settings.",
-        nextHint: "Now the constraint that shapes everything else here.",
+          "Turn it back down until the repeats support the groove rather than crowding it. Short notes show delay much more clearly than held ones.",
+        nextHint: "Now the two that change the sound itself.",
       },
       {
         id: "I06-S06",
-        title: "One set of effects per program",
-        instruction: "Read this before you try to give two parts different effects.",
+        title: "A little character from the other two",
+        instruction:
+          "Press the Effect 1 Type button, turn its knob up a little, then do the same with Effect 2.",
         detail:
-          "Roland states it plainly: each program contains a single set of effect type selections and settings. One part cannot have Effect 1 set to Distortion while another has it set to Fuzz. There is one Effect 1, one Effect 2, one Delay and one Reverb for the whole program.",
-        hardwareTargets: ["effectsSection"],
+          "These change what the sound is made of rather than where it seems to be. In a groove they are best used in small amounts — a bit of grit or a bit of sweep, not a transformation.",
+        hardwareTargets: ["effect1Knob", "effect2Knob"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "The groove gaining some roughness or motion without losing its shape.",
         whyItMatters:
-          "This is a hard limit, and knowing it early saves you looking for a per-part effect type setting that does not exist. What you can change per part is which of those effects each part goes through.",
-        checkpoint: "You can say what is shared across the program and what is not.",
+          "These two are the most tempting to overdo because they are the most dramatic. In context, a setting that sounded exciting on a single held note usually turns the whole groove to mush.",
+        checkpoint:
+          "You have added a small amount from at least one of the two slots and the groove still works.",
         recoveryHelp:
-          "Nothing to recover from — this step changes nothing. The next two steps are how you work within the constraint.",
-        nextHint: "Now route the parts.",
+          "Turn either knob back to the left to remove it. Some types get much louder as you turn them up — keep Master Volume down while you explore. Press the Type button again to step on to a different one.",
+        nextHint: "Now the thing that makes this a balancing problem.",
       },
       {
         id: "I06-S07",
-        title: "Send each part where you want it",
+        title: "Different sounds want different amounts",
         instruction:
-          "Press Exit, open Program Edit, reach the MAIN group, and find Part Output.",
+          "Play a low note, then a held chord high up, then a single bright note, against the same effect settings.",
         detail:
-          "This chooses which effects a part passes through. Roland's settings run from everything, through progressively fewer, to a direct output with no effects at all — and there is a setting specific to the Drums part that uses each drum instrument's own routing.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["PROG: MAIN D1", "Level 127"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Program Edit MAIN screen. Part Output is one of the parameters along this group; the two letters at the right show which part you are routing.",
+          "Listen to how the same reverb sounds on each. A bass usually wants almost none of it — reverb on low sounds turns to mud faster than anything. A pad usually wants a lot. A lead wants somewhere in between, and often prefers delay.",
+        hardwareTargets: ["keys", "reverbKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The same amount of reverb sounding right on a held high sound and wrong on a low one.",
         whyItMatters:
-          "This is the answer to the shared-effects constraint. Your bass can go straight out while your pad goes through everything, using the same one set of effects.",
-        checkpoint: "You can see Part Output and change it for the selected part.",
+          "This is why effects are hard. The correct amount is not a property of the effect; it is a property of the sound you are putting it on, and one setting has to serve all of them.",
+        checkpoint:
+          "You can say which of the three kinds of sound wants the least reverb, and why.",
         recoveryHelp:
-          "Use Part Select to change which part you are routing — the two letters at the right of the upper line tell you which one that is. N02 covers this screen.",
-        nextHint: "Then decide how much of it arrives.",
+          "If the difference is hard to hear, turn Reverb up further than you would use, listen to the low and high sounds again, then bring it back — exaggerating makes the comparison obvious.",
+        nextHint: "And here is why that is a problem.",
       },
       {
         id: "I06-S08",
-        title: "Set the sends by part",
-        instruction: "Find the delay and reverb send levels and set them per part.",
+        title: "One set of effects, shared by everything",
+        instruction: "Read this before you try to give two parts different settings.",
         detail:
-          "These decide how much of each part is sent to the delay and the reverb. A pad might be sent heavily; a bass usually is not sent at all.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
-        visualMode: "full-plus-inset",
-        expectedSound: "One part sitting in a large space while another stays dry and close.",
+          "The effect settings belong to the whole program, not to a part. There is one reverb, one delay, and one of each effect slot, and every part that is switched through to them gets the same one. You cannot turn the reverb up for the pad and down for the bass.",
+        hardwareTargets: ["effectsSection"],
+        visualMode: "full",
         whyItMatters:
-          "Space is a relative thing. A pad only sounds distant if something else is near, so the sends matter more than the reverb amount does.",
-        checkpoint: "Two parts have audibly different amounts of space around them.",
+          "This is the constraint that makes the previous step matter. Since one setting has to serve a bass, a pad and a lead at once, the right answer is usually less than any of them would want on its own.",
+        checkpoint:
+          "You can explain why the reverb setting is a compromise rather than a choice.",
         recoveryHelp:
-          "A send at zero means that effect does nothing for that part no matter what the panel knob is set to — that is one of the documented reasons an effect appears not to work, which B07 lists in full.",
-        nextHint: "One more effect, and whether you have it depends on your JD-Xi.",
+          "Nothing to do here — this step only asks you to read. The Effects On/Off button does let you take a part out of the effects entirely, which is the blunt version of the control this constraint denies you.",
+        nextHint: "So the last move is usually downward.",
       },
       {
         id: "I06-S09",
-        title: "Duck the synths under the drums (version 1.50 or later)",
+        title: "Back it down until the groove is clear",
         instruction:
-          "Set Effect 1's type to Compressor, then look for its side-chain parameters.",
+          "With the pattern playing, reduce every effect until you can hear each part distinctly again — then stop.",
         detail:
-          "From system version 1.50, the Compressor gained a side chain that reduces the volume of the digital and analog parts while the drum part is sounding. If your instrument is older it will not have these parameters, and you can skip this step — nothing else here depends on it.",
-        hardwareTargets: ["menuWriteButton", "programValueButtons"],
+          "Take a little off each one rather than turning any of them off. You are looking for the most effect you can have while still being able to pick out the drums.",
+        hardwareTargets: ["reverbKnob", "delayKnob", "effect1Knob", "effect2Knob"],
         visualMode: "full-plus-inset",
         expectedSound:
-          "With a pattern playing, the synth parts dip slightly on every drum hit and recover between them.",
+          "The groove tightening up: still in a space, but with the drums crisp and every part findable again.",
         whyItMatters:
-          "It is the sound of a mix breathing with the beat, and on this instrument it is done for you rather than by hand.",
+          "Almost every mix problem a beginner has is too much effect, and almost every fix is subtraction. Doing it as the last deliberate move — rather than never doing it — is the habit worth taking away.",
         checkpoint:
-          "Either you have found the side-chain parameters, or you have established your JD-Xi does not have them.",
+          "You can hear every part clearly and the groove still sounds finished rather than bare.",
         recoveryHelp:
-          "If the parameters are not there after Type is set to Compressor, your JD-Xi is very likely running a system version earlier than 1.50 — that is not a fault, and N01 shows you where to read your version. Turn the side chain switch off to remove the effect.",
-        nextHint: "Now come out and listen to the whole thing.",
+          "If you are not sure whether you have gone too far, press Effects On/Off to compare with none at all. If the difference between your setting and nothing is very small, you have overcorrected.",
+        nextHint: "Last step: decide what happens to it.",
       },
       {
         id: "I06-S10",
-        title: "Listen to the whole program",
-        instruction: "Press Exit to the top screen and play the pattern.",
+        title: "Keep it, if you want it",
+        instruction:
+          "If you like where the effects have ended up, save the program.",
         detail:
-          "Everything you changed belongs to this program and is lost if you switch program or power off without saving.",
-        hardwareTargets: ["exitButton", "playStopButton"],
+          "Effect settings are saved with the program, along with everything else in it. If you were only practising, there is nothing to do.",
+        hardwareTargets: ["shiftButton", "menuWriteButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "Parts sitting at different distances rather than all in the same place.",
-        checkpoint: "The parts occupy different amounts of space.",
+        whyItMatters:
+          "I07 starts a fresh program and sets its own effects, so nothing later depends on this one. Saving here is for you.",
+        checkpoint:
+          "You have balanced a set of effects in context, and decided whether to keep them.",
         recoveryHelp:
-          "There is no undo for effect settings and no single button that puts them back. Setting the types to Thru and the sends to zero gives you a clean starting point to rebuild from.",
+          "N09 Save your work has the full procedure. There is no one-button way back from effect changes, so if you want the stored settings, selecting another program and returning gives you them — but that discards every other unsaved change on this program too.",
         nextHint:
-          "Next, put four parts together into one deliberate program.",
+          "You can balance a groove. Next, build the whole thing from scratch.",
       },
     ],
   },
@@ -5236,177 +5399,220 @@ window.JDXI_TUTORIALS = {
     title: "Build a multi-part program",
     shortTitle: "Multi-part program",
     summary:
-      "Assemble four parts into one coherent setup: balance, position, routing, and the per-part adjustments that let one program hold four sounds that belong together.",
-    estimatedMinutes: 13,
+      "Build your performance groove setup. Choose and shape a drum kit, a bass, something to fill the middle and something to play on top — four parts in one program, chosen to belong together.",
+    estimatedMinutes: 15,
     prerequisites: ["I06"],
     learningGoals: [
-      "Set up all four parts of one program deliberately.",
-      "Use the program-wide settings as well as the per-part ones.",
-      "Adjust a part's sound without leaving Program Edit.",
-      "Save the whole arrangement as one program.",
+      "Choose and shape a sound for each of the four parts.",
+      "Pick sounds that leave room for each other rather than competing.",
+      "Balance the four so all of them can be heard.",
+      "Finish with one program holding a complete setup.",
     ],
     // Source record: docs/tutorials/I07-SOURCE-NOTES.md
-    // The OFFSET group (PG p.11) is the reason this tutorial is not just N06
-    // again: it adjusts the tone assigned to a part -- cutoff, resonance and
-    // the envelope times -- from inside Program Edit, without editing the
-    // tone itself. That is how one program holds four sounds that fit each
-    // other rather than four sounds that happen to be loaded together.
+    // I07 STARTS THE FRESH FINAL PROJECT
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 11). Its subject is CHOOSING
+    // AND SHAPING four sounds, not Program Edit architecture: the brief
+    // rules out making OFFSET, Pan or routing the main lesson.
+    //
+    // Program Edit is opened once, for per-part Level, because four parts
+    // cannot coexist without it. Pan, Part Output, send levels and the
+    // OFFSET group are NOT used.
+    //
+    // I07 does not save the project -- I09 owns the final save. The closing
+    // step says plainly that nothing is stored yet and what to do if the
+    // learner is stopping here.
     steps: [
       {
         id: "I07-S01",
-        title: "Protect any work you want to keep",
-        instruction: "Decide whether this program holds work you have not saved.",
+        title: "Protect your work, and choose somewhere to build",
+        instruction:
+          "Decide whether this program holds work you have not saved, then pick a program you are happy to rebuild.",
         detail:
-          "This tutorial changes settings across all four parts. If the program you are on has work you want, save it first, or move to one you are happy to rebuild.",
+          "This is the start of the final project, and it changes all four parts. Save anything here you want first, or step to a program you do not mind overwriting entirely.",
         hardwareTargets: ["programValueButtons"],
         visualMode: "full",
-        checkpoint: "You have decided: nothing to keep, saved already, or moved somewhere disposable.",
-        recoveryHelp: "N09 Save your work teaches saving.",
-        nextHint: "Start with the whole program rather than one part.",
+        whyItMatters:
+          "You are about to spend three tutorials on one program. Starting on something you are willing to lose means you can work freely, and starting on something you care about means you cannot.",
+        checkpoint:
+          "You are on a program you are happy to rebuild, and anything you wanted from before is saved.",
+        recoveryHelp:
+          "N09 Save your work teaches saving. Stepping to another program with Value + discards anything unsaved on this one, which is the choice this step is asking you to make deliberately.",
+        nextHint: "Now the shape of what you are building.",
       },
       {
         id: "I07-S02",
-        title: "The program's own settings",
-        instruction:
-          "Open Program Edit from the Menu and read the COMMON group.",
+        title: "What you are building",
+        instruction: "Read this before you choose any sounds.",
         detail:
-          "These belong to the program as a whole rather than any part: its tempo, and the level of the program itself.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["PROG: COMMON", "Tempo 120"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Program Edit COMMON screen. Your JD-Xi shows its own program's tempo.",
+          "Four parts, chosen to work together: drums to carry the rhythm, a bass to hold the bottom, something in the middle to fill it out, and something on top to play. That set covers most of what music needs, and the JD-Xi gives you exactly four.",
+        hardwareTargets: ["partSelectGroup"],
+        visualMode: "full-plus-inset",
         whyItMatters:
-          "Program level is the one that sets how loud this whole program is against your other programs — useful when you have built several and one of them jumps out.",
-        checkpoint: "You can see the program-wide settings.",
+          "Choosing four sounds you like separately usually produces four sounds that fight. Choosing them for the job each has to do is what makes a program sound like one thing.",
+        checkpoint: "You know which of the four parts is going to do which job.",
         recoveryHelp:
-          "Hold Shift and press Cursor to move between COMMON and the other groups. N02 covers this screen.",
-        nextHint: "Now go part by part.",
+          "Nothing to do here — this step only asks you to read. The parts are Digital Synth 1, Digital Synth 2, Drums and Analog Synth; which job goes on which is largely up to you.",
+        nextHint: "Start at the bottom, with the drums.",
       },
       {
         id: "I07-S03",
-        title: "Set each part's level",
+        title: "Choose and shape a drum kit",
         instruction:
-          "Reach the MAIN group and set the Level of each of the four parts in turn.",
+          "Press Drums, step through kits with Tone + until one fits, then adjust Cutoff to taste.",
         detail:
-          "Use Part Select to move between them; the two letters at the right of the upper line tell you which one you are on. Do this with the pattern playing.",
-        hardwareTargets: ["partSelectGroup", "programValueButtons"],
+          "Pick a kit whose bass drum and snare you like the sound of. Then use Cutoff the way N04 showed — darker for something softer and further back, brighter for something sharp and modern.",
+        hardwareTargets: ["drumsButton", "toneButtons", "cutoffKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "The four parts settling into a balance rather than competing.",
-        checkpoint: "No part is drowning the others.",
+        expectedSound: "A kit you have chosen, adjusted to the character you want.",
+        whyItMatters:
+          "Drums set the character of everything else. A soft kit and a hard kit lead you toward completely different choices for the other three parts, so this decision is worth making first.",
+        checkpoint: "You have a drum kit you chose and shaped.",
         recoveryHelp:
-          "Note each number before you change it. If you lose the balance completely, mute parts with Shift and Part Select and bring them back one at a time.",
-        nextHint: "Now give them room across the stereo picture.",
+          "Tone − steps back if you have gone past one you liked. If Cutoff seems to do nothing, check that Drums is still the selected part.",
+        nextHint: "Now the bottom end.",
       },
       {
         id: "I07-S04",
-        title: "Place them left and right",
-        instruction: "Set Pan for each part.",
+        title: "Choose and shape a bass",
+        instruction:
+          "Press Analog Synth, find a low sound with Tone −/+, then shape it the way I01 showed.",
         detail:
-          "Keep the bass and the drums near the centre and move the others out. Headphones show this most clearly.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Take the top off with Cutoff, add a little Resonance if it wants growl, and keep the envelope short so notes get out of each other's way.",
+        hardwareTargets: ["analogSynthButton", "toneButtons", "cutoffKnob", "envelopeKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "Parts occupying different positions rather than stacking in the middle.",
+        expectedSound: "A solid low sound that stops cleanly between notes.",
         whyItMatters:
-          "Low sounds carry no directional information worth much, so they belong in the middle. Everything else gains clarity by moving out of the way.",
-        checkpoint: "You can hear parts in different places.",
+          "The bass and the bass drum occupy the same territory, and this is the moment to make sure they are not both trying to fill it. If your kit has a big deep kick, keep the bass tighter and shorter.",
+        checkpoint: "You have a bass that sits under your drum kit without swamping it.",
         recoveryHelp:
-          "Centre is the middle of the range. If a part has vanished, you may have moved it fully to one side while listening on one speaker.",
-        nextHint: "Now route them to the effects you set up.",
+          "Play the bass and press a bass-drum key alternately. If you cannot tell them apart, take more top off one of them or shorten the bass. I01 has the full procedure.",
+        nextHint: "Now something to fill the middle.",
       },
       {
         id: "I07-S05",
-        title: "Route each part",
-        instruction: "Set Part Output and the send levels for each part.",
+        title: "Choose and shape something for the middle",
+        instruction:
+          "Press Digital Synth 1, use the Category dial and Tone buttons to find something sustained, and soften it the way I02 showed.",
         detail:
-          "This is where I06's work pays off: one set of effects, but each part passing through only what suits it.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "This is the part that fills space behind everything else — a pad, strings, anything that holds. Turn the Envelope knob right so it swells and hangs on, and take enough brightness off that it stays behind.",
+        hardwareTargets: ["digitalSynth1Button", "categoryDial", "envelopeKnob"],
         visualMode: "full-plus-inset",
-        expectedSound: "Some parts dry and close, others sitting in a space.",
-        checkpoint: "The parts are not all in the same acoustic place.",
+        expectedSound: "A sustained sound sitting behind the drums and bass.",
+        whyItMatters:
+          "Without something holding in the middle, a groove is just rhythm and bottom end with a hole above it. This is the part that makes the other three sound like they are in the same room.",
+        checkpoint:
+          "You have a sustained sound that fills space without drawing attention.",
         recoveryHelp:
-          "A send at zero means that effect does nothing for that part regardless of the panel knob. I06 covers the routing in detail.",
-        nextHint: "Now the group that adjusts a sound from out here.",
+          "If it keeps pulling focus, close Cutoff further — brightness is what makes a sound come forward. I02 has the full procedure.",
+        nextHint: "Now something to play on top.",
       },
       {
         id: "I07-S06",
-        title: "Adjust a part's sound without leaving",
+        title: "Choose and shape something to play",
         instruction:
-          "Hold Shift and press Cursor until the upper line reads PROG:OFFSET, then change Cutoff Ofst.",
+          "Press Digital Synth 2, find something bright, and make it immediate the way I03 showed.",
         detail:
-          "These adjust the tone assigned to the part rather than editing the tone itself. Roland provides offsets for cutoff and resonance, for the attack, decay and release times, and for vibrato.",
-        hardwareTargets: ["shiftButton", "cursorRightButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["PROG:OFFSET D1", "Cutoff Ofst 0"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated Program Edit OFFSET screen. The two letters show the part, and the value is your own program's.",
+          "This is the part your hands will use in I10. It needs to arrive the instant you press and be bright enough to be heard over the other three. If you would rather have an arpeggiated layer than a played one, this is the part to put the arpeggiator on.",
+        hardwareTargets: ["digitalSynth2Button", "categoryDial", "envelopeKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound: "A bright, immediate sound that cuts through the other three.",
         whyItMatters:
-          "This is the difference between four sounds that happen to be loaded together and four that fit each other. You can darken a preset slightly for this program without changing the preset.",
-        checkpoint: "You can hear a part's brightness change from inside Program Edit.",
+          "Everything so far has been foundation. This is the part you actually perform on, so it is the one that has to respond the way you expect when you play it live.",
+        checkpoint:
+          "You have a sound you would be happy to play a line on over the other three.",
         recoveryHelp:
-          "These offsets run both ways from zero, so setting one back to zero removes the adjustment. If the part has gone silent, the cutoff offset is probably far negative.",
-        nextHint: "There are more offsets than brightness.",
+          "If it disappears under everything else, open Cutoff before reaching for level. N07 covers putting the arpeggiator on this part if you would rather it played itself.",
+        nextHint: "Now make sure you can hear all four.",
       },
       {
         id: "I07-S07",
-        title: "Adjust the timing of a part",
-        instruction: "Press Cursor ► to reach the attack, decay and release offsets.",
+        title: "Balance the four",
+        instruction:
+          "Open Program Edit, reach the MAIN group, and set each part's Level so all four can be heard.",
         detail:
-          "The same idea applied to the envelope: shorten a pad's release for this program without editing the pad.",
-        hardwareTargets: ["cursorRightButton", "programValueButtons"],
+          "Use Part Select to move between the parts — the two letters at the right of the upper line tell you which one you are on. Pull back whatever is too loud rather than pushing everything else up.",
+        hardwareTargets: ["menuWriteButton", "partSelectGroup", "programValueButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "A part arriving or ending differently, without its tone being edited.",
+        expectedSound: "Four parts audible at once, none of them drowning the others.",
         whyItMatters:
-          "It keeps a sound reusable. The tone stays as you built it, and each program bends it a little to fit.",
-        checkpoint: "You have changed how a part behaves in time without opening Tone Edit.",
-        recoveryHelp: "Set any offset back to zero to remove its adjustment.",
-        nextHint: "One structural fact worth restating here.",
+          "This is the one Program Edit setting the project genuinely needs. Four sounds chosen separately almost never arrive at usable relative volumes, and no amount of filtering fixes a part that is simply too loud.",
+        checkpoint: "You can hear all four parts, and none of them dominates.",
+        recoveryHelp:
+          "If you get lost, press Exit until you are back at the top screen and open Program Edit again. Nothing in here is written to storage — it is part of the loaded program until you save it.",
+        nextHint: "Now one pass of effects over the whole thing.",
       },
       {
         id: "I07-S08",
-        title: "Four parts, one player",
-        instruction: "Press Exit, and play the keys while the pattern runs.",
+        title: "Give the whole thing some space",
+        instruction:
+          "Press Exit, then set Reverb and Delay to suit the setup as a whole.",
         detail:
-          "The program holds four parts and the pattern plays all of them, but the keys still play only the one you have selected. That is the shape of every JD-Xi performance: the sequencer covers the arrangement and your hands cover one part of it.",
-        hardwareTargets: ["partSelectGroup", "keys"],
-        visualMode: "full",
-        expectedSound: "The full arrangement playing, with your one part on top of it.",
+          "Remember from I06 that there is one set of effects for the entire program, so this is a compromise across all four parts rather than a choice for any one of them. Less than any single sound would want.",
+        hardwareTargets: ["reverbKnob", "delayKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound: "The four parts sounding like they are in the same space.",
         whyItMatters:
-          "It is worth deciding in advance which part you want to play live, because that is the one the arrangement should leave room for.",
-        checkpoint: "You know which part you are playing and which the sequencer is covering.",
+          "Shared effects are what make four separate sounds feel like one program. It is also the last thing you can do to tie them together before you start putting notes in.",
+        checkpoint:
+          "The four parts sound like they belong in the same place.",
         recoveryHelp:
-          "Press the Part Select button of whichever part you want under your hands; the pattern keeps playing the rest.",
-        nextHint: "Now check the whole thing hangs together.",
+          "Press Effects On/Off to compare with none at all. If the bass has gone muddy, that is usually reverb — it hurts low sounds first, which is why I06 spends a step on it.",
+        nextHint: "Now listen to each one on its own.",
       },
       {
         id: "I07-S09",
-        title: "Check it as one thing",
-        instruction: "Mute each part in turn and decide whether it is earning its place.",
+        title: "Audition the parts",
+        instruction:
+          "Press each Part Select button in turn and play a few keys on each.",
         detail:
-          "Hold Shift and press a Part Select button. If a part disappears and nothing is worse, it may not need to be there.",
-        hardwareTargets: ["shiftButton", "partSelectGroup"],
-        visualMode: "full-plus-inset",
-        expectedSound: "Each part revealing what it contributes by being taken away.",
-        checkpoint: "You can say what each of the four parts is doing for the program.",
+          "Four sounds, one after another. Ask whether each one is doing a job the others are not, and whether any two are trying to do the same job.",
+        hardwareTargets: ["partSelectGroup", "keys"],
+        visualMode: "full",
+        expectedSound: "Four clearly different sounds, each with an obvious purpose.",
+        whyItMatters:
+          "Two parts doing the same job is the commonest problem with a four-part setup, and it is much easier to hear now — one at a time, with nothing recorded — than it will be once there is a pattern covering everything.",
+        checkpoint:
+          "You can say what each of the four parts is for, and no two are doing the same thing.",
         recoveryHelp:
-          "Unmute everything before you save — a muted part is a program setting and would be saved muted.",
-        nextHint: "Last step: keep the whole arrangement.",
+          "If two parts are too similar, change one of them now: a different tone, or a much darker or brighter setting. Fixing it here costs a minute; fixing it in I08 means re-recording.",
+        nextHint: "One optional extra before you finish.",
       },
       {
         id: "I07-S10",
-        title: "Save the arrangement",
-        instruction: "Save the program.",
+        title: "Optional: a minimal test pattern",
+        instruction:
+          "If you want to hear the four together, put a few drum hits and a couple of bass notes in — no more.",
         detail:
-          "One save keeps all four parts and their tones, the balance, the routing, the offsets, the effects, the arpeggio, the tempo and the pattern. That is what a program is.",
-        hardwareTargets: ["shiftButton", "menuWriteButton"],
+          "Just enough to check the setup works as a whole. I08 is where the real pattern gets built, so anything elaborate here is work you will do again.",
+        hardwareTargets: ["stepButtons", "playStopButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "The whole arrangement is stored under a name you chose.",
+        expectedSound:
+          "A rough sketch — a few hits and notes — with all four sounds present.",
+        whyItMatters:
+          "Sounds chosen in silence sometimes fall apart the moment they play together. A rough sketch catches that while it is still cheap to fix.",
+        checkpoint:
+          "Either you have heard the four parts together, or you have decided to go straight on to I08.",
         recoveryHelp:
-          "N09 Save your work has the full sequence, including choosing a destination you are willing to overwrite.",
+          "N04 and N05 cover placing drum hits and notes. Keep it small — this is a test, not the pattern.",
+        nextHint: "Last step, and it is a warning rather than an instruction.",
+      },
+      {
+        id: "I07-S11",
+        title: "None of this is saved yet",
+        instruction:
+          "If you are carrying straight on to I08, leave the JD-Xi as it is. If you are stopping, save the program now.",
+        detail:
+          "Everything you have just chosen and shaped lives in the loaded program and nowhere else. Changing program or switching off loses all four parts at once. I09 is where the finished project gets saved properly, but that is two tutorials away.",
+        hardwareTargets: ["display"],
+        visualMode: "full-plus-inset",
+        whyItMatters:
+          "This is the largest amount of unsaved work the course has ever asked you to hold. I08 continues on this setup, so going straight on is the intended route — but a break in between is exactly when it would be lost.",
+        checkpoint:
+          "You have a four-part setup, and you know it is not stored yet.",
+        recoveryHelp:
+          "N09 Save your work has the procedure if you are stopping. Saving now costs nothing — I09 saves again at the end, and saving twice to the same slot is harmless.",
         nextHint:
-          "The sounds are arranged. Next, make the pattern worth arranging.",
+          "The setup is built. Next, give it a pattern worth performing.",
       },
     ],
   },
@@ -5417,201 +5623,245 @@ window.JDXI_TUTORIALS = {
     title: "Build a fuller pattern",
     shortTitle: "Fuller pattern",
     summary:
-      "Take a pattern beyond one measure of one part: all four recording methods and what each does to what is already there, longer patterns, recorded knob movements, and how to take things back out.",
-    estimatedMinutes: 14,
+      "Give your setup a pattern worth performing: a real drum groove, parts underneath and over it, more than one measure of room, and a fill at the end so the loop turns around instead of just repeating.",
+    estimatedMinutes: 16,
     prerequisites: ["I07"],
     learningGoals: [
-      "Choose a recording method for what it does to existing notes.",
-      "Record a performance in real time.",
-      "Work across more than one measure.",
-      "Take out what you no longer want, and know what cannot be taken out.",
+      "Build a drum groove with more in it than a first beat.",
+      "Get all four parts contributing to one pattern.",
+      "Extend a pattern beyond one measure and work on a later one.",
+      "Add a fill so the loop turns around differently.",
     ],
     // Source record: docs/tutorials/I08-SOURCE-NOTES.md
-    // The four methods and their differing overwrite behaviour are the spine
-    // (OM pp.11-12, PG p.3). Two documented traps get their own steps because
-    // both cost work: recorded effect-knob movements cannot be erased at all
-    // and must be re-recorded, and Pattern Copy overwrites the destination.
-    // Loop Rec is described rather than performed -- it is a SYSTEM parameter
-    // and SYSTEM writes itself on exit.
+    // I08 is the DEEPEST SEQUENCER LESSON and the final groove build
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 11).
+    //
+    // The brief lists five things to remove explicitly, and none appears:
+    // Realtime Recording, recorded knob/wheel automation, Pattern Copy,
+    // Scale/subdivision, velocity/accent.
+    //
+    // Pattern Length and measure navigation arrive here from N03, which is
+    // the right home: they are only useful once a pattern outgrows one
+    // measure, which is exactly what this tutorial does.
+    //
+    // Four measures is stated as a GOAL, never a requirement.
     steps: [
       {
         id: "I08-S01",
         title: "Protect any work you want to keep",
-        instruction: "Decide whether this program's pattern holds work you have not saved.",
+        instruction:
+          "Decide whether this program's pattern holds work you have not saved.",
         detail:
-          "Everything here records into the pattern, and two of the methods overwrite what is already there.",
-        hardwareTargets: ["programValueButtons", "stepButtons"],
+          "Everything here records into the pattern of the loaded program. If you built the setup in I07 and it is still loaded, this is the tutorial that fills it in — carry on. If there is something else here you want, save it first.",
+        hardwareTargets: ["stepButtons", "eraseButton"],
         visualMode: "full",
-        checkpoint: "You have decided: nothing to keep, saved already, or working somewhere disposable.",
-        recoveryHelp: "N09 Save your work teaches saving.",
-        nextHint: "Start with the method that adds without destroying.",
+        whyItMatters:
+          "A pattern disappears if you select a different program or switch off, and by the end of this tutorial there will be a great deal of it. That makes the decision worth making now.",
+        checkpoint:
+          "You have decided: either there is nothing here to keep, or you have saved it, or you are deliberately building on your I07 setup.",
+        recoveryHelp:
+          "N09 Save your work teaches saving. If your I07 setup is gone, that is recoverable — this tutorial works on any program, and you can rebuild a rough setup in a few minutes with I07's steps.",
+        nextHint: "Now start where the groove starts.",
       },
       {
         id: "I08-S02",
-        title: "The four ways in",
-        instruction: "Read this before you record anything.",
+        title: "Start from your setup",
+        instruction:
+          "Press each Part Select button and check you have four sounds you want to work with.",
         detail:
-          "There are four recording methods and they behave differently. Lighting steps by hand refuses to record over a step that already holds a note. Holding a step and playing adds notes without deleting anything. Step recording and realtime recording both delete what was there and replace it.",
-        hardwareTargets: ["patternSequencerSection", "stepButtons"],
+          "If your I07 program is loaded, this is a quick check. If it is not, any program with four sounds you like will do — nothing below depends on the specific tones.",
+        hardwareTargets: ["partSelectGroup"],
         visualMode: "full-plus-inset",
+        expectedSound: "Four different sounds, one on each part.",
         whyItMatters:
-          "On an empty pattern the choice barely matters. On a pattern you have spent an hour on, it is the difference between adding a part and losing one.",
-        checkpoint: "You can say which two methods overwrite and which two do not.",
+          "The pattern you are about to build takes a while, so it is worth thirty seconds now confirming you want to build it on these sounds rather than discovering halfway through that you do not.",
+        checkpoint: "You have four sounds you are happy to build a pattern on.",
         recoveryHelp:
-          "Nothing to recover from — this step changes nothing. When in doubt, hold a step and play: it is the one that never deletes.",
-        nextHint: "Now record a performance rather than placing notes.",
+          "If a part has a sound you do not want, change it now with Tone −/+ before you record anything. I07 covers choosing sounds for the four jobs.",
+        nextHint: "Now build a groove worth the name.",
       },
       {
         id: "I08-S03",
-        title: "Arm the recording",
-        instruction: "Select the part you want to record on, then press Real Time Rec.",
+        title: "Build a fuller drum groove",
+        instruction:
+          "Select Drums, and place a bass drum, a snare and a closed hi-hat — then add at least one more instrument.",
         detail:
-          "Recording always goes to the selected part, so choose it before you arm anything.",
-        hardwareTargets: ["partSelectGroup", "realTimeRecButton"],
+          "Start the way N04 did, then go further: an open hi-hat, a clap, a tom, a rim. Play a key to choose the instrument, then light the steps you want it on.",
+        hardwareTargets: ["drumsButton", "stepButtons"],
         visualMode: "full-plus-inset",
-        checkpoint: "The part you want is selected and Real Time Rec is armed.",
+        expectedSound:
+          "A groove with more going on than a first beat — four or more instruments, interlocking.",
+        whyItMatters:
+          "The difference between a beat and a groove is mostly the number of things happening between the main hits. This is where a pattern starts sounding like music rather than a demonstration.",
+        checkpoint:
+          "At least four different drum instruments are playing in the pattern.",
         recoveryHelp:
-          "Press Real Time Rec again to disarm without recording anything. Nothing has been changed yet.",
-        nextHint: "Now start it and play.",
+          "If a step will not take a note, it already holds one — stop the pattern, hold Erase and press it. If the groove has become cluttered, take instruments out: erasing is as much a part of this as adding.",
+        nextHint: "Now shape the kit to suit it.",
       },
       {
         id: "I08-S04",
-        title: "Record in real time",
-        instruction: "Press Play/Stop, and play along.",
+        title: "Shape the kit further",
+        instruction:
+          "With the groove running, adjust Cutoff and the Envelope knob on the Drums part.",
         detail:
-          "Your performance is layered onto the pattern as it runs. Knob and wheel movements are recorded as well as notes.",
-        hardwareTargets: ["playStopButton", "keys"],
-        visualMode: "full",
-        expectedSound: "What you play appearing in the pattern as it comes round again.",
+          "Cutoff sets how bright the kit is; the Envelope knob turned left shortens the hits. A busy groove usually wants shorter, tighter drums than a sparse one.",
+        hardwareTargets: ["cutoffKnob", "envelopeKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The same groove sounding tighter and more controlled, or softer and further back.",
         whyItMatters:
-          "This is the first method where timing is yours rather than the grid's, which is what makes a part sound played rather than placed.",
-        checkpoint: "Something you played in real time is now repeating in the pattern.",
+          "This is deeper drum work than N04 asked for, and it matters more now: with four instruments interlocking, long ringing hits run into each other in a way one bass drum never did.",
+        checkpoint:
+          "The kit sounds like it suits the groove you built rather than fighting it.",
         recoveryHelp:
-          "Press Real Time Rec again to stop recording. Note that this method replaces existing notes as it goes — if you have covered something you wanted, there is no undo.",
-        nextHint: "One behaviour of this method surprises people.",
+          "Turn either knob back by ear. If the groove has gone muddy, shorten the envelope before you reach for Cutoff — overlap is usually the problem in a busy pattern.",
+        nextHint: "Now the bottom end.",
       },
       {
         id: "I08-S05",
-        title: "It stops at the end of the pattern",
-        instruction: "Keep recording and let the pattern come round to its start.",
+        title: "Add the bass",
+        instruction:
+          "Select your bass part, play a low key, and light the steps where you want it.",
         detail:
-          "Roland documents this: if you record while the pattern is playing, recording stops automatically the moment playback returns to the beginning. A system setting called Loop Rec changes that so recording continues until you stop it yourself.",
-        hardwareTargets: ["realTimeRecButton"],
+          "Fewer notes than you think. A bass that plays on every step leaves the drums nowhere to go, and a bass that plays on two or three carries the whole thing.",
+        hardwareTargets: ["analogSynthButton", "stepButtons"],
         visualMode: "full-plus-inset",
+        expectedSound: "Your groove with a low line underneath holding it down.",
         whyItMatters:
-          "Without knowing this, it looks as though recording failed. It did not — it finished, exactly once round.",
-        checkpoint: "You have seen recording end by itself at the end of the pattern.",
+          "The relationship between the bass and the bass drum is what makes a groove feel solid or wobbly. Try putting bass notes on the same steps as the kick, then on different ones, and hear which you prefer.",
+        checkpoint: "A bass line is playing along with the drum groove.",
         recoveryHelp:
-          "To record over several passes, that Loop Rec setting has to be turned on — and it lives in the system settings, which save themselves as you leave the screen. This tutorial does not go in there; change it only deliberately, and note the value you found.",
-        nextHint: "Now use more than one measure.",
+          "N05 has the full procedure, including using a second nearby key so the line moves. Erase with Erase plus a step if you have put in too many notes.",
+        nextHint: "Now something in the middle.",
       },
       {
         id: "I08-S06",
-        title: "Give yourself more room",
-        instruction: "Set the pattern to more measures from the Menu.",
+        title: "Add a synth part",
+        instruction:
+          "Select your middle part, hold a key, and light a few steps — long, sparse notes work best here.",
         detail:
-          "Up to four. Answering the copy question with Enter fills the new measures from what you already have; Exit leaves them blank.",
-        hardwareTargets: ["menuWriteButton", "display"],
+          "Try holding one note across most of the pattern rather than playing a line. This part is filling space, not competing for attention.",
+        hardwareTargets: ["digitalSynth1Button", "stepButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound: "The groove filling out, with something sustaining behind it.",
+        whyItMatters:
+          "Three parts is where a pattern stops sounding sparse. It is also where the choices you made in I07 start paying off — a part chosen to sit behind will sit behind without further work.",
+        checkpoint: "Three parts have content in the pattern.",
+        recoveryHelp:
+          "If this part is drawing too much attention, use fewer steps rather than turning it down. If it is inaudible, check that it is not muted — hold Shift and press its Part Select button.",
+        nextHint: "A fourth, if it earns a place.",
+      },
+      {
+        id: "I08-S07",
+        title: "A fourth part, if it earns a place",
+        instruction:
+          "Add a few notes on the remaining part, then mute it and decide whether the pattern is better with or without.",
+        detail:
+          "This one is genuinely optional. Three parts that work beat four parts where one is in the way, and you now have the muting habit to find out which you have.",
+        hardwareTargets: ["digitalSynth2Button", "shiftButton"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The pattern with a fourth part, then without it — and a clear preference between them.",
+        whyItMatters:
+          "The instinct is always to add. Building the habit of adding something and then checking whether it helped is what stops a pattern turning into a pile.",
+        checkpoint:
+          "You have made a decision about the fourth part on the basis of hearing the loop both ways.",
+        recoveryHelp:
+          "Leave it muted if you do not want it, or erase its steps. Neither is wrong, and muting is reversible.",
+        nextHint: "Now give the pattern more room.",
+      },
+      {
+        id: "I08-S08",
+        title: "Make the pattern longer",
+        instruction:
+          "Press Menu/Write, select Pattern Length, press Enter, choose more measures with Value, then press Enter.",
+        detail:
+          "The JD-Xi now asks a question rather than acting. Enter fills the new measures by copying what you already have; Exit adds blank ones. Either answer applies the change — this is not a cancel.",
+        hardwareTargets: ["menuWriteButton", "programValueButtons", "display"],
         visualMode: "display-focus",
         expectedDisplay: ["With Copying ?", "[Exit]:N [Ent]:Y"],
         syntheticDisplay: false,
         displayNote:
           "Roland's illustrated prompt from the Pattern Length procedure, reproduced with its own left-to-right order.",
         whyItMatters:
-          "Copying is usually what you want when extending something that already works — you get a second measure to vary rather than an empty one to fill.",
-        checkpoint: "The pattern is longer than it was.",
+          "Read this screen carefully, because Exit here does not mean cancel — it means answer no and carry on. On this instrument the same button does not always do the same thing.",
+        checkpoint: "The pattern is longer than one measure.",
         recoveryHelp:
-          "Neither answer cancels; both apply the change — N03 covers this screen. If you want the original length back, set it again the same way. Roland notes the length also reverts if you select another program before saving, but reach for that only if you want none of what you have: it discards every unsaved change on this program, your pattern and sounds included.",
-        nextHint: "Now move around the measures you have.",
-      },
-      {
-        id: "I08-S07",
-        title: "Work on a later measure",
-        instruction:
-          "With the pattern playing, hold Shift and press one of the first four numbered buttons.",
-        detail:
-          "That chooses which measure the sixteen buttons are showing. The current measure blinks while Shift is held.",
-        hardwareTargets: ["shiftButton", "stepButtons"],
-        visualMode: "full-plus-inset",
-        checkpoint: "You can edit a measure other than the first.",
-        recoveryHelp:
-          "This only works while the pattern is playing or recording. With a 32nd-note scale the range is the first eight buttons instead of the first four.",
-        nextHint: "Now add movement that is not notes.",
-      },
-      {
-        id: "I08-S08",
-        title: "Record a knob movement",
-        instruction:
-          "Start realtime recording again and sweep the Cutoff knob while the pattern runs.",
-        detail:
-          "Knob and wheel movements are recorded alongside notes, so a filter sweep becomes part of the pattern.",
-        hardwareTargets: ["realTimeRecButton", "cutoffKnob"],
-        visualMode: "full-plus-inset",
-        expectedSound: "The filter sweeping by itself each time the pattern comes round.",
-        whyItMatters:
-          "This is how a pattern stops being static without you touching anything. It is also the fastest way to fill a pattern's capacity, so use it deliberately.",
-        checkpoint: "The pattern now moves on its own.",
-        recoveryHelp:
-          "If the display reports the pattern is full, you have recorded more movement than it can hold — Roland's advice is to remove unneeded data from the pattern. Recording extreme movements can also make playback struggle to keep up.",
-        nextHint: "Taking movement back out is not like taking notes out.",
+          "Answering with Enter and copying is the safer choice: you get what you already had, twice, and can change the second half. If you go back to fewer measures later, you lose what was in the ones you removed. Note that a length change is not written to storage — selecting another program before saving reverts it.",
+        nextHint: "Now go and work on a later measure.",
       },
       {
         id: "I08-S09",
-        title: "Removing recorded movement",
+        title: "Work on a later measure",
         instruction:
-          "While the pattern plays, hold Enter and press Erase to clear the selected part's knob and wheel movements.",
+          "With the pattern playing, hold Shift and press one of the buttons 01 to 04.",
         detail:
-          "This erases only the recorded movements, for as long as you hold the buttons, and only for the selected part. On the Drums part it clears them for every instrument at once. It was added in system version 1.10 — earlier instruments do not have it.",
-        hardwareTargets: ["enterButton", "eraseButton"],
+          "That chooses which measure the sixteen buttons are showing. Holding Shift lights those buttons and the current measure blinks, so you can always see where you are.",
+        hardwareTargets: ["shiftButton", "stepButtons"],
         visualMode: "full-plus-inset",
-        checkpoint: "The recorded movement is gone and the notes are still there.",
+        whyItMatters:
+          "Without this you can only ever edit the first measure, which is why a longer pattern feels impossible to work on until someone shows you the gesture. This is the answer to the window problem N03 described.",
+        checkpoint:
+          "Holding Shift lights some of the first four buttons, one of them blinks, and the row is showing a different measure.",
         recoveryHelp:
-          "If nothing happens, your JD-Xi may be running a system version earlier than 1.10, which does not have this. Note that this is a documented erase with no undo — the movement has to be re-recorded.",
-        nextHint: "One kind of movement cannot be removed at all.",
+          "Hold Shift down before pressing the numbered button. If nothing lights, the pattern may still be one measure long — go back and lengthen it first.",
+        nextHint: "Now make the end of the loop different.",
       },
       {
         id: "I08-S10",
-        title: "Effect knob movements are different",
-        instruction: "Read this before you record an effect sweep.",
+        title: "Add a fill at the end",
+        instruction:
+          "Move to the last measure and change its final few steps — add drum hits, or take some out.",
         detail:
-          "Roland is explicit: because effect knob movements are saved for the whole program rather than the pattern, erasing the pattern does not erase them — and they cannot be erased at all. If you record one and change your mind, the only route is to re-record it.",
-        hardwareTargets: ["effectsSection"],
+          "A fill is nothing more complicated than that: the last part of the loop does something different, so the loop turns around instead of simply starting again. A run of hi-hats, an extra snare, or a gap all work.",
+        hardwareTargets: ["stepButtons", "drumsButton"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "The loop building to something slightly different at the end, then coming round again.",
         whyItMatters:
-          "It is the one recording on this instrument that cannot be taken back, so it is worth knowing before you make it rather than after.",
-        checkpoint: "You know which knob movements can be erased and which cannot.",
+          "This is the difference between a loop you can listen to for a minute and one you can listen to for five. It costs a handful of steps and it is the single most effective thing in this tutorial.",
+        checkpoint:
+          "The end of the loop is audibly different from the rest of it.",
         recoveryHelp:
-          "If you have recorded an effect movement you do not want, re-record it holding the knob still. Nothing else removes it.",
-        nextHint: "One more tool, and it overwrites.",
+          "If the fill draws too much attention, use fewer extra hits — a gap where something usually happens is often more effective than adding anything. Erase with Erase plus a step to take a hit back out.",
+        nextHint: "Now check the whole thing, and fix what is wrong.",
       },
       {
         id: "I08-S11",
-        title: "Copying a pattern from elsewhere",
-        instruction: "Read this before using it.",
+        title: "Audition and correct",
+        instruction:
+          "Mute each part in turn to check it, then stop the pattern and erase any step that is in the wrong place.",
         detail:
-          "Holding Menu/Write and pressing button 10 opens Pattern Copy, which brings a pattern in from another program. It overwrites the destination part, and you choose whether to copy the pattern, the sound, or both. Roland notes that program and effect settings are not copied.",
-        hardwareTargets: ["menuWriteButton", "stepButton10"],
+          "Muting tells you what each part is contributing; stopping and using Erase with a step button takes out anything you do not want. Step recording is available too if you would rather enter a run of notes than pick steps.",
+        hardwareTargets: ["shiftButton", "eraseButton", "stepRecButton"],
         visualMode: "full-plus-inset",
+        expectedSound: "Each part on its own, then the pattern with the mistakes gone.",
         whyItMatters:
-          "It is the only documented way to move a tone from one program into another, using its sound-only setting — which is useful, because the JD-Xi cannot save a tone on its own.",
-        checkpoint: "You know what Pattern Copy does and what it replaces.",
+          "A pattern this size always has something in it you did not mean. Being able to find it by muting and remove it cleanly is what makes a long pattern workable rather than something you start again.",
+        checkpoint:
+          "You have listened to each part on its own and removed anything you did not want.",
         recoveryHelp:
-          "It overwrites the destination part with no undo, so be sure which part you are copying into before you confirm. Press Exit to leave the screen without copying.",
-        nextHint: "Last step: keep the pattern.",
+          "The pattern must be stopped before Erase plus a step will remove a note. Remember that turning a button dark only mutes its note — it stays there and will block a new one until it is erased properly.",
+        nextHint: "Last step: how far you got, and what happens to it.",
       },
       {
         id: "I08-S12",
-        title: "Save the pattern with its program",
-        instruction: "Save the program.",
+        title: "Four measures is a goal, not a rule",
+        instruction: "Let the whole pattern play round a few times and listen.",
         detail:
-          "The pattern, the recorded movements, the length and the parts all go together. There is still no separate save for a pattern.",
-        hardwareTargets: ["shiftButton", "menuWriteButton"],
-        visualMode: "full-plus-inset",
-        checkpoint: "Your fuller pattern is stored.",
+          "Four measures is the most the JD-Xi will hold, and it is worth working toward — but a two-measure loop with a fill is better than four measures of something you stopped caring about halfway through. Stop where it sounds good.",
+        hardwareTargets: ["playStopButton", "display"],
+        visualMode: "full",
+        expectedSound: "Your finished groove, several parts, looping with a turnaround.",
+        whyItMatters:
+          "This is the thing you will perform in I10. It does not have to be long or clever; it has to be something you are happy to hear repeatedly, because that is exactly what is going to happen to it.",
+        checkpoint:
+          "You have a multi-part loop you would be happy to play over, and you know it is not saved yet.",
         recoveryHelp:
-          "N09 Save your work has the full sequence. If you do not save, selecting another program or powering off loses the pattern and everything in it.",
+          "Nothing here needs recovering — this step asks you to listen. The pattern, its length and all four parts are still only in the loaded program. I09 is the next tutorial and it is where all of this gets saved.",
         nextHint:
-          "You can build a full pattern now. Next, keep and organize what you have made.",
+          "The groove is built. Next, keep it — properly, and for good.",
       },
     ],
   },
@@ -5622,232 +5872,211 @@ window.JDXI_TUTORIALS = {
     title: "Save and organize creations",
     shortTitle: "Save and organize",
     summary:
-      "Manage a growing library: where your programs live, how to recall them instantly, how to choose what the JD-Xi starts on, and how to get a copy of everything onto a computer.",
+      "Turn the groove you have built into a program you own: named so you will recognise it, saved somewhere you chose, checked that it really persisted, and put on a button so one press brings it back.",
     estimatedMinutes: 13,
     prerequisites: ["I08"],
     learningGoals: [
-      "Organize your own programs across the user banks.",
-      "Register and recall favourites, across more than one bank.",
-      "Choose which program the JD-Xi starts on.",
-      "Get a copy of your work onto a computer.",
+      "Save a finished program safely, to a destination you chose.",
+      "Give it a name you will still understand later.",
+      "Check that the save really persisted.",
+      "Register it as a Favorite so one press recalls it.",
     ],
     // Source record: docs/tutorials/I09-SOURCE-NOTES.md
+    // I09 turns the final groove into a reusable personal Program
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 11): safe save, meaningful
+    // name, intentional overwrite destination, verify, register as a
+    // hardware Favorite, practical organisation.
     //
-    // DESTRUCTIVE-RISK TUTORIAL. It performs Backup, which only reads, and
-    // deliberately does NOT perform Restore, which replaces the instrument's
-    // data. Restore and the Extra Bank import are described so the learner
-    // knows they exist and what they cost; neither is carried out.
+    // The brief lists ten things to remove entirely from guided v1 and none
+    // appears: USB/computer, Backup, Restore, Export/import, Extra Banks,
+    // Startup Program, SYSTEM parameter change, Tone-saving curriculum,
+    // Pattern Copy, Program-copy curriculum.
     //
-    // Startup Program is a SYSTEM parameter, so it writes itself on exit
-    // (OM p.13). That is stated to the learner, and the step has them read
-    // the current value before changing it -- the only restore path SYSTEM
-    // offers. It is firmware-gated at 1.50.
+    // The WRITE mechanics are N09's; I09 performs them on the real project
+    // and spends its extra depth on naming, destination and recall instead.
     steps: [
       {
         id: "I09-S01",
         title: "Save anything you came here to save",
         instruction:
-          "Decide whether the program loaded right now holds work you have not saved.",
+          "Check that the program loaded right now is the one you want to keep, and do not change program from here on.",
         detail:
-          "The very next step steps through programs to show you what is in the user banks — and selecting another program throws away anything unsaved on the one you leave. If you have arrived here with work still loaded, save it before you go any further.",
+          "If your groove from I08 is loaded, that is what you are saving. If you arrived here with something else you want, this is the moment — selecting a different program would throw it away.",
         hardwareTargets: ["programValueButtons"],
         visualMode: "full",
         whyItMatters:
-          "This tutorial is about keeping and organizing what you have made, so losing something in its first minute would be a poor start. It is also the one place where the risk arrives immediately rather than several steps in.",
+          "This tutorial exists to rescue work, so the one thing it must not do is lose some on the way in. From here to the end, the Value buttons are only used inside the WRITE screen.",
         checkpoint:
-          "You have decided: either there is nothing loaded that you need, or you have saved it.",
+          "The thing you want to keep is loaded, and you have not changed program.",
         recoveryHelp:
-          "N09 Save your work has the full save sequence. If you are not sure whether the loaded program has been edited, look at the lower line of the display — a sound with no tone number showing has been changed and not saved.",
-        nextHint: "Now go and look at what you already have.",
+          "If you have already lost it, it cannot be recovered — but I07 and I08 will rebuild a setup and a groove faster the second time. If you are unsure whether this is the right program, look at the tone names on each part before you go on.",
+        nextHint: "Now what a save actually covers.",
       },
       {
         id: "I09-S02",
-        title: "Where your work lives",
-        instruction: "Hold Shift and press a Value button to look through the banks.",
+        title: "One save keeps all of it",
+        instruction: "Read this before you start.",
         detail:
-          "Roland's programs are in banks A to D and yours go in E to H, sixty-four in each. Stepping through the user banks shows you what you have built so far.",
-        hardwareTargets: ["shiftButton", "programValueButtons"],
-        visualMode: "full-plus-inset",
+          "Saving stores the whole program: all four parts and their tones, everything you shaped, the balance, the effects, the arpeggio settings, the tempo, and the pattern with its length and its fill. Three tutorials of work, in one operation.",
+        hardwareTargets: ["partSelectGroup"],
+        visualMode: "full",
         whyItMatters:
-          "Two hundred and fifty-six slots sounds like plenty until they are full of programs called Init Program. How you organize them now decides whether you can find anything later.",
-        checkpoint: "You can move between banks and see what is in the user banks.",
+          "There is no separate save for a sound or for a pattern — the JD-Xi cannot store sound settings as individual tones. The program is the unit, which is why everything you have built since I07 lives or dies together.",
+        checkpoint:
+          "You know that one save covers all four parts, the effects and the pattern.",
         recoveryHelp:
-          "Changing program discards anything unsaved on the one you are leaving, which the previous step asked you to settle. If you would rather not browse at all, skip to the next step — nothing later depends on having looked.",
-        nextHint: "Now a faster way back to the ones you use.",
+          "Nothing to do here — this step only asks you to read. N09 Save your work has the same fact in more detail if you want it.",
+        nextHint: "Now decide what to call it.",
       },
       {
         id: "I09-S03",
-        title: "Find a free favourite slot",
-        instruction: "Press Favorite, then press one of the numbered buttons.",
+        title: "Choose a name you will recognise later",
+        instruction:
+          "Before you touch anything, decide what this program should be called.",
         detail:
-          "With Favorite lit, the numbered buttons become favourite slots. A button with nothing stored reports Not Registered, which is the JD-Xi telling you it is free. If a sound loads instead, that slot is in use — try another.",
-        hardwareTargets: ["favoriteButton", "stepButtons"],
-        visualMode: "full-plus-inset",
+          "You will have room for a short name. Something about what it sounds like beats something about when you made it — you will not remember which one was Monday, but you will remember which one was the dark one.",
+        hardwareTargets: ["display"],
+        visualMode: "full",
         whyItMatters:
-          "Registering replaces whatever was on a button and the JD-Xi does not ask first. Checking for Not Registered is the only way it will tell you a slot is free beforehand.",
-        checkpoint:
-          "You have found a numbered button that reports Not Registered, and noted which one it is.",
+          "This is the whole of organisation on this instrument. There are no folders, no tags and no search: there are two hundred and fifty-six slots and whatever you called things. A name you understand in six months is the only index you get.",
+        checkpoint: "You know what you are going to call it before you start typing.",
         recoveryHelp:
-          "If pressing a button loaded a different sound, that slot was already registered and the program you were on has been replaced — anything unsaved on it is gone. Try a different button. B03 covers this in full.",
-        nextHint: "Now put something in it.",
+          "Stuck? Describe the sound rather than the occasion — dark, bright, slow, hard. If you make a lot of these, a short prefix for a family of related grooves is worth more than a clever name for one.",
+        nextHint: "Now open the save screen and type it.",
       },
       {
         id: "I09-S04",
-        title: "Register a favourite",
+        title: "Open WRITE and enter the name",
         instruction:
-          "Select the program you want, then hold Favorite and press that free button.",
+          "Hold Shift and press Menu/Write, then use Cursor to move along the name and Value to choose each character.",
         detail:
-          "The program selected right now is the one that gets registered. Use the free button you just found, not one that already held something.",
-        hardwareTargets: ["favoriteButton", "stepButtons"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "A favourite also remembers which part was selected when you registered it, so recalling one brings back the part you were playing as well as the program.",
-        checkpoint: "Pressing that numbered button while Favorite is lit recalls your program.",
+          "Cursor picks which character you are on; Value changes that character. Nothing has been written yet — this screen is only asking what to call it.",
+        hardwareTargets: ["shiftButton", "menuWriteButton", "cursorButtons", "display"],
+        visualMode: "display-focus",
+        expectedDisplay: ["Name:      [Ent]", "Init Program"],
+        syntheticDisplay: false,
+        displayNote:
+          "Roland's illustrated name input screen. The lower line shows the current program's name, which will be whatever yours is called rather than the example.",
+        checkpoint: "The lower line shows the name you chose.",
         recoveryHelp:
-          "To clear a registration, hold Erase and press that button while Favorite is lit. If the program you are registering has been edited and not saved, save it first — a favourite recalls the stored program, not your unsaved edits.",
-        nextHint: "Sixteen is not the limit.",
+          "Hold Shift down first, then press Menu/Write — a short press on its own opens the ordinary Menu, and a long press opens the portamento screen. Press Exit to leave without saving if you need to start again. N09 has this in more detail.",
+        nextHint: "Now where it is going to live.",
       },
       {
         id: "I09-S05",
-        title: "More than sixteen favourites",
-        instruction:
-          "With Favorite lit, press and hold Shift until one of the numbered buttons blinks, then press a different one.",
+        title: "Where your own programs live",
+        instruction: "Press Enter to accept the name.",
         detail:
-          "Favourites are organized into sixteen banks of sixteen. The blinking button is the bank you are on; pressing a non-blinking one switches to that bank.",
-        hardwareTargets: ["favoriteButton", "shiftButton"],
+          "You are now choosing a destination. Roland's own programs fill banks A to D; yours go in banks E, F, G and H, with sixty-four slots in each. That is two hundred and fifty-six slots of your own.",
+        hardwareTargets: ["programValueButtons", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "It is a long press rather than a normal Shift combination, which is why most people never find it and assume there are only sixteen favourites.",
-        checkpoint: "You have switched to a different favourite bank.",
+          "Keeping related work near each other is the only organisation the instrument supports. Grooves in one bank and single sounds in another, or one bank per project, will save you a lot of stepping later.",
+        checkpoint: "The screen has moved on from naming to choosing where it goes.",
         recoveryHelp:
-          "If nothing blinks, hold Shift longer — this one needs a long press. Switch back the same way; the bank you were on is whichever button blinks.",
-        nextHint: "Now decide what the JD-Xi wakes up on.",
+          "Press Exit if you want to go back and change the name. Nothing is written until several steps from now.",
+        nextHint: "Now the part that can destroy something.",
       },
       {
         id: "I09-S06",
-        title: "Open the system settings (version 1.50 or later)",
-        instruction: "Open the Menu, select SYSTEM, and press Enter.",
+        title: "What choosing a destination costs",
+        instruction: "Read this before you choose where to save.",
         detail:
-          "This sets which program is selected when the JD-Xi powers on. It was added in system version 1.50; if your instrument is older it will not be there, and you can skip this step.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "full-plus-inset",
+          "If the slot you pick already holds a program, saving replaces it and the previous data is erased. Roland gives one signal and only one: if the destination already holds data, its name appears on the lower line. There is no message that tells you a slot is free, and this tutorial cannot promise you one is.",
+        hardwareTargets: ["programValueButtons", "display"],
+        visualMode: "full",
         whyItMatters:
-          "It means the instrument can start on your own work rather than on whatever it happened to be showing.",
-        checkpoint: "You are inside the system settings.",
+          "By now you may have several programs of your own, which makes this more dangerous than it was in N09, not less. The slot that was empty then may be your bass from I01 now.",
+        checkpoint:
+          "You understand that saving replaces whatever is in the slot you choose, permanently.",
         recoveryHelp:
-          "Anything you change in here is written as you leave, so touch nothing on the way. Press Exit to come straight back out if you would rather not continue.",
-        nextHint: "Now find the one parameter this tutorial wants.",
+          "There is no undo for an overwrite. If you are not certain a slot is spare, step through a few more and read the lower line each time — an empty one shows no name.",
+        nextHint: "Now choose one, reading as you go.",
       },
       {
         id: "I09-S07",
-        title: "Find Start Prog",
-        instruction: "Hold Shift and press Cursor until the upper line reads GENERAL, then use Cursor to find Start Prog.",
+        title: "Choose where it goes",
+        instruction:
+          "Use the Value buttons to choose a destination, watching the lower line as you step.",
         detail:
-          "Shift with Cursor moves between the SYSTEM groups; Cursor on its own walks the parameters inside one.",
-        hardwareTargets: ["shiftButton", "cursorRightButton"],
+          "A name on the lower line means that slot is occupied by the program with that name. Pick one you are willing to overwrite — ideally one showing nothing at all.",
+        hardwareTargets: ["programValueButtons", "display"],
         visualMode: "full-plus-inset",
         checkpoint:
-          "Either you have found Start Prog, or you have established your JD-Xi does not have it.",
+          "You have a destination selected and you have read what the lower line says about it.",
         recoveryHelp:
-          "If Start Prog is not in the GENERAL group at all, your JD-Xi is very likely running a system version earlier than 1.50 — N01 shows you where to read your version. Cursor cannot change a value, so walking the list alters nothing.",
-        nextHint: "Read the current value before you change it.",
+          "Keep stepping if everything you land on is occupied — there are sixty-four slots in each of four user banks, and hold Shift with Value to jump a bank. Press Exit to abandon the save entirely without writing anything.",
+        nextHint: "Now the last moment before anything happens.",
       },
       {
         id: "I09-S08",
-        title: "Change it deliberately",
+        title: "Confirm, and write it",
         instruction:
-          "Note the value shown, then use Value to choose one of your own programs.",
+          "Press Enter, read the confirmation, then press Enter again — and do not touch the power switch.",
         detail:
-          "This is one of the system settings, and those behave differently from everything else: the JD-Xi saves them automatically as you leave the screen. There is no confirmation and no undo, which is why you note the old value first.",
-        hardwareTargets: ["programValueButtons", "exitButton"],
+          "The first Enter brings up a confirmation; Exit cancels there and Enter goes ahead. The JD-Xi then writes the program and shows Complete when it has finished. Roland's warning is blunt: never turn the power off while saving.",
+        hardwareTargets: ["enterButton", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "N10 makes the general point; this is the one place in the Intermediate path where you deliberately use that behaviour rather than avoid it.",
-        checkpoint:
-          "Start Prog names a program of yours, and you wrote down what it said before.",
+          "This is the only moment in the whole course where switching the power off could damage more than the thing you are working on. It takes a second, and then it is done.",
+        checkpoint: "The display reports that it is complete.",
         recoveryHelp:
-          "If you changed it by accident, set it back to the value you noted before leaving the screen. Once you leave, it is written.",
-        nextHint: "Now get a copy of everything off the instrument.",
+          "If you pressed Exit at the confirmation, nothing was written — start again from the WRITE screen. If it completed to a slot you did not mean, the previous occupant is gone and cannot be recovered; save again to the slot you intended.",
+        nextHint: "Now prove it worked.",
       },
       {
         id: "I09-S09",
-        title: "Connect a computer",
-        instruction: "Connect the JD-Xi to a computer with a USB cable.",
+        title: "Prove it is really there",
+        instruction:
+          "Press Exit to the top screen, step to another program with Value +, then come back to yours.",
         detail:
-          "Backing up needs a computer. Nothing is transferred until you ask for it.",
-        hardwareTargets: ["usbComputerPort"],
+          "Selecting a program loads it from storage, so coming back gives you the saved version. If your groove is still there, complete with its pattern, it is genuinely written.",
+        hardwareTargets: ["programValueButtons", "playStopButton"],
         visualMode: "full-plus-inset",
-        checkpoint: "The JD-Xi is connected to a computer by USB.",
+        expectedSound:
+          "Your groove, loading complete with all four parts and its pattern, after you had left it entirely.",
+        whyItMatters:
+          "This is also the first time you have been able to leave this program safely since I07. Everything before this step risked three tutorials of work; from here it is stored.",
+        checkpoint:
+          "You left your program, came back, and everything is still there.",
         recoveryHelp:
-          "If you have no computer to hand, you can stop here — the rest of this tutorial is about backing up, and nothing later depends on having done it.",
-        nextHint: "Now take a copy.",
+          "If it is missing or incomplete, the save did not take — go back to the WRITE screen and work through it again, watching for the Complete message. Do not switch off until it has worked.",
+        nextHint: "Now make it quick to reach.",
       },
       {
         id: "I09-S10",
-        title: "Back up your data",
+        title: "Put it on a Favorite button",
         instruction:
-          "Open the Menu, select UTILITY, press Enter, then select Backup and press Enter.",
+          "Press Favorite so it lights, find a button that reports “Not Registered!”, then hold Favorite and press it.",
         detail:
-          "A folder opens on the computer showing the file to be backed up. Roland's instruction is specific: copy the whole JD-Xi folder, not just the BACKUP folder inside it or some of the files, or the backup will not restore correctly. Do not rename the file that is shown.",
-        hardwareTargets: ["menuWriteButton", "display"],
-        visualMode: "display-focus",
-        expectedDisplay: ["UTILITY", "Backup"],
-        syntheticDisplay: false,
-        displayNote:
-          "Roland's illustrated UTILITY screen, shown at the point where Backup is selected.",
+          "With Favorite lit the numbered buttons recall registered programs. A button with nothing on it reports “Not Registered!”, which is the JD-Xi telling you it is free. Registering replaces whatever was there, and it does not ask first.",
+        hardwareTargets: ["favoriteButton", "stepButtons"],
+        visualMode: "full-plus-inset",
         whyItMatters:
-          "This is the only thing that survives a factory reset, a failure, or a mistake with the WRITE destination. Everything else in this level is work you would have to do again.",
-        checkpoint: "The whole JD-Xi folder is copied to your computer.",
+          "I10 asks you to load this program and perform it. Doing that from a Favorite button is one press; doing it by stepping through banks is not something you want to be doing in front of anyone.",
+        checkpoint:
+          "Pressing that numbered button while Favorite is lit brings your groove back.",
         recoveryHelp:
-          "Backup only reads from the instrument — it changes nothing on the JD-Xi. When you have finished, disconnect the JD-Xi on the computer; if the JD-Xi does not return to its normal screen, press Exit.",
-        nextHint: "The opposite operation is not one to try casually.",
+          "If pressing a numbered button loaded something else, that slot was in use — step back to your program with Value and try a different number. Your work is saved now, so this is safe. Press Favorite again when you are done to give the numbered buttons their normal job back.",
+        nextHint: "Last step: what to do with everything else.",
       },
       {
         id: "I09-S11",
-        title: "Restore replaces everything",
-        instruction: "Read this, and do not perform it now.",
+        title: "Tidy what you have",
+        instruction:
+          "Step through your user banks and note anything still called Init Program.",
         detail:
-          "Restore is also under UTILITY, and it puts a backup file back onto the JD-Xi — replacing what is on the instrument. When it finishes the display asks you to turn the power off. This tutorial does not carry it out.",
-        hardwareTargets: ["menuWriteButton"],
+          "Renaming means saving that program again, with a better name, to the same slot — the sequence you have just done. It is worth doing while you still remember what each one was.",
+        hardwareTargets: ["programValueButtons", "display"],
         visualMode: "full-plus-inset",
         whyItMatters:
-          "It is the counterpart to Backup and the reason Backup is worth doing, but it is a replace rather than a merge: anything on the instrument that is not in the backup file goes.",
-        checkpoint: "You know Restore exists, what it costs, and where it lives.",
-        recoveryHelp:
-          "Never turn the power off while a restore is running. If you ever need one, take a fresh backup first if the instrument still holds anything you want.",
-        nextHint: "One more way to move programs about.",
-      },
-      {
-        id: "I09-S12",
-        title: "Sharing single banks (version 1.10 or later)",
-        instruction: "Read this if you want to move programs between instruments.",
-        detail:
-          "From system version 1.10 the JD-Xi can export up to one bank of sixty-four programs to a computer as a file, and load such files back into extra banks named S to Z. Exporting does not remove anything from the instrument. Both operations warn against switching the power off while they run.",
-        hardwareTargets: ["usbComputerPort"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "It is how a set of programs travels — to another JD-Xi, or from sounds published for the instrument — without disturbing what you already have in banks E to H.",
+          "Programs called Init Program are the ones you will never open again, because you have no way of knowing what is in them without loading each in turn. Ten minutes of naming now is worth an hour of hunting later.",
         checkpoint:
-          "You know the difference between a backup, which is everything, and an export, which is one bank.",
+          "You have a saved, named groove on a Favorite button, and you know how to name the rest.",
         recoveryHelp:
-          "If your JD-Xi has no export option, it is very likely running a system version earlier than 1.10. Note that extra banks only appear after data has been loaded into them.",
-        nextHint: "Last step: a habit worth having.",
-      },
-      {
-        id: "I09-S13",
-        title: "Name things so you can find them",
-        instruction: "Look through your user banks and rename anything called Init Program.",
-        detail:
-          "Renaming means saving the program again with a better name, to the same slot. You already know the sequence.",
-        hardwareTargets: ["shiftButton", "menuWriteButton"],
-        visualMode: "full-plus-inset",
-        whyItMatters:
-          "The JD-Xi gives you no folders, no search and no dates. The name and the slot number are the entire filing system, which makes them worth a minute each.",
-        checkpoint: "You can find a program you made without playing every slot to identify it.",
-        recoveryHelp:
-          "Saving to the same slot replaces what is there, which is what you want when renaming — but check the slot number carefully, because saving to the wrong one destroys a different program. N09 covers the sequence.",
+          "Renaming overwrites the same slot, so the risk is only to that program — but the same rules apply, and stepping to another program on the way discards anything unsaved. Everything of yours is saved at this point, so there is nothing to lose.",
         nextHint:
-          "Your library is in order. Last of all: put everything together.",
+          "Your groove is saved and one press away. Next, perform it.",
       },
     ],
   },
@@ -5858,161 +6087,226 @@ window.JDXI_TUTORIALS = {
     title: "Performance challenge",
     shortTitle: "Performance challenge",
     summary:
-      "No new controls. Build a complete program of your own from nothing — sounds, arrangement, pattern, effects — save it, and play it.",
-    estimatedMinutes: 20,
+      "No new controls, and nothing to build. Load the groove you saved, start it, and play it — taking parts out, pushing the tempo, bending notes, moving an effect while it runs. Then stop it cleanly.",
+    estimatedMinutes: 18,
     prerequisites: ["I09"],
     learningGoals: [
-      "Build a complete program without being told which button to press.",
-      "Make the arrangement leave room for the part you will play.",
-      "Save your work before you perform it.",
-      "Perform with the JD-Xi rather than only programming it.",
+      "Load your own saved program and perform with it.",
+      "Change a running groove without stopping it.",
+      "Play a part over your own pattern, expressively.",
+      "Choose the performance controls that suit the moment.",
     ],
     // Source record: docs/tutorials/I10-SOURCE-NOTES.md
-    // Introduces no new technical claim and teaches no new procedure: every
-    // action was taught and source-verified in I01-I09 or earlier, and each
-    // step's recoveryHelp names the tutorial that taught it. Like B10 it is a
-    // challenge rather than an exam -- nothing is scored and the learner may
-    // stop at any point.
+    // I10 is the COURSE CAPSTONE and uses the SAVED I07-I09 creation
+    // (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 11). It builds nothing: the
+    // brief is explicit that the previous version wrongly rebuilt the
+    // project and backed it up, and both are gone.
+    //
+    // No Backup, no USB, no rebuilding, no new procedure. Every control used
+    // is one an earlier tutorial taught.
+    //
+    // The closing step frames Finish Tutorial as Course Complete.
     steps: [
       {
         id: "I10-S01",
-        title: "Start somewhere you can afford to lose",
-        instruction: "Choose a program slot you are happy to build over.",
+        title: "Protect anything unsaved, and load your groove",
+        instruction:
+          "Save anything loaded that you still want, then recall your saved groove — from its Favorite button, or by its bank and number.",
         detail:
-          "You are going to change everything about this program. Pick one of your own that you do not need, or save whatever is loaded before you start.",
-        hardwareTargets: ["programValueButtons"],
-        visualMode: "full",
-        checkpoint: "You are on a program you are willing to rebuild.",
+          "Loading a program discards whatever is loaded and unsaved, as always. Your groove from I09 is already stored, so recalling it costs nothing except whatever else is in front of you now.",
+        hardwareTargets: ["favoriteButton", "programValueButtons"],
+        visualMode: "full-plus-inset",
+        expectedSound: "Your own program, loading complete with all four parts.",
+        whyItMatters:
+          "This is the first tutorial in the course whose starting point is something you made. Everything from here is performance rather than construction.",
+        checkpoint: "Your saved groove is loaded and you can hear all of its parts.",
         recoveryHelp:
-          "N09 Save your work teaches saving, and I09 covers finding your way around the user banks.",
-        nextHint: "Now the foundation.",
+          "If you cannot find it, step through the user banks E to H with Shift and Value and read the names. If you never saved one, I09 is where that happens — or use any preset program with a good pattern, and everything below still works.",
+        nextHint: "Now start it.",
       },
       {
         id: "I10-S02",
-        title: "Build a bass",
-        instruction: "Build a bass sound on the Analog Synth part.",
-        detail: "Waveform, sub-oscillator, filter, and a short envelope.",
-        hardwareTargets: ["analogSynthButton", "analogOscSection"],
+        title: "Start the pattern",
+        instruction: "Press Play/Stop and let it run for a while.",
+        detail:
+          "Listen to the whole loop round several times before you touch anything. You are about to change it while it plays, so it is worth knowing what it does on its own first.",
+        hardwareTargets: ["playStopButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "A low sound with a defined attack that stops when you stop.",
-        checkpoint: "You have a bass you are happy with.",
+        expectedSound: "Your groove, looping, with its fill coming round at the end.",
+        whyItMatters:
+          "Performing is reacting to what you hear. Sitting with the loop for thirty seconds first is what gives you something to react to.",
+        checkpoint: "Your pattern is running and you have listened to it a few times.",
         recoveryHelp:
-          "I01 Build a bass sound covers this. Remember the analog part offers a low-pass filter only, and its square wave may not sound high up the keyboard.",
-        nextHint: "Now something behind it.",
+          "If nothing plays, check the pattern is in this program — B08 covers finding one. If parts are missing, they may be muted: hold Shift and press their Part Select buttons.",
+        nextHint: "Now take something out of it.",
       },
       {
         id: "I10-S03",
-        title: "Build a pad",
-        instruction: "Build a sustained sound on one of the digital parts.",
-        detail: "Slow attack, long release, some slow movement.",
-        hardwareTargets: ["digitalSynth1Button"],
+        title: "Take parts out and bring them back",
+        instruction:
+          "Hold Shift and press Part Select buttons to mute parts while it runs, then bring them back.",
+        detail:
+          "Drop the pad and let the drums and bass carry it. Drop the drums entirely for a few bars. Bring things back one at a time and let the groove build.",
+        hardwareTargets: ["shiftButton", "partSelectGroup"],
         visualMode: "full-plus-inset",
-        expectedSound: "A wide sound that swells in and hangs on after you let go.",
-        checkpoint: "You have a pad that fills space behind everything else.",
+        expectedSound:
+          "The groove thinning out and filling back up as you take parts away and return them.",
+        whyItMatters:
+          "This is the single most effective performance move on this instrument, and it needs no preparation. A loop that never changes gets old in a minute; the same loop with parts coming and going holds up for far longer.",
+        checkpoint:
+          "You have taken at least two parts out and brought them back while the pattern kept running.",
         recoveryHelp:
-          "I02 Build a pad sound covers this. If the envelope will not stretch far enough, check you are editing the AMP group rather than the filter.",
-        nextHint: "Now something in front.",
+          "If something will not come back, press the same combination once more — it is the same gesture both ways. Nothing you do here changes the stored program.",
+        nextHint: "Now change how fast it goes.",
       },
       {
         id: "I10-S04",
-        title: "Build a lead",
-        instruction: "Build a bright, immediate sound on the other digital part.",
-        hardwareTargets: ["digitalSynth2Button"],
+        title: "Push the tempo",
+        instruction:
+          "Turn the tempo knob while it plays, or press Tap three or more times at the speed you want.",
+        detail:
+          "Try it noticeably faster and noticeably slower than you built it. A groove often has a speed that suits it better than the one it was made at.",
+        hardwareTargets: ["tempoKnob", "tapButton"],
         visualMode: "full-plus-inset",
-        expectedSound: "A sound that cuts through without being the loudest thing.",
-        checkpoint: "You have a lead you can hear over everything.",
+        expectedSound: "The whole groove speeding up or slowing down together.",
+        whyItMatters:
+          "Everything follows the tempo — the pattern, the arpeggiator, the delay. Changing it changes the feel of the entire program at once, which makes it a big lever for one knob.",
+        checkpoint: "You have heard your groove at more than one speed.",
         recoveryHelp:
-          "I03 Build a lead sound covers this. If it disappears in the mix, reach for brightness before volume.",
-        nextHint: "Now a rhythm to sit them on.",
+          "Tap at the speed you want if the knob overshoots. Remember the tempo belongs to the program, so if you want to keep a new one you would have to save again.",
+        nextHint: "Now put your hands on it.",
       },
       {
         id: "I10-S05",
-        title: "Make a pattern",
-        instruction: "Build a pattern with drums and at least one other part in it.",
-        detail: "Use whichever recording method suits what you are adding.",
-        hardwareTargets: ["stepButtons", "playStopButton"],
-        visualMode: "full-plus-inset",
-        expectedSound: "A repeating pattern with more than one part in it.",
-        checkpoint: "A pattern is running with drums and at least one pitched part.",
+        title: "Play a part over the top",
+        instruction:
+          "Choose the part you built to play on, and play over the running pattern.",
+        detail:
+          "Long notes that suit what is playing beat fast ones that do not. You are adding to a groove that already works, not competing with it.",
+        hardwareTargets: ["partSelectGroup", "keys"],
+        visualMode: "full",
+        expectedSound: "Your groove with a live part played over it by you.",
+        whyItMatters:
+          "This is what the whole course has been for. The sequencer covers the arrangement and your hands cover one part of it — which is the shape of every JD-Xi performance there is.",
+        checkpoint:
+          "You have played over your own pattern for a little while and it sounded like one thing.",
         recoveryHelp:
-          "N04 and N05 cover building beats and lines; I08 covers the longer, fuller version and which methods overwrite.",
-        nextHint: "Now make the four parts fit together.",
+          "If your part is buried, open Cutoff on it rather than reaching for level. If the part you want is not what the keys are playing, press its Part Select button — the last one pressed wins.",
+        nextHint: "Now make what you play more expressive.",
       },
       {
         id: "I10-S06",
-        title: "Balance and place the parts",
-        instruction: "Set the level and pan of each part so they sit together.",
-        hardwareTargets: ["menuWriteButton", "partSelectGroup"],
+        title: "Bend and shake what you play",
+        instruction:
+          "Use the Pitch control to bend into notes and the Mod control on the long ones.",
+        detail:
+          "Pitch springs back on its own, so be bold with it. Mod stays where you leave it, so bring it back down when the long note has finished.",
+        hardwareTargets: ["pitchControl", "modControl"],
         visualMode: "full-plus-inset",
-        expectedSound: "Four parts audible at once, none of them fighting.",
-        checkpoint: "You can hear every part without any of them dominating.",
+        expectedSound:
+          "Notes sliding into pitch and long notes wavering, over a groove that carries on regardless.",
+        whyItMatters:
+          "These two are what separate playing from pressing keys. They are also the only controls on the instrument that respond continuously to your hand rather than in steps.",
+        checkpoint:
+          "You have bent at least one note and added movement to a held one.",
         recoveryHelp:
-          "N06 covers levels and pan; I07 covers the whole arrangement, including the offsets that let you adjust a part without editing its sound.",
-        nextHint: "Now give them somewhere to be.",
+          "If everything wavers after you stop, the Mod control is still up — move it fully toward yourself. If Pitch does nothing, hold a key down at the same time.",
+        nextHint: "Move the keyboard if you need to.",
       },
       {
         id: "I10-S07",
-        title: "Set up the effects",
-        instruction: "Choose effect types and route each part to what suits it.",
-        detail: "Remember the program has one set of effects, shared by everything in it.",
-        hardwareTargets: ["effectsSection"],
+        title: "Move the keyboard to suit the part",
+        instruction:
+          "Use the OCTAVE buttons if what you are playing sits in the wrong place.",
+        detail:
+          "Down for something that needs weight, up for something that needs to be heard over the pattern. Press both together to get back to where you started.",
+        hardwareTargets: ["octaveButtons"],
         visualMode: "full-plus-inset",
-        expectedSound: "Parts at different distances rather than all in the same place.",
-        checkpoint: "The parts do not all sit in the same acoustic space.",
+        expectedSound: "The same part, playing in a register that suits it better.",
+        whyItMatters:
+          "Thirty-seven keys is not many, and the range you need while performing is not always the range the program was built in. This is one button press rather than a rethink.",
+        checkpoint:
+          "You have moved the keyboard while performing, or decided it was already right.",
         recoveryHelp:
-          "I06 Effects and space covers this, including Part Output and the send levels. If an effect appears to do nothing, B07 lists Roland's documented causes.",
-        nextHint: "Now save it, before you play it.",
+          "Press both OCTAVE buttons together to return to 0. Note that they have no effect on the Drums part, so if nothing happens, check which part is selected.",
+        nextHint: "Let the instrument play a part, if it suits.",
       },
       {
         id: "I10-S08",
-        title: "Save it before you perform",
-        instruction: "Save the program to a slot you chose deliberately.",
+        title: "Let the arpeggiator play, if it suits",
+        instruction:
+          "If your groove has room for it, press ARPEGGIO On and hold two or three keys over the pattern.",
         detail:
-          "Everything so far is unsaved and one program change from gone. Save now, while it is worth saving.",
-        hardwareTargets: ["shiftButton", "menuWriteButton"],
+          "It runs at the program's tempo, so it stays in time by itself. Turn it off again if it crowds the loop rather than adding to it — that is a real answer.",
+        hardwareTargets: ["arpeggioOnButton", "keys"],
         visualMode: "full-plus-inset",
+        expectedSound:
+          "A moving arpeggiated layer over your groove, in time with it.",
         whyItMatters:
-          "Performing means pressing things, and pressing things is how unsaved work disappears. Saving first turns a mistake into an annoyance instead of a loss.",
-        checkpoint: "The whole program is stored under a name you chose.",
+          "This is the one performance tool that plays a part for you, which frees your attention for everything else. It suits some grooves and ruins others, and knowing which is the skill.",
+        checkpoint:
+          "You have either added an arpeggiated layer or decided your groove is better without one.",
         recoveryHelp:
-          "N09 Save your work has the sequence, including choosing a destination you are willing to overwrite.",
-        nextHint: "Now play it.",
+          "Press ARPEGGIO On again to turn it off. If notes keep sounding after you let go, ARPEGGIO Key Hold is on — press it once. N07 covers all of this.",
+        nextHint: "Now change the sound while it runs.",
       },
       {
         id: "I10-S09",
-        title: "Perform it",
+        title: "Move something while it plays",
         instruction:
-          "Start the pattern, choose the part you want under your hands, and play.",
+          "With the pattern running, sweep Cutoff on one part, or bring an effect up and back down.",
         detail:
-          "Mute and unmute parts as you go. Use the Pitch and Mod controls. Move a knob and hear the whole thing change.",
-        hardwareTargets: ["playStopButton", "keys"],
-        visualMode: "full",
-        expectedSound: "An arrangement running, with you playing on top of it.",
+          "Slowly. A filter opening over eight bars is a performance; the same move in one second is a noise. Pick one control and commit to it.",
+        hardwareTargets: ["cutoffKnob", "reverbKnob"],
+        visualMode: "full-plus-inset",
+        expectedSound:
+          "The groove changing character underneath you while it keeps running.",
         whyItMatters:
-          "This is what the instrument is for. Everything in these thirty tutorials was in service of being able to do this without having to think about which button does what.",
-        checkpoint: "You have performed with your own program for a few minutes.",
+          "Everything so far has been arranging what plays. This changes what things sound like while they play, which is the last kind of control the instrument offers you.",
+        checkpoint:
+          "You have changed the sound of the running groove with a knob and brought it back.",
         recoveryHelp:
-          "Hold Shift and a Part Select button to mute a part; the same combination brings it back. B08 and N06 cover muting; B05 covers the Pitch and Mod controls.",
-        nextHint: "One last thing.",
+          "Turn the knob back by ear. None of this is written anywhere unless you save, so the stored version of your program is untouched whatever you do here.",
+        nextHint: "One thought before you finish.",
       },
       {
         id: "I10-S10",
-        title: "Keep it, and keep a copy",
-        instruction: "Save the program again if you changed anything while performing.",
+        title: "Use what fits, not everything",
+        instruction:
+          "Play the groove once more, using only the two or three controls that actually suited it.",
         detail:
-          "Then, if you have a computer to hand, take a backup. A saved program lives on the instrument; a backup lives somewhere a factory reset cannot reach.",
-        hardwareTargets: ["usbComputerPort"],
-        visualMode: "full-plus-inset",
+          "You have eight or nine tools available. A good performance uses a few of them well rather than all of them in turn. Decide which ones this groove wants and leave the rest alone.",
+        hardwareTargets: ["partSelectGroup", "tempoSection", "pitchControl"],
+        visualMode: "full",
+        expectedSound:
+          "Your groove, performed with a few deliberate moves rather than a demonstration of every control.",
         whyItMatters:
-          "You have now built something you would be sorry to lose, which is the first point at which backing up stops being an abstract idea.",
+          "Working through a list of controls is how you learn them. Choosing between them is how you use them, and it is the difference between a demonstration and a performance.",
         checkpoint:
-          "Your program is saved, and you know how to get a copy of it off the instrument.",
+          "You have performed your groove using a few controls you chose deliberately.",
         recoveryHelp:
-          "I09 Save and organize creations covers backing up, including Roland's instruction to copy the whole folder rather than part of it.",
+          "If you are not sure which fit, take one away and see whether the performance is worse. It is the same question as muting a part, asked about your own playing.",
+        nextHint: "Last step: stop it properly.",
+      },
+      {
+        id: "I10-S11",
+        title: "Stop cleanly",
+        instruction:
+          "Bring the parts back in, let the loop finish, and press Play/Stop.",
+        detail:
+          "Unmute what you muted, put the Mod control back toward you, turn the arpeggiator off if you used it, and stop at the end of a loop rather than in the middle of one.",
+        hardwareTargets: ["playStopButton", "modControl"],
+        visualMode: "full-plus-inset",
+        expectedSound: "The groove ending where it was meant to, rather than being cut off.",
+        whyItMatters:
+          "Your saved program is untouched by everything you just did, so there is nothing to lose — but leaving the instrument as you found it is what makes the next session start well rather than with a mystery.",
+        checkpoint:
+          "The pattern is stopped, nothing is left muted or held, and your saved program is intact.",
+        recoveryHelp:
+          "If anything is still sounding, check ARPEGGIO Key Hold and the Mod control. If you changed something you want to keep, save the program again — otherwise the stored version is exactly as you left it in I09.",
         nextHint:
-          "That is the whole guided path. Everything from here is your own.",
+          "That is the course. You can build a groove, save it, and play it.",
       },
     ],
   },
-
 };

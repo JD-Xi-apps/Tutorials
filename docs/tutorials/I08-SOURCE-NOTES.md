@@ -5,115 +5,118 @@ Source reconciliation record for I08. Content lives in `js/tutorials.js`
 
 | Field | Value |
 |---|---|
-| Tutorial | **I08 — Build a fuller pattern** (intermediate, order 8, 12 steps, ~14 min) |
+| Tutorial | **I08 — Build a fuller pattern** (intermediate, order 8, 12 steps, ~16 min) |
 | Short title | Fuller pattern |
-| Prerequisites | `["I07"]` — advisory, not a gate |
-| Kind | **Authoring, with destructive risk.** All four recording methods; two overwrite. |
+| Prerequisites | `["I07"]` — advisory; I08 works on any program if the I07 setup is gone |
+| Kind | **Operating procedure.** The deepest sequencer lesson; records into the loaded pattern. |
 | Authored | 2026-08-31 |
+| Reconciled | 2026-08-31, against `PRODUCT-CURRICULUM-MASTER-PLAN.md` §11 |
+
+## Master-plan reconciliation (2026-08-31)
+
+The brief says the previous I08 *contains explicit v1 exclusions and must be rewritten*, and
+lists five things to remove by name. Four of them were the tutorial's subject.
+
+| Old step | What it was | Which exclusion |
+|---|---|---|
+| old S02 | "the four ways in", naming realtime recording as one | Realtime Recording |
+| old S03–S05 | arming `[Real Time Rec]`, recording a live performance, and the automatic stop at the loop point | Realtime Recording |
+| old S08 | recording a Cutoff sweep into the pattern | recorded knob/wheel automation |
+| old S09 | `[Enter]` + `[Erase]` to clear recorded knob and wheel movements | recorded knob/wheel automation |
+| old S10 | effect knob movements being saved per program and unerasable | recorded knob/wheel automation |
+| old S11 | `[Menu/Write]` + `[10]` opening Pattern Copy | Pattern Copy |
+
+That is six of twelve steps removed. What replaces them is what the master plan actually asks
+for: a fuller drum groove, deeper drum editing than `N04`, bass, a synth part, an optional
+fourth, extending the pattern gradually toward four measures, a fill made by changing the final
+steps, Part Mute for auditioning, correcting steps, and Step Recording where it helps.
+
+**Two procedures arrive here from `N03`**, which is where the reconciliation moved them:
+
+- **Pattern Length** (`I08-S08`), including Roland's `With Copying ?` prompt.
+- **Measure navigation**, `[Shift]` + `[01]`–`[04]` (`I08-S09`).
+
+Both were four of eleven steps in `N03`, a tutorial whose pattern is one measure long and which
+therefore had no use for either. Here they are the answer to a problem the learner now has.
+
+**Four measures is stated as a goal, not a requirement** (`I08-S12`), which the master plan asks
+for in those words. The closing step says outright that a two-measure loop with a fill beats
+four measures of something abandoned halfway.
 
 ## Sources consulted
 
 | Source | Where it is used |
 |---|---|
-| Owner's Manual `eng07` | **p.10** *Changing the Number of Measures* and its prompt, measure switching, *Copying a Pattern*, *Deleting All Notes at a Specific Step*; **p.11** *Realtime Recording*, *Tips for Realtime Recording*, *Note When Recording Effect Knob Movements*, TR-REC and its re-input rule; **p.12** *Step Recording*, the fourth recording method, *Saving a Pattern*; **p.13** `Loop Rec`; **p.15** the click-out setting |
-| Parameter Guide `e01` | **p.3** all of the above restated, including the four methods' overwrite behaviour and the note that recorded effect knob movements cannot be erased; **p.4** `Pattern Full!` after heavy knob recording, and that extreme knob movements may make playback struggle; **p.5** the `Pattern Full!` error row |
-| Version 1.10 Supplementary Manual | **p.2** *Erasing Knob and Wheel Movements Recorded in a Pattern* — `[Enter]` + `[Erase]` during playback, for the selected part, and for all drum instruments at once |
-| `docs/ROLAND-SOURCE-MAP.md` | §7 rows 25–28 (the four methods), 45 (pattern copy); §8.3 erasing pattern data; §9 the I08 row |
+| Owner's Manual `eng07` | **p.5** *Choosing a Part to Play*, *Choosing a Tone — Drums part* and the printed instrument names; **p.8** FILTER and AMP/ENV applying to the Drums part; **p.10** *Muting a specific part*, *Basic Operation of the Pattern Sequencer*, *Changing the Number of Measures* and its `With Copying ?` prompt, *Switching the Number of Measures Shown by the [01]–[16] Buttons*, *Deleting All Notes at a Specific Step*; **p.11** *What is TR-REC?* and the TR-REC procedures; **p.12** *Step Recording*, *Saving a Pattern* |
+| Parameter Guide `e01` | **p.11** `Cutoff Ofst` — the basis for Cutoff acting on the whole drum kit |
+| `docs/ROLAND-SOURCE-MAP.md` | §7 rows 24–26 (sequencer, TR-REC, part mute); §8.2 losing unsaved work; §8.3 erasing pattern data; §9 the I08 row |
 
 ## Per-step reconciliation
 
 | Step | Targets | Mode | Learner-facing factual claims | Support |
 |---|---|---|---|---|
-| **I08-S01** Protect any work you want to keep | `programValueButtons`, `stepButtons` | `full` | Two of the methods overwrite what is already there. | OM p.11 / PG p.3. |
-| **I08-S02** The four ways in | `patternSequencerSection`, `stepButtons` | `full-plus-inset` | TR-REC refuses to record over an existing note; holding a step and playing adds without deleting; step and realtime recording delete and replace. | OM p.11 and PG p.3: "If you want to use TR-REC to re-input notes at a step in which you previously input a note… you must first delete the existing notes. When you use step recording or realtime recording, the original notes are automatically deleted and replaced (overwritten)." OM p.12 / PG p.3 for the fourth method: "the originally existing notes are not deleted; the notes you enter are added to the recording." |
-| **I08-S03** Arm the recording | `partSelectGroup`, `realTimeRecButton` | `full-plus-inset` | Recording goes to the selected part; press [Real Time Rec] to arm. | OM p.10 ("When you record, the part that's selected by Part Select is recorded"); OM p.11 *Realtime Recording* steps 1–2. |
-| **I08-S04** Record in real time | `playStopButton`, `keys` | `full` | Press [▶/■] and play; the performance is layered onto the pattern; knob and wheel movements are recorded too. | OM p.11 steps 3–4, including "Your performance is recorded by layering it onto the selected pattern" and "Movements of the knobs and wheels are also recorded." |
-| **I08-S05** It stops at the end of the pattern | `realTimeRecButton` | `full-plus-inset` | Recording while the pattern plays stops automatically when playback returns to the beginning; the `Loop Rec` system parameter changes that. | OM p.11 *Tips for Realtime Recording*, quoted closely, and OM p.13's `Loop Rec` definition. See *SYSTEM handling*. |
-| **I08-S06** Give yourself more room | `menuWriteButton`, `display` | `display-focus` | Up to four measures; Enter copies from the existing pattern, Exit adds blank measures; neither cancels; the length reverts if you select another program before saving — offered only with its discard warning. | OM p.10 *Changing the Number of Measures*, its button table and its note. Screen from OM p.10 — see *Display provenance*. The discard warning is required by the recovery house rule: Roland's revert-by-switching-program also throws away every other unsaved change, so it may never be offered bare. |
-| **I08-S07** Work on a later measure | `shiftButton`, `stepButtons` | `full-plus-inset` | `[Shift]` + one of the first four numbered buttons chooses the displayed measure, during playback or recording; the current measure blinks; with a 32nd-note scale the range is the first eight. | OM p.10, as in `N03`. |
-| **I08-S08** Record a knob movement | `realTimeRecButton`, `cutoffKnob` | `full-plus-inset` | Knob movements are recorded with the notes; recording a lot of movement can fill the pattern; extreme movements can make playback struggle. | OM p.11 for the recording; PG p.4: "If you record extreme knob movements, pattern playback might not keep up. If the storage capacity for knob movements reaches its limit, the display indicates 'Pattern Full!' and no further recording is possible." PG p.5's error row gives the documented action. |
-| **I08-S09** Removing recorded movement | `enterButton`, `eraseButton` | `full-plus-inset` | `[Enter]` + `[Erase]` during playback erases the selected part's knob and wheel movements while held; on the Drums part it clears them for every instrument at once. | v1.10 p.2, quoted closely: "While a pattern plays back, you can hold down the [Enter] button and press the [Erase] button to erase only the knob and wheel movements from the currently selected part. Erasure occurs while you hold down the button. Note that in the case of a Drums part, this erases the recorded movements for all of the instruments." See *Version-dependent content*. |
-| **I08-S10** Effect knob movements are different | `effectsSection` | `full-plus-inset` | Effect knob movements are saved for the whole program, so erasing the pattern does not erase them, and they cannot be erased at all — they must be re-recorded. | OM p.11 *Note When Recording Effect Knob Movements* and PG p.3, both stating it: "since effect knob movements are saved for the entire program, the effect knob movements are not erased even if you erase the entire pattern. Since effect knob movements that you record cannot be erased, you'll need to re-record." v1.10 p.2 repeats the point. |
-| **I08-S11** Copying a pattern from elsewhere | `menuWriteButton`, `stepButton10` | `full-plus-inset` | `[Menu/Write]` + `[10]` opens Pattern Copy; it overwrites the destination part; you choose pattern, sound, or both; program and effect settings are not copied; the sound-only setting is how a tone is moved between programs. | OM p.10 *Copying a Pattern*, its tables, and its note: "The pattern data and tones are copied. Programs and effect settings are not copied", plus the MEMO: "The JD-Xi cannot save sound settings as individual tones. If you want to use a tone from another program, use the Pattern copy Sound Only setting to copy it." |
-| **I08-S12** Save the pattern with its program | `shiftButton`, `menuWriteButton` | `full-plus-inset` | There is no separate save for a pattern. | OM p.12 *Saving a Pattern*. |
+| **I08-S01** Protect any work you want to keep | `stepButtons`, `eraseButton` | `full` | Recording changes the loaded pattern; a pattern disappears on program change or power-off. | OM p.12 *Saving a Pattern*. |
+| **I08-S02** Start from your setup | `partSelectGroup` | `full-plus-inset` | Part Select chooses which part the keys play. | OM p.5. The step is explicitly written so that the I07 setup is convenient but not required. |
+| **I08-S03** Build a fuller drum groove | `drumsButton`, `stepButtons` | `full-plus-inset` | On the Drums part, playing a key chooses the instrument and the numbered buttons set the steps it sounds on; a step that already holds a note must be erased first. | OM p.11 TR-REC step 1 and the drum case; the occupied-step constraint is OM p.11's own note, and the erase gesture in the recovery is OM p.10. Instrument names are printed above the keys (OM p.5). **No key numbers are given** — instrument placement varies by kit. |
+| **I08-S04** Shape the kit further | `cutoffKnob`, `envelopeKnob` | `full-plus-inset` | Cutoff and the Envelope knob act on the Drums part, adjusting the kit assigned to it. | OM p.8 heads the filter and amp descriptions *Digital Synth/Drums part*; PG p.11's `Cutoff Ofst` is documented as adjusting "the tone/drum kit that's assigned to the part". The overlap advice is a listening judgement. |
+| **I08-S05** Add the bass | `analogSynthButton`, `stepButtons` | `full-plus-inset` | TR-REC on a pitched part: play the key, light the steps. | OM p.11 *Digital Synth part/Analog Synth part*, steps 1–2. |
+| **I08-S06** Add a synth part | `digitalSynth1Button`, `stepButtons` | `full-plus-inset` | Same procedure. Muting a part is `[Shift]` + Part Select. | OM p.11 for TR-REC, OM p.10 for Part Mute in the recovery. |
+| **I08-S07** A fourth part, if it earns a place | `digitalSynth2Button`, `shiftButton` | `full-plus-inset` | Same procedure; muting is reversible and changes nothing. | OM p.11 and OM p.10 ("To return to the original state, once again hold down the [Shift] button and press the Part Select button"). Optional, per the master plan's fourth-part-optional framing carried forward from `N06`. |
+| **I08-S08** Make the pattern longer | `menuWriteButton`, `programValueButtons`, `display` | `display-focus` | Menu → Pattern Length → Enter; Value chooses measures; Enter confirms; the JD-Xi then asks `With Copying ?`, where Enter copies from the existing pattern and Exit adds blank measures. **Either answer applies the change.** A length change reverts if you select another program before saving. | OM p.10 *Changing the Number of Measures*, steps 1–4 and the button table: "[Enter] button — If the number of measures is being increased, measures are copied from the original pattern. [Exit] button — Blank measures are added", then "Press the [Enter] or [Exit] button to change the number of measures." The revert warning is Roland's own note on the same page. Screen reproduced verbatim — see *Display provenance*. |
+| **I08-S09** Work on a later measure | `shiftButton`, `stepButtons` | `full-plus-inset` | `[Shift]` + one of `[01]`–`[04]` chooses the displayed measure during playback or recording; holding Shift lights those buttons and the current measure blinks. | OM p.10, quoted closely. **The 32nd-note variant is deliberately not given** — see *Deliberate omissions*. |
+| **I08-S10** Add a fill at the end | `stepButtons`, `drumsButton` | `full-plus-inset` | Steps in the last measure are lit and unlit like any others. | OM p.11 TR-REC. The definition of a fill offered here — the end of the loop doing something different — is the master plan's own framing ("changing final steps so the loop turns around differently") and is a musical description rather than a claim about the instrument. |
+| **I08-S11** Audition and correct | `shiftButton`, `eraseButton`, `stepRecButton` | `full-plus-inset` | Part Mute for auditioning; `[Erase]` plus a step erases with the pattern stopped; turning a button dark only mutes its note. Step recording is available as an alternative. | OM p.10 *Muting a specific part* and *Deleting All Notes at a Specific Step*, both quoted in substance; OM p.12 *Step Recording* for the alternative. |
+| **I08-S12** Four measures is a goal, not a rule | `playStopButton`, `display` | `full` | A pattern can be up to four measures. The pattern is not saved. | OM p.10 ("You can create a pattern that's up to four measures long") and OM p.12 *Saving a Pattern*. |
 
 ## Display provenance
 
-One screen, at I08-S06, reproduced verbatim from OM p.10:
+One screen, at `I08-S08`, reproduced verbatim from Roland's illustration at OM p.10:
 
 ```
 With Copying ?
 [Exit]:N [Ent]:Y
 ```
 
-`syntheticDisplay: false`, with the `displayNote` stating it is reproduced with its own
-left-to-right order — the same wording `N03` uses for the same screen, and the counterpart
-to `N10`'s mirrored Factory Reset prompt.
-
-## Two traps that cost work
-
-Both get their own step because both are irreversible in a way nothing else in the
-sequencer is:
-
-- **I08-S10 — effect knob movements cannot be erased.** This is the only recording on the
-  instrument that cannot be taken back by any documented means. Roland states it twice, in
-  two documents, and adds it a third time to the 1.10 supplement. The step is placed
-  *before* the learner is likely to record one, and says so: "it is worth knowing before
-  you make it rather than after."
-- **I08-S11 — Pattern Copy overwrites the destination.** The step describes it rather than
-  performing it, gives the cost, and notes that Exit leaves without copying.
-
-## Version-dependent content
-
-**I08-S09 is firmware-gated.** Erasing recorded knob and wheel movements with
-`[Enter]` + `[Erase]` was added at system version **1.10** (v1.10 p.2), not 1.50 — it is
-one of the two shortcuts that supplement introduced, alongside the program-change lock.
-The step's `recoveryHelp` treats "nothing happens" as the expected symptom of an earlier
-instrument rather than a fault, and points at `N01` for reading the version.
-
-The first draft of this step named 1.50 in its `detail` while naming 1.10 in its
-`recoveryHelp`. That was caught writing this file and corrected before the checkpoint;
-it is recorded here because a version caveat that contradicts itself is exactly the kind
-of defect these notes exist to catch.
-
-## A recovery that had to be qualified
-
-I08-S06's `recoveryHelp` originally repeated Roland's note plainly — "the length reverts
-if you select another program before saving" — which is true and, on its own, dangerous.
-A learner following it to undo a pattern-length change would also lose the pattern, the
-sounds and everything else unsaved on that program.
-
-It now offers setting the length back as the ordinary fix, and presents the
-select-another-program route with its full cost attached. The rule that caught it is
-enforced in `tools/validate-data.js`: wherever a step offers selecting another program as
-a recovery, the discard has to be stated in the same breath.
-
-## SYSTEM handling
-
-`Loop Rec` is exactly the setting a learner will want after I08-S05, and I08
-**deliberately does not go and change it.** It lives in SYSTEM (OM p.13), and system
-parameters are saved automatically on leaving the screen (OM p.7, p.13, p.15).
-
-I08-S05's `recoveryHelp` therefore names the setting, states the auto-save behaviour as
-the reason the tutorial stays out, and tells the learner to change it only deliberately
-and to note the value they found — which is the only restore path SYSTEM offers.
+`syntheticDisplay: false`, with a `displayNote` naming the source and flagging that the
+left-to-right order is Roland's own. That order matters: it is the **opposite** of the Factory
+Reset prompt shown in `N10-S11`, where `[Ent]` comes first. Both are reproduced as printed, and
+`N10`'s note draws attention to the difference.
 
 ## Direct-entry safety
 
-**I08-S01 is the protect-your-work preflight**, and I08-S02 immediately follows it with
-the overwrite table, so the learner knows which method is safe before choosing one.
+**I08 carries its preflight at `I08-S01`**, before any recording.
 
-I08 assumes nothing about the pattern's current length, scale, contents, or which parts
-already hold data. I08-S07's `recoveryHelp` covers the 32nd-note case where the measure
-range is eight buttons rather than four.
+I08 is written to work whether or not the I07 setup survived: `I08-S02` checks what is there
+rather than assuming, and its recovery says plainly that a lost setup is rebuildable and points
+at I07. No step reads any state I07 leaves behind beyond "there are four sounds".
+
+## Destructive-risk handling
+
+Three genuinely destructive operations appear, and each is scoped.
+
+1. **`[Erase]` plus a step** erases a note permanently. Taught at `N03` and used here on steps
+   the learner is deliberately correcting, always with the stopped-pattern precondition stated.
+2. **Reducing the pattern length** loses what was in the removed measures. `I08-S08`'s recovery
+   says so, and recommends the copying answer as the safer choice.
+3. **Recording over an occupied step** cannot happen with TR-REC — Roland prevents it — which is
+   why the tutorial uses TR-REC throughout and treats a refusing step as a prompt to erase
+   rather than as a fault.
+
+**Whole-pattern erase** (`[Shift]` + `[Erase]`, OM p.10) is not mentioned anywhere in I08. It
+destroys a part's entire pattern in one gesture and belongs in Quick Reference with an explicit
+warning.
 
 ## Deliberate omissions
 
-- **Pattern Erase** (`[Shift]` + `[Erase]`, OM p.10) is not taught. It erases a part's
-  pattern or every part's, and with All selected it also resets the length and scale
-  (PG p.3). Nothing in I08 needs it, and `N04` already teaches the per-step erase.
-- **Chord entry** during recording (OM p.11, p.12) is omitted; no chord vocabulary is
-  assumed.
-- **Auto Note's effect on Pitch Bend Range** (PG p.4) is out of scope.
-- **`Rec Overflow!`** (PG p.5) is not raised; `Pattern Full!` is the one a learner
-  recording knob movements will actually meet.
+- **Realtime Recording** (OM p.11) is excluded from v1 and is not named, not even as one of the
+  ways in. `I08-S11` offers Step Recording as the alternative to TR-REC, which are v1's two.
+- **Recorded knob and wheel automation**, its `[Enter]` + `[Erase]` removal (v1.10), and the
+  unerasable effect-knob case (OM p.11) are all excluded. Removing the recording removes the
+  need for the removal procedure and the caveat.
+- **Pattern Copy** (OM p.10) is excluded from v1.
+- **Scale Setting** (OM p.10) is excluded from v1, which is also why `I08-S09` does not give
+  Roland's 32nd-note variant of the measure-switching gesture: stating it would require naming
+  the scale setting it depends on.
+- **Velocity and Gate Time** (OM p.12) are excluded; velocity/accent instruction is outside v1.
+- **`Loop Rec`** (OM p.11) is a SYSTEM parameter that only matters for realtime recording, and
+  goes with it.
