@@ -76,17 +76,17 @@ window.JDXI_SPECIALTY = {
           id: "SPEC-VOC-S03",
           title: "Set the input level, if you need to",
           instruction:
-            "If your voice is too quiet or too loud, press Menu/Write, select SYSTEM, press Enter, and find the INPUT group's Level parameter.",
+            "If your voice is too quiet or too loud: press Menu/Write, select SYSTEM, press Enter, and reach the INPUT group's Level parameter. Write down the number you find there before you touch anything, then change it with Value − and Value +.",
           detail:
-            "Roland also provides a Mic Sel setting. With the microphone that came with the instrument it should read Attached. Press Exit several times when you have finished.",
-          hardwareTargets: ["menuWriteButton", "display"],
+            "Write the original number down first because SYSTEM is the one screen that saves itself: the value you leave behind is saved automatically the moment you leave the screen, there is no confirmation asking whether you meant it, and there is no undo. Setting Level back to the number you noted is the only way to put it back. Roland also provides a Mic Sel setting; with the microphone that came with the instrument it should read Attached. Press Exit several times when you have finished.",
+          hardwareTargets: ["menuWriteButton", "programValueButtons", "display"],
           visualMode: "full-plus-inset",
           whyItMatters:
-            "These are system settings, and the JD-Xi saves them automatically as you leave the screen. There is no confirmation and no undo, so change only what you came in for.",
+            "Every other edit screen on the JD-Xi holds its change in the loaded program until you save it, so leaving without saving is how you back out. SYSTEM works the opposite way round, and it is the only screen in this lesson that does.",
           checkpoint:
-            "Your voice registers at a usable level, or you have decided the default was fine.",
+            "You have the original Level value written down, and your voice registers at a usable level — or you have decided the default was fine and changed nothing.",
           recoveryHelp:
-            "N01 Learn the menu controls shows how to move around in SYSTEM safely. Note the value you find before you change it — because the screen saves itself, that note is the only way back.",
+            "If you changed Level and want it back, go into SYSTEM the same way and set it to the number you noted; nothing else restores it. N01 Learn the menu controls shows how to move around in SYSTEM safely.",
           nextHint: "Before you change sounds, one check.",
         },
         {
@@ -316,7 +316,7 @@ window.JDXI_SPECIALTY = {
       shortTitle: "Auto Note",
       summary:
         "Play the JD-Xi with your voice. Auto Note listens to the pitch you sing and plays that note, so you can use any sound on the instrument without touching the keys.",
-      estimatedMinutes: 6,
+      estimatedMinutes: 7,
       prerequisites: ["B03"],
       learningGoals: [
         "Turn Auto Note on and play a sound by singing.",
@@ -337,10 +337,26 @@ window.JDXI_SPECIALTY = {
           checkpoint: "The microphone is connected and the INPUT jack is empty.",
           recoveryHelp:
             "The Vocoder lesson covers the microphone setup in more detail, including the input level.",
-          nextHint: "Now choose what your voice is going to play.",
+          nextHint: "Before you choose a sound, one check.",
         },
         {
           id: "SPEC-AN-S02",
+          title: "Protect any work you want to keep",
+          instruction: "Decide whether this program holds work you have not saved.",
+          detail:
+            "The next step selects a tone, which throws away an edited sound that has not been saved. Auto Note itself edits nothing — but choosing the sound it will play does.",
+          hardwareTargets: ["toneButtons"],
+          visualMode: "full",
+          whyItMatters:
+            "Auto Note plays whatever the selected part is already holding, so it is easy to arrive here with an unsaved edit in front of you and lose it while picking something to sing through.",
+          checkpoint:
+            "You have decided: either there is nothing here to keep, or you have saved it first.",
+          recoveryHelp:
+            "N09 Save your work teaches saving. This lesson is optional and nothing depends on completing it, so stopping here costs nothing. If the sound you want is already loaded, you can leave the part and tone alone and go straight on.",
+          nextHint: "Now choose what your voice is going to play.",
+        },
+        {
+          id: "SPEC-AN-S03",
           title: "Choose a sound to play",
           instruction:
             "Select any part and any tone you like, and play a few keys to hear it.",
@@ -357,7 +373,7 @@ window.JDXI_SPECIALTY = {
           nextHint: "Now hand it over to your voice.",
         },
         {
-          id: "SPEC-AN-S03",
+          id: "SPEC-AN-S04",
           title: "Turn Auto Note on",
           instruction: "Press the Auto Note button so it lights.",
           detail: "It sits at the top left of the panel, near the microphone jack.",
@@ -369,7 +385,7 @@ window.JDXI_SPECIALTY = {
           nextHint: "Now play without touching anything.",
         },
         {
-          id: "SPEC-AN-S04",
+          id: "SPEC-AN-S05",
           title: "Play with your voice",
           instruction:
             "Sing a note into the microphone, with your hands off the keyboard.",
@@ -388,7 +404,7 @@ window.JDXI_SPECIALTY = {
           nextHint: "One note worth having if you ever record with it.",
         },
         {
-          id: "SPEC-AN-S05",
+          id: "SPEC-AN-S06",
           title: "One thing to know about recording",
           instruction: "Read this if you ever record a pattern using Auto Note.",
           detail:
@@ -404,7 +420,7 @@ window.JDXI_SPECIALTY = {
           nextHint: "Last step: put it back.",
         },
         {
-          id: "SPEC-AN-S06",
+          id: "SPEC-AN-S07",
           title: "Turn it off cleanly",
           instruction: "Press the Auto Note button so the light goes out, then play a key.",
           detail:

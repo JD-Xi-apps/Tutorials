@@ -6,7 +6,7 @@ Source reconciliation record for the three Specialty lessons. Content lives in
 
 | Field | Value |
 |---|---|
-| Lessons | **Use the Vocoder** (9 steps), **Use AutoPitch** (7 steps), **Use Auto Note** (6 steps) |
+| Lessons | **Use the Vocoder** (9 steps), **Use AutoPitch** (7 steps), **Use Auto Note** (7 steps) |
 | Ids | `vocoder`, `auto-pitch`, `auto-note` — deliberately not `B##`/`N##`/`I##` |
 | Status | **Optional. Outside the canonical thirty. Never counted in x/30.** |
 | Prerequisites | `["B03"]` on each — advisory, not a gate |
@@ -57,7 +57,7 @@ step's `instruction`, `detail`, `whyItMatters` and `checkpoint`.
 
 | Source | Where it is used |
 |---|---|
-| Owner's Manual `eng07` | **p.2** items 1 (MIC jack) and the Auto Note button; **p.5** *Choosing a Part to Play*, *Choosing a Tone* and the Vocoder/AutoPitch note; **p.7** *Using the Microphone* (connection, the INPUT-jack priority rule, the SYSTEM INPUT parameters), *Vocoder/Auto Pitch* (what each does, the three-step procedure, the Setup route, the two limits), *Auto Note* (what it does, the two-step procedure, and the Pitch Bend Range MEMO); **p.9** *Saving a Sound (Program) (WRITE)*; **p.13** SYSTEM settings save on exit |
+| Owner's Manual `eng07` | **p.2** items 1 (MIC jack) and the Auto Note button; **p.5** *Choosing a Part to Play*, *Choosing a Tone* and the Vocoder/AutoPitch note; **p.7** *Using the Microphone* (connection, the INPUT-jack priority rule, the SYSTEM INPUT parameters), *Vocoder/Auto Pitch* (what each does, the three-step procedure, the Setup route, the two limits), *Auto Note* (what it does, the two-step procedure, and the Pitch Bend Range MEMO); **p.9** *Saving a Sound (Program) (WRITE)*; **p.2** and **p.13** the menu button roles and Value as the parameter control in a settings screen; **p.13** and **p.15** SYSTEM settings save on exit |
 | `docs/ROLAND-SOURCE-MAP.md` | §7 rows 5 (part selection), 10 (tone selection); §9; §8.2 losing unsaved work |
 
 The Parameter Guide's Vocoder and AutoPitch parameter tables (PG p.28) were **not** used: the
@@ -69,7 +69,7 @@ lessons open the edit screens and say where the settings are, without walking th
 |---|---|---|
 | `SPEC-VOC-S01` Connect the included microphone | The included microphone plugs into the MIC jack; adjust its direction and angle after connecting. | OM p.7: "Connect the included microphone to the MIC jack. After you've connected the microphone, adjust its direction and angle." |
 | `SPEC-VOC-S02` Check nothing is plugged into the INPUT jack | If devices are connected to both the MIC jack and the INPUT jack, the INPUT jack takes priority and the MIC jack is unavailable. | OM p.7, quoted in substance: "You can't use the mic if a device is connected to the INPUT jack… If you want to use the microphone, disconnect any device from the INPUT jack." |
-| `SPEC-VOC-S03` Set the input level, if you need to | The INPUT group in SYSTEM holds `Level`; `Mic Sel` reads `Attached` for the included microphone; SYSTEM settings save automatically on exit. | OM p.7's Setup procedure and its parameter table (`Level`, `Mic Sel` with "Attached (when using the included microphone)"), and "The settings are saved automatically." The auto-save warning is also OM p.13. **`Mic Sel`'s other value is named nowhere in the lesson** — only the one that applies to the included microphone. |
+| `SPEC-VOC-S03` Set the input level, if you need to | The INPUT group in SYSTEM holds `Level`, reached with Menu/Write → SYSTEM → Enter and changed with Program Value `[-]` `[+]`; SYSTEM saves the changed value automatically when you leave the screen, with no confirmation and no undo, so the value noted beforehand is the way back; `Mic Sel` reads `Attached` for the included microphone. | OM p.7's Setup procedure and its parameter table (`Level`, `Mic Sel` with "Attached (when using the included microphone)"), and "The settings are saved automatically." The auto-save warning is also OM p.13 and p.15. The absence of a confirmation is the absence of one in Roland's procedure. Value `[-]` `[+]` as the parameter control in a settings screen is OM p.2 and p.13. **`Mic Sel`'s other value is named nowhere in the lesson** — only the one that applies to the included microphone. |
 | `SPEC-VOC-S04` Protect any work you want to keep | Selecting a tone discards an unsaved edit; Vocoder settings are saved per program. | OM p.9 for the discard; OM p.7: "Vocoder and AutoPitch settings are saved individually for each program." |
 | `SPEC-VOC-S05` Select the Vocoder/AutoPitch category | The Category dial has a Vocoder/AutoPitch position. | OM p.7 step 1: "Use the category dial to select 'Vocoder/AutoPitch.'" |
 | `SPEC-VOC-S06` Choose a vocoder tone | Tone `[-]` `[+]` select a tone within the category; the category holds both kinds. | OM p.7 step 2. That both kinds share the category is the plain reading of Roland's heading and of the AutoPitch note in step 3. |
@@ -94,25 +94,54 @@ lessons open the edit screens and say where the settings are, without walking th
 | Step | Learner-facing factual claims | Support |
 |---|---|---|
 | `SPEC-AN-S01` Get the microphone working | As above. | OM p.7. |
-| `SPEC-AN-S02` Choose a sound to play | Auto Note needs no special category; any part and tone will do. | Roland's Auto Note procedure (OM p.7) contains no tone or category step, unlike the Vocoder/AutoPitch procedure immediately above it, and the *Note when using Vocoder and AutoPitch* limits are stated for those two only. The lesson states the difference as an absence, which is what it is. |
-| `SPEC-AN-S03` Turn Auto Note on | Press the `[Auto Note]` button to make it light. | OM p.7 step 1. |
-| `SPEC-AN-S04` Play with your voice | Auto Note detects the pitch of your voice and plays that pitch; sound is heard without playing the keyboard. | OM p.7: "Auto Note is a function that detects the pitch of your voice, and plays that pitch… Input your voice from the microphone; sound is heard even though you're not playing the keyboard." The recovery's noisy-environment caveat is Roland's, from the same page's NOTE covering all three functions. |
-| `SPEC-AN-S05` One thing to know about recording | A pattern recorded with Auto Note has Pitch Bend Range fixed at 24; playing it back with Auto Note off may sound different unless Pitch Bend Range is set to 24. | OM p.7's MEMO, in substance. **This is a note, not a recording lesson** — the step is read-only and says the live playing this lesson teaches is unaffected. |
-| `SPEC-AN-S06` Turn it off cleanly | Pressing the button again turns it off. | OM p.7 step 1 read in reverse — the button lights to turn on. Roland documents no separate off procedure, and the step claims none. |
+| `SPEC-AN-S02` Protect any work you want to keep | Selecting a tone discards an unsaved edit. | OM p.9. The step asserts nothing else about the instrument; it is the direct-entry safety requirement (master plan §7, `DESIGN-RULES.md` §7a) applied to the tone selection in the step that follows. |
+| `SPEC-AN-S03` Choose a sound to play | Auto Note needs no special category; any part and tone will do. | Roland's Auto Note procedure (OM p.7) contains no tone or category step, unlike the Vocoder/AutoPitch procedure immediately above it, and the *Note when using Vocoder and AutoPitch* limits are stated for those two only. The lesson states the difference as an absence, which is what it is. |
+| `SPEC-AN-S04` Turn Auto Note on | Press the `[Auto Note]` button to make it light. | OM p.7 step 1. |
+| `SPEC-AN-S05` Play with your voice | Auto Note detects the pitch of your voice and plays that pitch; sound is heard without playing the keyboard. | OM p.7: "Auto Note is a function that detects the pitch of your voice, and plays that pitch… Input your voice from the microphone; sound is heard even though you're not playing the keyboard." The recovery's noisy-environment caveat is Roland's, from the same page's NOTE covering all three functions. |
+| `SPEC-AN-S06` One thing to know about recording | A pattern recorded with Auto Note has Pitch Bend Range fixed at 24; playing it back with Auto Note off may sound different unless Pitch Bend Range is set to 24. | OM p.7's MEMO, in substance. **This is a note, not a recording lesson** — the step is read-only and says the live playing this lesson teaches is unaffected. |
+| `SPEC-AN-S07` Turn it off cleanly | Pressing the button again turns it off. | OM p.7 step 1 read in reverse — the button lights to turn on. Roland documents no separate off procedure, and the step claims none. |
 
 ## Direct-entry safety
 
-Each lesson carries a protect-your-work preflight before its first tone selection — `S04` in
-the Vocoder lesson, `S02` in AutoPitch. **Auto Note deliberately has none**, and that is
-correct rather than an omission: it selects no program and no tone. `SPEC-AN-S02` has the
-learner choose a sound, which is a tone selection — so the lesson's own recovery text points at
-`B03`, and the step is written as "select any part and any tone you like", an action the
-learner is choosing rather than one the lesson imposes on loaded work.
+**All three lessons carry a protect-your-work preflight before their first tone selection** —
+`SPEC-VOC-S04` in the Vocoder lesson, `SPEC-AP-S02` in AutoPitch, and `SPEC-AN-S02` in Auto
+Note. Each is its own step, so the one-primary-action rule holds: the learner makes the safety
+decision, and only then picks a sound.
 
-All three assume nothing about what is connected, what is loaded, or whether the learner has a
-microphone at all. `SPEC-VOC-S01`'s recovery says plainly that without one the lesson cannot be
-completed, and that nothing in the course depends on it — which is true, because Specialty is
-optional.
+Auto Note's was added by the master-plan reconciliation review, and the reasoning that had left
+it out was wrong. It ran: Auto Note selects no program and no tone of its own, and the step that
+chooses a sound says "select any part and any tone you like", which is the learner's choice
+rather than something the lesson imposes. Both halves are false where it matters. Selecting a
+tone is selecting a tone however freely it is offered (OM p.9), and a learner arriving directly
+with an edited sound in front of them — which the direct-entry contract requires every lesson to
+assume — would have thrown it away while picking something to sing through. That the lesson
+pointed at `B03` in its `recoveryHelp` made it worse rather than better: `recoveryHelp` is behind
+the lesson screen's *I'm lost* button, so it is read after the loss, which is the same defect
+`DESIGN-RULES.md` §7a records against `I09`.
+
+`SPEC-VOC-S03` is a different risk and takes a different answer. It changes a **system** setting
+rather than the loaded sound, so `N09` and a preflight do not help: SYSTEM saves the value
+automatically as the learner leaves the screen, with no confirmation and no undo. The
+deterministic way back is a value the learner wrote down first, so the step's `instruction` says
+to write it down before touching anything and its `detail` states the auto-save, the absent
+confirmation, the absent undo, and what the noted value is for. All of that is in the two fields
+the lesson screen shows by default — none of it is left to `whyItMatters` or `recoveryHelp`,
+which the screen hides behind *Why?* and *I'm lost* and which a learner following the procedure
+meets, if at all, after acting.
+
+Both rules are enforced rather than reviewed, in `tools/validate-data.js`:
+
+- the **protect-your-work preflight** check now runs over the Specialty lessons as well as the
+  canonical catalog, with no Specialty exemption. Removing `SPEC-AN-S02` fails the run.
+- a **SYSTEM auto-save** check requires any step that operates Value inside SYSTEM to state the
+  note-it-first instruction, the automatic save, the absence of an undo, and the way back, in
+  `title` / `instruction` / `detail`. Moving any of the four into `whyItMatters` or
+  `recoveryHelp` fails the run, and says so in those words.
+
+All three lessons assume nothing about what is connected, what is loaded, or whether the learner
+has a microphone at all. `SPEC-VOC-S01`'s recovery says plainly that without one the lesson
+cannot be completed, and that nothing in the course depends on it — which is true, because
+Specialty is optional.
 
 ## Deliberate omissions
 
