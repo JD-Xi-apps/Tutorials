@@ -320,7 +320,7 @@ ids.forEach((id) => {
 /* -------------------------------------------- protect-your-work preflight */
 
 /*
- * DESIGN-RULES.md §7a: a tutorial carries the protect-your-work preflight when
+ * DESIGN-RULES.md §7a: a lesson carries the protect-your-work preflight when
  * it can lose the learner's unsaved work - by DISCARDING it (selecting another
  * Program or Tone) or by OVERWRITING it (a knob that edits the loaded program).
  * The preflight must come BEFORE the first such step.
@@ -331,7 +331,17 @@ ids.forEach((id) => {
  * which discards. Neither was caught by any other check, because a missing
  * warning renders perfectly.
  *
- * The one exemption is listed here rather than inferred, so that a tutorial
+ * It runs over the CANONICAL CATALOG AND THE SPECIALTY LESSONS, because the
+ * risk is a property of the instrument rather than of a lesson's status. The
+ * master plan states the requirement in the direct-entry contract (sec 7),
+ * which binds anything the guided renderer presents, and Specialty is rendered
+ * by that renderer. Restricting the check to B/N/I ids let a real defect ship:
+ * the Auto Note lesson told the learner to select any part and any tone with
+ * no preflight in front of it, while the Vocoder and AutoPitch lessons beside
+ * it both carried one. There is deliberately no Specialty exemption - a lesson
+ * that skips the preflight has to be argued for below, by id, like any other.
+ *
+ * The one exemption is listed here rather than inferred, so that a lesson
  * skipping the preflight has to be argued for in this file.
  */
 const PREFLIGHT_EXEMPT = {
@@ -353,12 +363,31 @@ const OVERWRITING =
 const OPERATES = /^(press|hold|use|select|turn|set|choose|with|start|add|light|play|give|make|note|raise|move|adjust|tap)\b/i;
 const CONTEMPLATES = /^(decide|read|find|look|learn|leave|check|do not)\b/i;
 
-ids.forEach((id) => {
-  const t = tutorials[id];
-  const steps = t.steps || [];
+/* Every lesson the guided renderer presents, canonical or Specialty. */
+const GUIDED_LESSONS = [];
+ids.forEach((id) => GUIDED_LESSONS.push(['tutorial ' + id, id, tutorials[id].steps || []]));
+if (specialty) {
+  (specialty.order || []).forEach((id) => {
+    const l = (specialty.lessons || {})[id];
+    if (l) GUIDED_LESSONS.push(['specialty lesson "' + id + '"', id, l.steps || []]);
+  });
+}
+
+/* The check must never quietly become a no-op over an empty or mis-shaped
+   list, so the two populations are counted rather than assumed. */
+check(GUIDED_LESSONS.length === ids.length + (specialty ? (specialty.order || []).length : 0),
+  'protect-your-work preflight: lesson list does not cover every catalog and specialty lesson');
+if (specialty) {
+  check(GUIDED_LESSONS.some(([, , steps]) => steps.length && String(steps[0].id).indexOf('SPEC-') === 0),
+    'protect-your-work preflight: no specialty lesson reached the check');
+}
+
+let preflightsFound = 0;
+GUIDED_LESSONS.forEach(([where, id, steps]) => {
   const preflightAt = steps.findIndex((s) =>
     /protect|afford to lose|save anything you came here/i.test(s.title || '')
   );
+  if (preflightAt >= 0) preflightsFound++;
 
   let riskAt = -1;
   steps.forEach((s, i) => {
@@ -376,7 +405,7 @@ ids.forEach((id) => {
   }
   check(
     preflightAt >= 0,
-    `tutorial ${id}: reaches a step that can lose unsaved work (${steps[riskAt].id}) with no protect-your-work preflight`
+    `${where}: reaches a step that can lose unsaved work (${steps[riskAt].id}) with no protect-your-work preflight`
   );
   if (preflightAt >= 0) {
     /* At or before the risk. Equal is legitimate: I10's preflight IS the step
@@ -384,10 +413,99 @@ ids.forEach((id) => {
        the warning and the choice are the same act. Later is not. */
     check(
       preflightAt <= riskAt,
-      `tutorial ${id}: the preflight (${steps[preflightAt].id}) comes after the first step that can lose unsaved work (${steps[riskAt].id})`
+      `${where}: the preflight (${steps[preflightAt].id}) comes after the first step that can lose unsaved work (${steps[riskAt].id})`
     );
   }
 });
+
+/* A title-matched detector that matched nothing would report every lesson as
+   safe. It has to find the preflights that are known to exist. */
+check(preflightsFound > 0,
+  'protect-your-work preflight: the title detector matched no preflight anywhere');
+
+/* ------------------------------------------- SYSTEM auto-save persistence */
+
+/*
+ * SYSTEM is the one screen on the JD-Xi that saves itself: "The parameters you
+ * edit are saved when you exit the system setting screen" (OM p.7, p.13, p.15).
+ * There is no confirmation and no undo, so the ONLY deterministic way back to
+ * the previous value is a value the learner wrote down before changing it.
+ *
+ * That makes the warning part of the procedure rather than background. The
+ * lesson screen shows `title`, `instruction` and `detail` by default and keeps
+ * `whyItMatters` behind "Why?" and `recoveryHelp` behind "I'm lost", so a
+ * warning that lives only in those two arrives after the learner has already
+ * acted - which is exactly the defect that shipped in the Vocoder lesson, and
+ * the same shape as the I09 defect DESIGN-RULES.md sec 7a records.
+ *
+ * Detection is deliberately narrow, and both directions are controlled:
+ *
+ *   scope marker   the step names the SYSTEM screen in text the learner reads;
+ *   change marker  it operates the Value buttons there - a programValue target,
+ *                  or an instruction that tells the learner to use Value;
+ *   negative class a closed list of the prohibition wordings this library uses
+ *                  to name the Value buttons inside SYSTEM in order to forbid
+ *                  them - N01-S09's "do not press the Value buttons" is the
+ *                  shape. Those steps mention Value without operating it, and a
+ *                  text-only change marker would otherwise read them backwards;
+ *   non-vacuity    at least one step in the library must still be classified as
+ *                  SYSTEM-changing, so the check cannot silently match nothing.
+ */
+{
+  const NAMES_SYSTEM = /\bSYSTEM\b|\bsystem setting|\bsystem parameter/;
+  const USES_VALUE = /\bValue\b/;
+  const FORBIDS_VALUE =
+    /do not press the Value|leave the Value buttons alone/i;
+
+  /* Each requirement is a thing the learner has to be told, not a phrase. */
+  const REQUIRED = [
+    ['note the current value first',
+      /(write (it |the [a-z ]*)?down|note the [a-z ]*value|make a note of)/i],
+    ['SYSTEM saves the change automatically on leaving',
+      /saved? (itself|automatically)|saves (itself|it automatically)/i],
+    ['nothing asks for confirmation',
+      /no confirmation|without (a |any )?confirmation|nothing (asks|confirms)/i],
+    ['there is no undo',
+      /no undo|cannot be undone/i],
+    ['the noted original value is the way back',
+      /(only way|nothing else) (to (put it )?back|back|restores)|way to put it back/i],
+  ];
+
+  let systemChangingSteps = 0;
+
+  GUIDED_LESSONS.forEach(([where, , steps]) => {
+    steps.forEach((st) => {
+      const visible = [st.title, st.instruction, st.detail]
+        .map((v) => String(v || '')).join(' ');
+      const hidden = [st.whyItMatters, st.recoveryHelp]
+        .map((v) => String(v || '')).join(' ');
+      const all = visible + ' ' + hidden;
+
+      if (!NAMES_SYSTEM.test(all)) return;
+      if (FORBIDS_VALUE.test(all)) return;
+
+      const targets = (st.hardwareTargets || []).join(' ');
+      const changes =
+        /programValue/.test(targets) || USES_VALUE.test(String(st.instruction || ''));
+      if (!changes) return;
+
+      systemChangingSteps++;
+      REQUIRED.forEach(([what, re]) => {
+        check(re.test(visible),
+          `${where} step ${st.id}: changes a SYSTEM setting but never states, in the ` +
+          `instruction or detail the learner is shown by default, that ${what}` +
+          (re.test(hidden)
+            ? ' - it says so only in whyItMatters/recoveryHelp, which the lesson hides behind "Why?" and "I\'m lost"'
+            : ''));
+      });
+    });
+  });
+
+  /* If nothing matched, the four requirements above asserted nothing at all. */
+  check(systemChangingSteps > 0,
+    'SYSTEM auto-save: no step was classified as changing a SYSTEM setting, so the ' +
+    'persistence-warning check asserted nothing');
+}
 
 /* ----------------------------------------------------- recovery house rules */
 
@@ -595,6 +713,52 @@ if (reference) {
         `${at}: describes erasing but is neither flagged destructive nor warned`);
     }
   });
+
+  /*
+   * ROLAND-SOURCE-MAP.md sec 6.2 files [Shift] + Cursor under "context-specific
+   * behaviour - must never be taught as universal". Roland scopes it to
+   * "setting screens such as system or edit"; it is confirmed in SYSTEM,
+   * Program Edit, Tone Edit and Effects Edit, and is absent from the flat
+   * AutoPitch, Vocoder (PG p.28) and Arpeggio (PG p.29) parameter lists.
+   *
+   * Both entries that carry it once read "the major groups of a settings
+   * screen" with no qualifier, which a learner can only read as universal.
+   * Recall text compresses, and dropping the qualifier is exactly the edit
+   * compression makes - so the scope is checked rather than reviewed.
+   *
+   * The rule is: EVERY line that presents the combination must carry the scope
+   * itself - by naming a grouped screen, or by saying "grouped setting/edit
+   * screens" in as many words. Checking the entry as a whole is not enough and
+   * was tried first: `menu-controls` names SYSTEM in an unrelated note about
+   * auto-save, which let the unqualified step line back through. A learner
+   * reads the line, not the entry.
+   *
+   * This is a positive marker rather than a blacklist of loose phrasings,
+   * which would never be complete.
+   */
+  const SHIFT_CURSOR = /Shift\s*(\+|with)\s*Cursor/i;
+  const SCOPED = /\bSYSTEM\b|Program Edit|Tone Edit|Effects Edit|grouped (setting|edit)/i;
+  let shiftCursorLines = 0;
+  order.forEach((id) => {
+    const e = entries[id];
+    if (!e) return;
+    []
+      .concat(e.steps || [], e.notes || [], [e.title, e.summary], e.warning ? [e.warning] : [])
+      .forEach((line) => {
+        const text = String(line || '');
+        if (!SHIFT_CURSOR.test(text)) return;
+        shiftCursorLines++;
+        check(SCOPED.test(text),
+          `quick reference "${id}": presents [Shift] + Cursor without scoping it to a ` +
+          'grouped setting or edit screen in the same line, which reads as universal ' +
+          `(ROLAND-SOURCE-MAP.md sec 6.2): "${text}"`);
+      });
+  });
+  /* Both entries present it and both carry a scoping note, so four lines is the
+     floor. If the detector stops matching, the scope check above has quietly
+     stopped asserting anything. */
+  check(shiftCursorLines >= 4,
+    `quick reference: [Shift] + Cursor found in ${shiftCursorLines} lines, expected at least 4`);
 
   Object.keys(entries).forEach((id) => {
     check(seenQr.has(id), `quick reference "${id}": entry exists but is not in order`);

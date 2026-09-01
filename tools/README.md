@@ -41,10 +41,19 @@ the defect renders perfectly and nothing else would see it:
   real tutorial, and a destructive entry must carry a warning. That last check
   runs *both* ways: an entry whose own text describes erasing but which is not
   flagged and carries no warning fails too, because that is the direction drift
-  actually takes.
+  actually takes. A second rule guards scope: any line presenting `[Shift]` +
+  Cursor must name the grouped setting or edit screen it belongs to *in that
+  line*, because `ROLAND-SOURCE-MAP.md` §6.2 documents it only there. Checking
+  the entry as a whole was tried and is not enough — `menu-controls` names
+  SYSTEM in an unrelated note, which let the unqualified line back through, and
+  a learner reads the line rather than the entry.
 - **Specialty** must hold exactly 3 lessons whose ids — and step ids — cannot be
   mistaken for canonical ones, in either direction, and whose instructional text
-  never strays into the external-audio input v1 excludes.
+  never strays into the external-audio input v1 excludes. Specialty is **also**
+  checked for discard/overwrite risk by the protect-your-work preflight check
+  below, with no exemption of its own: the risk is a property of the instrument,
+  not of a lesson's status, and restricting that check to `B##`/`N##`/`I##` let a
+  real defect ship.
 - **The Hardware Explorer** must describe every registry target with a Roland
   source, describe nothing that is not a target, and list only top-level targets
   as major groups, so the landing view cannot become 99 simultaneous labels.
@@ -159,6 +168,32 @@ node tools/frozen-surfaces.js --out /tmp/jdxi-baseline   # run inside the worktr
 Then compare the working tree against that directory. Rendering is
 deterministic for a given browser build, so an unchanged surface diffs to
 exactly zero pixels; anything else needs an explanation.
+
+## Protecting the learner's work
+
+Two checks guard the same class of defect from opposite ends: a warning that is
+absent, and a warning that is present but not where the learner will read it.
+Neither is visible to any render or route check, because both failures render
+perfectly.
+
+**The protect-your-work preflight.** DESIGN-RULES.md §7a: a lesson that reaches a
+step which can discard or overwrite unsaved work must carry the preflight, at or
+before that step. It runs over the canonical catalog **and the Specialty
+lessons** — Specialty uses the same renderer and the same instrument, so it
+carries the same obligation, and the Auto Note lesson was found without one. The
+single exemption, `N09`, is named in the code so that skipping the preflight has
+to be argued for in the file rather than inferred. The detector is also asserted
+non-vacuous: a title matcher that matched nothing would report every lesson safe.
+
+**The SYSTEM auto-save warning.** SYSTEM is the one screen that saves itself, with
+no confirmation and no undo, so the only deterministic way back is a value the
+learner wrote down first. The lesson screen shows `title`, `instruction` and
+`detail` by default and hides `whyItMatters` behind *Why?* and `recoveryHelp`
+behind *I'm lost* — so a step that operates Value inside SYSTEM has to state all
+four of *note it first*, *it saves itself*, *there is no undo* and *the noted
+value is the way back* in the visible fields. When it states them only in the
+hidden ones, the failure message says so, because that is the mistake worth
+naming: the warning existed, and arrived too late.
 
 ## Excluded-content and terminology checks
 

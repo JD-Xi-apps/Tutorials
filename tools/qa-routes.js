@@ -210,12 +210,52 @@ const pw = require('playwright');
 
   /* --- viewport sweep --- */
   let viewportResults = null;
+  let viewportSample = [];
   if (doViewports) {
     viewportResults = [];
     /* One of each kind of surface, so the viewport sweep covers the catalog
-       layouts as well as the lesson and home views. */
+       layouts as well as the lesson and home views - plus, derived rather than
+       named, the text-heaviest Quick Reference entry and the text-heaviest step
+       of each Specialty lesson. Those two surfaces were missing here, and they
+       are the ones that stretch: a Quick Reference entry grows by a note and a
+       lesson step by a sentence, and either can start clipping at 800x500 long
+       before anything else does. Deriving them means an edit that makes a
+       surface longer moves the sweep onto it automatically. */
+    const stressed = await page.evaluate(() => {
+      const out = [];
+      const len = (o, fields) =>
+        fields.reduce((n, f) => n + String(o[f] || '').length, 0);
+
+      const qr = window.JDXI_QUICK_REFERENCE || { order: [], entries: {} };
+      let worstQr = null;
+      qr.order.forEach((id) => {
+        const e = qr.entries[id];
+        if (!e) return;
+        const n = len(e, ['title', 'summary', 'warning']) +
+          (e.steps || []).join(' ').length + (e.notes || []).join(' ').length;
+        if (!worstQr || n > worstQr.n) worstQr = { id, n };
+      });
+      if (worstQr) out.push('#reference/' + worstQr.id);
+
+      const sp = window.JDXI_SPECIALTY || { order: [], lessons: {} };
+      sp.order.forEach((sid) => {
+        const steps = (sp.lessons[sid] || {}).steps || [];
+        let worst = -1;
+        let worstN = -1;
+        steps.forEach((st, i) => {
+          const n = len(st, ['title', 'instruction', 'detail', 'expectedSound', 'nextHint']);
+          if (n > worstN) { worstN = n; worst = i; }
+        });
+        if (worst >= 0) {
+          out.push(worst === 0 ? '#specialty/' + sid : '#specialty/' + sid + '/step/' + (worst + 1));
+        }
+      });
+      return out;
+    });
     const sample = ['#home', '#tutorial/B01', '#level/beginner', '#topic/making-beats',
-                    '#progress', '#settings', '#favorites', routes[routes.length - 1]];
+                    '#progress', '#settings', '#favorites', routes[routes.length - 1]]
+      .concat(stressed);
+    viewportSample = sample;
     for (const [w, h] of VIEWPORTS) {
       await page.setViewportSize({ width: w, height: h });
       let bad = [];
@@ -254,7 +294,8 @@ const pw = require('playwright');
   }
   if (viewportResults) {
     const okc = viewportResults.filter((v) => v.ok).length;
-    console.log(`viewports: ${okc}/${viewportResults.length} clean`);
+    console.log(`viewports: ${okc}/${viewportResults.length} clean` +
+      ` (${viewportSample.length} routes each: ${viewportSample.join(' ')})`);
     viewportResults.filter((v) => !v.ok).forEach((v) => {
       console.log(`  ${v.size}:`);
       v.problems.forEach((p) => console.log('    - ' + p));
