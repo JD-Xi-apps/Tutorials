@@ -39,8 +39,8 @@ a time.
 | 12 | Register and recall a JD-Xi Favorite | OM p.5 *Using Favorite Sounds (Programs)* — *Selecting a Favorite*, *Registering a Favorite* and its NOTE; p.6 MEMO (a favorite remembers the selected part) | `N02`, `N09`, `I09` |
 | 13 | Correct or erase a sequencer step | OM p.10 *Deleting All Notes at a Specific Step*; p.11's note that TR-REC will not re-input over an existing note | `N03`, `N04` |
 | 14 | **Clear a part or a whole pattern** | OM p.10 *Erasing an Entire Pattern* | *(none — see below)* |
-| 15 | Common menu controls | OM p.2 (the button roles), p.13 (SYSTEM auto-save), p.14 *Accessing the Menu Screens* | `N01` |
-| 16 | Common useful shortcuts | OM p.16 *Shortcut List* | `N01`, `N10` |
+| 15 | Common menu controls | OM p.2 (the button roles), p.13 (SYSTEM auto-save; the grouped SYSTEM screen), p.14 *Accessing the Menu Screens*, p.16 (`[Shift]` + Cursor, scoped by Roland to "setting screens such as system or edit"); PG p.2, p.26 (the `Menu [Shift]+Cursor` column, present in the grouped edit screens and absent from the flat ones) | `N01` |
+| 16 | Common useful shortcuts | OM p.16 *Shortcut List*; PG p.2 (the same list, with the per-screen menu columns that bound `[Shift]` + Cursor) | `N01`, `N10` |
 | 17 | Portamento | OM p.6 *Shortcut to the Portamento Setting Screen* | `I03` |
 | 18 | Transpose | Version 1.50 Supplementary Manual p.2 *Transpose* | `B05` |
 | 19 | Arpeggiator | OM p.6 *Playing an Arpeggio*, *Using the Hold function*; PG p.29 (settings saved per program; no arpeggio-specific tempo) | `N07` |
@@ -85,8 +85,38 @@ Three entries carry material the tutorial that teaches them does **not**:
 - **Entry 6** includes the bank structure (A–D preset, E–H user, 64 each) that `B03` lost when
   Program browsing moved to `N02`.
 - **Entry 16** is Roland's shortcut list condensed to the combinations this course actually
-  uses, plus the two caveats that matter: `[Shift]` + `[Enter]` reaches the sound only, and the
-  printed lists predate the 1.10 and 1.50 updates.
+  uses, plus the three caveats that matter: `[Shift]` + `[Enter]` reaches the sound only,
+  `[Shift]` + Cursor is not universal (below), and the printed lists predate the 1.10 and 1.50
+  updates.
+
+## `[Shift]` + Cursor is scoped, in both entries
+
+Entries 15 and 16 previously read *"move between the major groups of a settings screen"*, with
+no qualifier. That is broader than the source. `ROLAND-SOURCE-MAP.md` §6.2 files this
+combination under *context-specific behaviour — must never be taught as universal*: Roland
+scopes it to "setting screens such as system or edit", it is confirmed in SYSTEM (OM p.13 step
+3), Program Edit, Tone Edit and Effects Edit (the `Menu [Shift]+Cursor` column, PG pp.10–27,
+and PG p.26 for moving between Effect 1 / Effect 2 / Delay / Reverb), and it is **absent** from
+the AutoPitch and Vocoder tables (PG p.28) and the Arpeggio table (PG p.29), which are flat
+parameter lists with no menu column at all.
+
+A learner reading the old wording would try it in the Vocoder or Arpeggio screen, get nothing,
+and have no way to tell a broken instrument from a shortcut that was never documented there.
+Both entries now name the grouped screens the move belongs to, and both carry a note saying
+that flat parameter lists have no groups to move between.
+
+The scoping is stated as the limit of the documentation, which is what it is — the entries say
+Roland documents the move for grouped screens, not that pressing it elsewhere does nothing.
+That is the same treatment `N10-S03` gives `[Shift]` + `[Enter]`, and it does not weaken the
+house rule that Quick Reference may condense a tutorial but never assert more than one could:
+`N01-S11`, the tutorial that teaches this move, already teaches it inside SYSTEM and names
+SYSTEM's six groups.
+
+`tools/validate-data.js` now checks it. Any line that presents `[Shift]` + Cursor must scope it
+**in that line** — by naming a grouped screen, or by saying "grouped setting/edit screens".
+Checking the entry as a whole was tried first and is not enough: `menu-controls` names SYSTEM in
+an unrelated note about auto-save, which let the unqualified step line pass. A learner reads the
+line, not the entry.
 
 ## What Quick Reference deliberately does not carry
 
