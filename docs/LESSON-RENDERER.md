@@ -421,6 +421,36 @@ still begins at y 118. The control occupies previously empty space to the right 
 title, which is why its box starts at a different x on every tutorial — it begins where
 that tutorial's title ends.
 
+## Frozen-surface accounting after the master-plan reconciliation
+
+The beta accounting above compared against that phase's parent. The master-plan
+reconciliation moved the baseline again, deliberately and in exactly **two** places. Compared
+against the pre-reconciliation candidate (`6ed05c0`), all 38 surfaces differ, and there are
+only these two causes:
+
+| Cause | Surfaces | Size | Why it is intentional |
+|---|---|---|---|
+| The topbar's new search icon | 37 (every B01/B02/N01 step, plus `topbar.png`) | **32 px, in one 7 × 7 box at x 1151, y 15** | Master plan §18 requires a single magnifying-glass icon in the topbar. The topbar is shared by every view, so a one-icon addition necessarily touches every frozen lesson surface |
+| Home's secondary destinations row | 1 (`home.png`) | 33 530 px, 2.59% | Master plan §17 requires Hardware Explorer, Quick Reference and Specialty as clear secondary destinations on Home |
+
+**The 32-pixel drift is the whole of what changed on B01, B02 and N01.** Their content, their
+layout, their crops and their highlight geometry are untouched — the drift is identical on all
+37 surfaces, in the same 7 × 7 box, in the topbar rather than in the lesson. That uniformity is
+the evidence: a content or layout change could not produce the same 32 pixels in the same place
+on 37 different screens.
+
+**Home's change is the one the brief asked for.** Reconciliation brief §17 says in as many
+words: *because master-plan Home additions are intentional, establish a new post-reconciliation
+Home screenshot baseline.* That baseline is `post-reconciliation` in the QA scratch directory.
+
+Fitting the new row needed the home grid to gain a fifth row, and the arithmetic is recorded in
+`css/app.css` beside it: the 864 px stage minus 40 px padding leaves 824, four 14 px gaps take
+56, so the five rows must total 768. The height came out of the hero's whitespace and a little
+off the roadmap. No typography, colour, spacing scale or stage philosophy changed, which is the
+constraint §17 sets alongside the addition.
+
+Canonical image and logo bytes are unchanged throughout, as they have been since B01.
+
 ## Deferred
 
 - **(no longer deferred)** tutorial content: all thirty canonical tutorials are

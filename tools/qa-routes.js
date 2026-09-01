@@ -69,9 +69,17 @@ const pw = require('playwright');
   await page.waitForTimeout(400);
 
   const routes = await page.evaluate(() => {
-    const out = ['#home', '#favorites', '#progress', '#settings'];
+    const out = [
+      '#home', '#favorites', '#progress', '#settings',
+      '#reference', '#specialty', '#explorer',
+    ];
     const tut = window.JDXI_TUTORIALS || {};
     const cols = window.JDXI_COLLECTIONS || {};
+    const qr = window.JDXI_QUICK_REFERENCE || { order: [] };
+    const sp = window.JDXI_SPECIALTY || { order: [], lessons: {} };
+    const exp = window.JDXI_EXPLORER || { views: [], majorGroups: {} };
+    const hw = window.JDXI_HARDWARE_TARGETS || { targets: {} };
+
     ['beginner', 'novice', 'intermediate'].forEach((l) => out.push('#level/' + l));
     /* Every collection with content is routable, live or planned - a planned
        one is simply not surfaced on the home screen. An empty collection is
@@ -85,6 +93,26 @@ const pw = require('playwright');
         out.push(i === 1 ? '#tutorial/' + id : '#tutorial/' + id + '/step/' + i);
       }
     });
+
+    /* Every Quick Reference entry. */
+    qr.order.forEach((qid) => out.push('#reference/' + qid));
+
+    /* Every Specialty lesson, every step - the same coverage a canonical
+       tutorial gets, because they are rendered by the same renderer and can
+       fail in the same ways. */
+    sp.order.forEach((sid) => {
+      const n = sp.lessons[sid].steps.length;
+      for (let i = 1; i <= n; i++) {
+        out.push(i === 1 ? '#specialty/' + sid : '#specialty/' + sid + '/step/' + i);
+      }
+    });
+
+    /* Every Explorer view, and EVERY hardware target - not only the major
+       groups, because every control row and sibling chip links to one and a
+       target that fails to render is invisible until someone clicks it. */
+    (exp.views || []).forEach((v) => out.push('#explorer/view/' + v.id));
+    Object.keys(hw.targets).forEach((tid) => out.push('#explorer/control/' + tid));
+
     return out;
   });
 

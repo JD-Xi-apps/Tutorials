@@ -27,7 +27,12 @@ function load() {
     'js/tutorials.js',
     'js/tutorial-fixtures.js',
   ];
-  const optional = ['js/collections.js'];
+  const optional = [
+    'js/collections.js',
+    'js/quick-reference.js',
+    'js/specialty.js',
+    'js/explorer.js',
+  ];
 
   for (const rel of files.concat(optional)) {
     const abs = path.join(ROOT, rel);
@@ -44,6 +49,9 @@ function load() {
     tutorials: sandbox.window.JDXI_TUTORIALS || null,
     fixtures: sandbox.window.JDXI_TUTORIAL_FIXTURES || null,
     collections: sandbox.window.JDXI_COLLECTIONS || null,
+    reference: sandbox.window.JDXI_QUICK_REFERENCE || null,
+    specialty: sandbox.window.JDXI_SPECIALTY || null,
+    explorer: sandbox.window.JDXI_EXPLORER || null,
   };
 }
 

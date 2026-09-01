@@ -37,11 +37,23 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
   await p.waitForTimeout(400);
 
   const routes = await p.evaluate(() => {
-    const out = ['#home', '#favorites', '#progress', '#settings'];
+    const out = [
+      '#home', '#favorites', '#progress', '#settings',
+      '#reference', '#specialty', '#explorer',
+    ];
     const T = window.JDXI_TUTORIALS, C = window.JDXI_COLLECTIONS;
+    const QR = window.JDXI_QUICK_REFERENCE || { order: [] };
+    const SP = window.JDXI_SPECIALTY || { order: [] };
+    const EX = window.JDXI_EXPLORER || { views: [] };
+    const HW = window.JDXI_HARDWARE_TARGETS || { targets: {} };
     ['beginner', 'novice', 'intermediate'].forEach((l) => out.push('#level/' + l));
     Object.keys(C).forEach((c) => { if ((C[c].tutorialIds || []).length) out.push('#topic/' + c); });
     Object.keys(T).sort().forEach((id) => out.push('#tutorial/' + id));
+    /* Every new surface family, so none of them can ship an unnamed control. */
+    QR.order.forEach((id) => out.push('#reference/' + id));
+    SP.order.forEach((id) => out.push('#specialty/' + id));
+    (EX.views || []).forEach((v) => out.push('#explorer/view/' + v.id));
+    Object.keys(HW.targets).forEach((id) => out.push('#explorer/control/' + id));
     return out;
   });
 
@@ -84,6 +96,70 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
     ok(found.clickableNonButton === 0, `${r}: ${found.clickableNonButton} clickable non-button element(s)`);
     ok(found.h1 === 1, `${r}: expected exactly one h1, found ${found.h1}`);
     ok(found.noisyDecor.length === 0, `${r}: decorative glyph not hidden from assistive tech (${found.noisyDecor.slice(0,3).join(', ')})`);
+  }
+
+  /* ---- universal search ---- */
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(150);
+  {
+    const btn = await p.$('#searchbtn');
+    ok(!!btn, 'topbar carries a search control');
+    if (btn) {
+      const label = await p.evaluate((el) => (el.getAttribute('aria-label') || '').trim(), btn);
+      ok(!!label, 'search control has an accessible name');
+      ok(
+        (await p.getAttribute('#searchbtn', 'aria-expanded')) === 'false',
+        'search control reports itself collapsed when closed'
+      );
+      ok(
+        (await p.getAttribute('#searchbtn', 'aria-controls')) === 'searchpanel',
+        'search control points at the panel it opens'
+      );
+
+      await p.click('#searchbtn');
+      await p.waitForTimeout(150);
+      ok(
+        (await p.getAttribute('#searchbtn', 'aria-expanded')) === 'true',
+        'search control reports itself expanded when open'
+      );
+      ok(
+        (await p.evaluate(() => document.activeElement && document.activeElement.id)) === 'searchinput',
+        'opening search moves focus into the input'
+      );
+      ok(
+        !!(await p.evaluate(() => (document.getElementById('searchinput').getAttribute('aria-label') || '').trim())),
+        'search input has an accessible name'
+      );
+      ok(
+        (await p.evaluate(() => document.getElementById('searchcount').getAttribute('aria-live'))) === 'polite',
+        'search result count is announced politely'
+      );
+
+      await p.fill('#searchinput', 'tempo');
+      await p.waitForTimeout(200);
+      const hits = await p.evaluate(() => {
+        const out = { unnamed: 0, headings: 0 };
+        document.querySelectorAll('#searchresults button').forEach((el) => {
+          const aria = (el.getAttribute('aria-label') || '').trim();
+          if (!aria && !el.textContent.trim()) out.unnamed++;
+        });
+        out.headings = document.querySelectorAll('#searchresults .search-group h3').length;
+        return out;
+      });
+      ok(hits.unnamed === 0, `search results: ${hits.unnamed} hit(s) with no accessible name`);
+      ok(hits.headings > 0, 'search results are grouped under headings');
+
+      await p.keyboard.press('Escape');
+      await p.waitForTimeout(150);
+      ok(
+        await p.evaluate(() => document.getElementById('searchpanel').hidden),
+        'Escape closes the search panel'
+      );
+      ok(
+        (await p.getAttribute('#searchbtn', 'aria-expanded')) === 'false',
+        'search control reports itself collapsed again after Escape'
+      );
+    }
   }
 
   /* ---- the topbar's icon-only control ---- */

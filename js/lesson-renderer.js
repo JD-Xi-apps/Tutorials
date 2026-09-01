@@ -694,12 +694,72 @@ window.JDXI_LESSON_RENDERER = (function () {
     btn.setAttribute("aria-expanded", open ? "true" : "false");
   }
 
+
+  /* ------------------------------------------------------- explorer support */
+
+  /*
+   * A public panel view, for the Hardware Explorer.
+   *
+   * The Explorer must never own coordinate maths: geometry lives in the
+   * registry and is turned into CSS percentages in exactly one place, which
+   * is this file. So the Explorer asks for a panel and gets the same
+   * highlight machinery every lesson step uses.
+   *
+   * `ids` are highlighted; ids that do not resolve on this image are skipped
+   * rather than guessed at. `opts.labels` and `opts.small` behave as they do
+   * for a step's full view. `opts.crop` requests the close-up crop of the
+   * first id that has a zoom, which is how a control detail page shows one
+   * control rather than the whole instrument.
+   */
+  function buildPanel(imageId, ids, opts) {
+    opts = opts || {};
+    var image = imageMeta(imageId || registry().defaultImageId);
+    if (!image) return el("div", "vis-note", "That hardware view is not available.");
+
+    var measurable = resolveAll(ids).filter(function (r) {
+      return r.state === "ok" && r.imageId === image.id;
+    });
+
+    if (opts.crop) {
+      var zoomSource = measurable.filter(function (r) {
+        return r.target.zoom;
+      })[0];
+      if (zoomSource) {
+        var inCrop = containedIn(zoomSource.target.zoom, measurable);
+        return buildCrop(image, zoomSource.target.zoom, inCrop, {
+          labels: opts.labels === true,
+          extraClass: opts.extraClass,
+        });
+      }
+    }
+
+    return buildHardwareImage(image, measurable, {
+      labels: opts.labels !== false,
+      small: !!opts.small,
+    });
+  }
+
+  /*
+   * Label geometry is only measurable once the node is in the document, so a
+   * caller that inserts a panel must say so afterwards. Exposed rather than
+   * done automatically because only the caller knows when insertion happened.
+   */
+  function settlePanels(host) {
+    [].slice.call((host || document).querySelectorAll(".jdxi-canvas")).forEach(
+      function (c) {
+        if (c._resolveLabels) resolveLabelCollisions(c);
+      }
+    );
+  }
+
   return {
     render: render,
     togglePanel: togglePanel,
     closePanel: closePanel,
     resolveTarget: resolveTarget,
     resolveImage: imageMeta,
+    buildPanel: buildPanel,
+    settlePanels: settlePanels,
     _pct: pct,
   };
 })();

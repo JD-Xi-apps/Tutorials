@@ -28,6 +28,8 @@ const VISUAL_MODES = ['full', 'full-plus-inset', 'control-closeup', 'display-foc
 const INSET_MODES = ['full-plus-inset', 'control-closeup'];
 const DISPLAY_LINE_GUARD = 16;
 const CANONICAL_TOTAL = 30;
+const QUICK_REFERENCE_TOTAL = 21;
+const SPECIALTY_TOTAL = 3;
 
 const beta = process.argv.includes('--beta');
 
@@ -46,7 +48,7 @@ function warn(cond, msg) {
   return cond;
 }
 
-const { registry, tutorials, fixtures, collections } = load();
+const { registry, tutorials, fixtures, collections, reference, specialty, explorer } = load();
 
 /* ------------------------------------------------------------------ registry */
 
@@ -524,6 +526,204 @@ if (collections) {
   errors.push('beta requires js/collections.js (topic membership source of truth)');
 }
 
+
+/* ================================================= master-plan surfaces === */
+
+/* ------------------------------------------------------- quick reference */
+
+/*
+ * The master plan (sec 20) fixes twenty-one required Quick Reference entries.
+ * The count is checked because "concise recall" is a shape that erodes one
+ * helpful addition at a time, and because a missing entry is invisible.
+ */
+if (reference) {
+  const order = reference.order || [];
+  const entries = reference.entries || {};
+
+  check(order.length === QUICK_REFERENCE_TOTAL,
+    `quick reference: ${order.length} entries, master plan requires ${QUICK_REFERENCE_TOTAL}`);
+
+  const seenQr = new Set();
+  order.forEach((id) => {
+    const at = `quick reference "${id}"`;
+    check(!seenQr.has(id), `${at}: listed twice in order`);
+    seenQr.add(id);
+    const e = entries[id];
+    check(!!e, `${at}: named in order but has no entry`);
+    if (!e) return;
+    check(e.id === id, `${at}: entry id "${e.id}" does not match its key`);
+    check(!!e.title, `${at}: no title`);
+    check(!!e.summary, `${at}: no summary`);
+    check(Array.isArray(e.steps) && e.steps.length > 0, `${at}: no procedure steps`);
+    check(!!e.source, `${at}: no Roland source recorded`);
+    check(Array.isArray(e.learnIn), `${at}: learnIn must be an array (empty is allowed)`);
+
+    /* Every learnIn target must be a real tutorial, or the entry sends the
+       learner to a tutorial that does not exist. */
+    (e.learnIn || []).forEach((tid) => {
+      check(Object.prototype.hasOwnProperty.call(tutorials || {}, tid),
+        `${at}: learnIn names unknown tutorial "${tid}"`);
+    });
+
+    /*
+     * A destructive procedure MUST carry a warning, and the warning renders
+     * above the procedure (app.js builds it first). This is the master plan's
+     * "destructive Quick Reference entries remain explicit", enforced rather
+     * than reviewed - a missing warning renders perfectly.
+     */
+    if (e.destructive) {
+      check(!!e.warning, `${at}: marked destructive but carries no warning`);
+    }
+
+    /*
+     * And the reverse, which is the one that actually catches drift: an entry
+     * whose own text talks about erasing or overwriting, but which is not
+     * flagged destructive, is either mislabelled or wrongly worded.
+     */
+    const body = [e.title, e.summary, (e.steps || []).join(' ')].join(' ');
+    if (/\berase[sd]?\b|\bclear(s|ing)? (a|the|every)\b/i.test(body) && !e.destructive) {
+      check(!!e.warning,
+        `${at}: describes erasing but is neither flagged destructive nor warned`);
+    }
+  });
+
+  Object.keys(entries).forEach((id) => {
+    check(seenQr.has(id), `quick reference "${id}": entry exists but is not in order`);
+  });
+} else if (beta) {
+  errors.push('beta requires js/quick-reference.js (master plan sec 20)');
+}
+
+/* -------------------------------------------------------------- specialty */
+
+if (specialty) {
+  const order = specialty.order || [];
+  const lessons = specialty.lessons || {};
+
+  check(order.length === SPECIALTY_TOTAL,
+    `specialty: ${order.length} lessons, master plan requires ${SPECIALTY_TOTAL}`);
+
+  order.forEach((id) => {
+    const at = `specialty "${id}"`;
+    const l = lessons[id];
+    check(!!l, `${at}: named in order but has no lesson`);
+    if (!l) return;
+
+    /*
+     * Specialty must never be mistakable for canonical content. Its ids stay
+     * out of JDXI_TUTORIALS and out of the B##/N##/I## shape, so no route,
+     * no stored learner record and no progress count can confuse the two.
+     */
+    check(!Object.prototype.hasOwnProperty.call(tutorials || {}, id),
+      `${at}: id also exists in the canonical catalog`);
+    check(!/^[BNI]\d\d$/i.test(id), `${at}: id looks like a canonical tutorial id`);
+
+    check(!!l.title, `${at}: no title`);
+    check(!!l.summary, `${at}: no summary`);
+    check(Array.isArray(l.steps) && l.steps.length > 0, `${at}: no steps`);
+
+    (l.steps || []).forEach((st, i) => {
+      const sat = `${at} step ${i + 1}`;
+      check(!!st.id, `${sat}: no id`);
+      check(!/^[BNI]\d\d-/i.test(st.id || ''), `${sat}: step id looks canonical`);
+      check(!!st.instruction, `${sat}: no instruction`);
+      check(!!st.checkpoint, `${sat}: no checkpoint`);
+      check(!!st.recoveryHelp, `${sat}: no recoveryHelp`);
+      check(VISUAL_MODES.indexOf(st.visualMode) >= 0,
+        `${sat}: unknown visualMode "${st.visualMode}"`);
+      (st.hardwareTargets || []).forEach((tid) => {
+        check(!!targets[tid], `${sat}: unknown hardware target "${tid}"`);
+      });
+    });
+  });
+
+  /*
+   * Included microphone only (master plan sec 21). External microphone setup,
+   * guitar input and other external-audio workflows are out of scope, and the
+   * check is on INSTRUCTIONAL text: a step may warn that something plugged
+   * into the INPUT jack disables the mic, because that is how you get the
+   * included microphone working.
+   */
+  const EXTERNAL = /\bguitar\b|\bcommercially available\b|\baudio player\b|\bLINE\/GUITAR\b|\bdynamic microphone\b/i;
+  order.forEach((id) => {
+    (lessons[id].steps || []).forEach((st) => {
+      ['instruction', 'detail', 'whyItMatters', 'checkpoint'].forEach((f) => {
+        if (st[f] && EXTERNAL.test(st[f])) {
+          check(false,
+            `specialty "${id}" ${st.id}.${f}: mentions external audio input, which v1 excludes`);
+        }
+      });
+    });
+  });
+
+  const notesFile = path.join(ROOT, 'docs', 'tutorials', 'SPECIALTY-SOURCE-NOTES.md');
+  check(fs.existsSync(notesFile), 'specialty: no SPECIALTY-SOURCE-NOTES.md');
+  if (fs.existsSync(notesFile)) {
+    const text = fs.readFileSync(notesFile, 'utf8');
+    order.forEach((id) => {
+      (lessons[id].steps || []).forEach((st) => {
+        check(text.indexOf(st.id) >= 0,
+          `specialty "${id}": source notes never cite step "${st.id}"`);
+      });
+    });
+  }
+} else if (beta) {
+  errors.push('beta requires js/specialty.js (master plan sec 21)');
+}
+
+/* ------------------------------------------------------- hardware explorer */
+
+if (explorer) {
+  const describe = explorer.describe || {};
+  const fallbacks = explorer.fallbacks || [];
+  const described = (id) =>
+    !!describe[id] || fallbacks.some((f) => id.indexOf(f.prefix) === 0);
+
+  /*
+   * EVERY registry target is reachable from the Explorer - through a major
+   * group, a parent's child list, or a sibling chip - so every one needs a
+   * description. A target with none renders a blank page rather than failing.
+   */
+  Object.keys(targets).forEach((id) => {
+    check(described(id), `explorer: hardware target "${id}" has no description`);
+  });
+
+  Object.keys(describe).forEach((id) => {
+    check(!!targets[id], `explorer: describes "${id}", which is not a hardware target`);
+    check(!!describe[id].what, `explorer "${id}": no plain-language description`);
+    check(!!describe[id].source, `explorer "${id}": no Roland source recorded`);
+  });
+
+  (explorer.views || []).forEach((v) => {
+    check(!!images[v.id], `explorer view "${v.id}": no such image in the registry`);
+    const group = (explorer.majorGroups || {})[v.id] || [];
+    check(group.length > 0, `explorer view "${v.id}": no major groups listed`);
+    group.forEach((id) => {
+      check(!!targets[id], `explorer view "${v.id}": unknown target "${id}"`);
+      if (targets[id]) {
+        const imageId = targets[id].imageId || registry.defaultImageId;
+        check(imageId === v.id,
+          `explorer view "${v.id}": target "${id}" belongs to image "${imageId}"`);
+      }
+    });
+  });
+
+  /*
+   * Major groups are the landing view, and the master plan is explicit that
+   * it must not be 99 simultaneous labels. Top-level targets only.
+   */
+  Object.keys(explorer.majorGroups || {}).forEach((viewId) => {
+    (explorer.majorGroups[viewId] || []).forEach((id) => {
+      const t = targets[id];
+      if (!t) return;
+      check(!t.group || t.group === 'rearPanel',
+        `explorer view "${viewId}": "${id}" is a child of "${t.group}" and is not a major group`);
+    });
+  });
+} else if (beta) {
+  errors.push('beta requires js/explorer.js (master plan sec 19)');
+}
+
 /* ------------------------------------------------------------------ report */
 
 console.log(`checks run: ${checks}`);
@@ -531,6 +731,8 @@ console.log(`tutorials: ${ids.length}` +
   (ids.length ? ` (${LEVELS.map((l) => l[0].toUpperCase() + byLevel[l].length).join(' ')})` : ''));
 if (collections) console.log(`collections: ${Object.keys(collections).length}`);
 console.log(`hardware targets: ${Object.keys(targets).length}`);
+if (reference) console.log(`quick reference: ${(reference.order || []).length}`);
+if (specialty) console.log(`specialty lessons: ${(specialty.order || []).length}`);
 
 if (warnings.length) {
   console.log(`\nWARNINGS (${warnings.length}):`);

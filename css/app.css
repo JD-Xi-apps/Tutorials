@@ -33,7 +33,13 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .navbtn.settings .iconline { font-size:19px; position:relative; top:-1px; }
 
 /* 864 = 22 top pad + 394 + 14 + 196 + 14 + 150 + 14 + 42 + 18 bottom pad */
-.shell { height:864px; padding:22px 34px 18px; display:grid; grid-template-rows:394px 196px 150px 42px; gap:14px; }
+/* Five rows since the master plan added the secondary destinations. The
+   arithmetic is exact and deliberate: 864 stage - 40 padding = 824 usable;
+   4 gaps x 14 = 56; so the five rows must total 768. The height came out of
+   the hero's whitespace and a little off the roadmap - no typography, colour
+   or stage philosophy changed. */
+.shell { height:864px; padding:22px 34px 18px; display:grid;
+  grid-template-rows:340px 196px 140px 50px 42px; gap:14px; }
 .hero { display:grid; grid-template-columns:380px 1fr; gap:26px; min-height:0; }
 .hero-copy { padding:9px 0 0 8px; }
 .hero-copy h1 { font-size:56px; line-height:.96; letter-spacing:-2.4px; margin:0; }
@@ -396,3 +402,131 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .favstar[aria-pressed="true"] { background:#fff7ec; border-color:#f0c98a; color:#8a5a00; }
 .favstar[aria-pressed="true"] .favstar-ico { color:var(--orange); }
 .favstar-ico { font-size:13px; line-height:1; }
+
+/* ------------------------------------------------- master-plan surfaces ---
+   Quick Reference, Specialty, Hardware Explorer and Search. All four render
+   into the existing catalog view, so these rules add card and list shapes
+   rather than a second layout system. The 1440x900 stage and its no-scroll
+   contract are unchanged: every surface fits, and long lists scroll inside
+   their own container rather than growing the page. */
+
+/* home: secondary destinations */
+.secondary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; min-height:0; }
+.secondary { display:grid; grid-template-columns:30px 1fr; align-items:center; gap:10px;
+  border:1px solid var(--line); background:#fff; border-radius:12px; padding:0 12px;
+  text-align:left; cursor:pointer; transition:.12s ease; box-shadow:var(--shadow);
+  min-height:0; overflow:hidden; }
+.secondary:hover { border-color:#bebebb; transform:translateY(-1px); }
+.sec-ico { width:30px; height:30px; border-radius:8px; display:grid; place-items:center;
+  font-size:14px; color:#fff; }
+.sec-ico.blue { background:var(--blue); } .sec-ico.orange { background:var(--orange); }
+.sec-ico.purple { background:var(--purple); }
+.sec-text { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.sec-text b { font-size:12px; line-height:1.2; }
+.sec-text span { font-size:10.5px; color:var(--muted); line-height:1.25; }
+
+/* quick reference */
+.ref-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px;
+  align-content:start; overflow:auto; min-height:0; padding-right:2px; }
+.ref-card { border:1px solid var(--line); background:#fff; border-radius:11px;
+  padding:9px 11px; text-align:left; cursor:pointer; transition:.12s ease;
+  display:flex; flex-direction:column; gap:4px; }
+.ref-card:hover { border-color:#bebebb; background:#fcfcfb; }
+.ref-card.destructive { border-color:#f3cdcb; }
+.rc-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.rc-title { font-size:12.5px; font-weight:750; }
+.rc-flag { font-size:9px; font-weight:850; letter-spacing:.4px; text-transform:uppercase;
+  color:var(--red); border:1px solid #f3cdcb; border-radius:999px; padding:1px 6px; }
+.rc-sum { font-size:11px; line-height:1.35; color:var(--muted); }
+.ref-steps { margin:0; padding-left:20px; }
+.ref-steps li { font-size:12.5px; line-height:1.5; color:var(--muted); margin-bottom:5px; }
+.ref-notes { margin:0; padding-left:18px; }
+.ref-notes li { font-size:12px; line-height:1.45; color:var(--muted); margin-bottom:4px; }
+.ref-source { font-size:10.5px !important; color:var(--muted); font-style:italic; margin-top:8px !important; }
+.cat-panel.danger { background:var(--redsoft); border-color:#f3cdcb; }
+.cat-panel.danger h2 { color:var(--red); }
+.cat-panel.danger p { color:#8a2d28; }
+
+/* specialty */
+.tut-card.specialty .tc-id { color:var(--purple); }
+
+/* hardware explorer */
+.exp-views { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.exp-view { border:1px solid var(--line); background:#fff; border-radius:13px;
+  padding:12px 14px; text-align:left; cursor:pointer; transition:.12s ease;
+  display:flex; flex-direction:column; gap:4px; box-shadow:var(--shadow); }
+.exp-view:hover { border-color:#bebebb; transform:translateY(-1px); }
+.exp-view b { font-size:13px; }
+.exp-view span { font-size:11.5px; line-height:1.35; color:var(--muted); }
+.exp-count { font-size:10px !important; font-weight:800; letter-spacing:.3px;
+  text-transform:uppercase; }
+.exp-panel { background:#fff; border:1px solid var(--line); border-radius:13px;
+  padding:10px; box-shadow:var(--shadow); }
+.exp-panel.detail { display:grid; grid-template-columns:1.35fr 1fr; gap:10px; align-items:center; }
+.ctl-list { display:grid; grid-template-columns:repeat(2,1fr); gap:6px;
+  overflow:auto; min-height:0; align-content:start; padding-right:2px; }
+.ctl-cols { display:grid; grid-template-columns:1.6fr 1fr; gap:14px;
+  overflow:auto; min-height:0; }
+.ctl-col h3 { margin:0 0 6px; font-size:11px; font-weight:850; letter-spacing:.4px;
+  text-transform:uppercase; color:var(--muted); }
+.ctl-col { display:flex; flex-direction:column; gap:5px; }
+.ctl-row { display:grid; grid-template-columns:minmax(120px,auto) 1fr auto; gap:9px;
+  align-items:baseline; border:1px solid var(--line); background:#fff; border-radius:9px;
+  padding:7px 10px; text-align:left; cursor:pointer; transition:.12s ease; }
+.ctl-row:hover { border-color:#bebebb; background:#fcfcfb; }
+.ctl-name { font-size:12px; font-weight:720; }
+.ctl-what { font-size:11px; line-height:1.35; color:var(--muted);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ctl-flag { font-size:9px; font-weight:800; letter-spacing:.3px; text-transform:uppercase;
+  color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:1px 6px;
+  white-space:nowrap; }
+.ctl-row.uncovered { background:#fbfbf9; }
+.ctl-legend, .ctl-safety { font-size:12.5px !important; line-height:1.5; }
+.ctl-safety { color:#7a4400 !important; }
+.ctl-uncovered { font-weight:750; color:var(--ink) !important; }
+
+/* search */
+.searchwrap { position:absolute; top:36px; left:0; right:0; z-index:40;
+  background:rgba(255,255,255,.98); border-bottom:1px solid var(--line);
+  box-shadow:0 12px 26px rgba(0,0,0,.12); padding:12px 18px 14px;
+  max-height:calc(900px - 36px); display:flex; flex-direction:column; gap:8px; }
+.searchwrap[hidden] { display:none; }
+.searchbar { display:grid; grid-template-columns:22px 1fr 28px; align-items:center; gap:8px;
+  border:1px solid var(--line); border-radius:11px; background:#fff; padding:7px 11px; }
+.searchicon { font-size:16px; color:var(--muted); text-align:center; }
+#searchinput { border:0; outline:none; font:inherit; font-size:14px; background:transparent;
+  color:var(--ink); width:100%; }
+.searchclose { border:0; background:transparent; cursor:pointer; font-size:13px;
+  color:var(--muted); border-radius:7px; padding:3px 6px; }
+.searchclose:hover { background:#f1f1ee; color:var(--ink); }
+.searchcount { margin:0; font-size:11px; color:var(--muted); }
+.searchresults { overflow:auto; min-height:0; display:flex; flex-direction:column; gap:10px; }
+.search-group h3 { margin:0 0 5px; font-size:10px; font-weight:850; letter-spacing:.5px;
+  text-transform:uppercase; color:var(--muted); }
+.search-group { display:flex; flex-direction:column; gap:4px; }
+.search-hit { display:flex; flex-direction:column; gap:2px; text-align:left;
+  border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 10px;
+  cursor:pointer; transition:.12s ease; }
+.search-hit:hover { border-color:#bebebb; background:#fcfcfb; }
+.search-hit.step { border-style:dashed; }
+.sh-title { font-size:12.5px; font-weight:700; }
+.sh-sub { font-size:11px; line-height:1.35; color:var(--muted);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.search-empty p { font-size:12px; line-height:1.5; color:var(--muted); margin:0; }
+.navbtn.search { padding-left:9px; padding-right:9px; }
+
+/* Dense reference surfaces: top-aligned, scrolling inside the body only. */
+.cat-body.dense { justify-content:flex-start; overflow:auto; padding-right:4px; }
+
+/* Explorer view: keep the instrument readable but leave the list room. */
+.exp-panel { max-width:1020px; margin:0 auto; width:100%; }
+.exp-view .exp-count { color:var(--muted); }
+#view-catalog .exp-panel .jdxi-canvas { width:100%; }
+.ctl-list { grid-template-columns:repeat(3,1fr); overflow:visible; }
+
+/* Explorer control detail: a bounded close-up beside a small context view. */
+.exp-panel.detail { display:grid; grid-template-columns:1fr 300px; gap:16px;
+  align-items:start; max-width:1100px; }
+.exp-closeup, .exp-context { display:flex; flex-direction:column; min-width:0; }
+.crop-frame.exp-crop { width:100%; height:250px; }
+.exp-context .jdxi-canvas { width:100%; }

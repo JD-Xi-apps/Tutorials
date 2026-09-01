@@ -16,8 +16,10 @@ node tools/validate-data.js          # structural checks
 node tools/validate-data.js --beta   # additionally require the full 30-tutorial catalog
 ```
 
-No dependencies. Checks the canonical catalog, the hardware registry and the
-collections against the rules in `docs/TUTORIAL-ARCHITECTURE.md`:
+No dependencies. Checks the canonical catalog, the hardware registry, the
+collections, **Quick Reference, Specialty and the Hardware Explorer** against
+the rules in `docs/TUTORIAL-ARCHITECTURE.md` and
+`docs/PRODUCT-CURRICULUM-MASTER-PLAN.md`:
 tutorial/step identity and uniqueness, level/order contiguity, prerequisite
 resolution, hardware-target existence, the same-image-per-step rule, visual-mode
 validity, the presence of `instruction` / `checkpoint` / `recoveryHelp` on every
@@ -31,6 +33,21 @@ crashes:
 - a step in an inset visual mode whose targets carry no `zoom` renders the full
   view and drops the magnification without any error;
 - a `zoom` that does not contain its own `region` magnifies the wrong area.
+
+Three master-plan surfaces add their own checks, each for the same reason —
+the defect renders perfectly and nothing else would see it:
+
+- **Quick Reference** must hold exactly 21 entries, every `learnIn` must name a
+  real tutorial, and a destructive entry must carry a warning. That last check
+  runs *both* ways: an entry whose own text describes erasing but which is not
+  flagged and carries no warning fails too, because that is the direction drift
+  actually takes.
+- **Specialty** must hold exactly 3 lessons whose ids — and step ids — cannot be
+  mistaken for canonical ones, in either direction, and whose instructional text
+  never strays into the external-audio input v1 excludes.
+- **The Hardware Explorer** must describe every registry target with a Roland
+  source, describe nothing that is not a target, and list only top-level targets
+  as major groups, so the landing view cannot become 99 simultaneous labels.
 
 ## `qa-routes.js`
 

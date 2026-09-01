@@ -20,11 +20,31 @@
           <span class="iconline" aria-hidden="true">⌂</span><span>Home</span>
         </button>
         <nav class="nav" aria-label="Application navigation">
+          <button class="navbtn search" id="searchbtn" type="button" title="Search" aria-label="Search"
+                  aria-expanded="false" aria-controls="searchpanel"><span class="iconline" aria-hidden="true">⌕</span></button>
           <button class="navbtn" type="button" title="My Progress" data-route="#progress"><span class="iconline" aria-hidden="true">▢</span><span>My Progress</span></button>
           <button class="navbtn" type="button" title="Favorites" data-route="#favorites"><span class="iconline" aria-hidden="true">☆</span><span>Favorites</span></button>
           <button class="navbtn settings" type="button" title="Settings" aria-label="Settings" data-route="#settings"><span class="iconline" aria-hidden="true">⚙</span></button>
         </nav>
       </header>
+
+      <!--
+        Universal search. One input over one in-memory index; no fetch, no
+        server. It overlays whichever view is showing rather than being a
+        route of its own, so dismissing it returns you exactly where you were.
+      -->
+      <div class="searchwrap" id="searchpanel" hidden>
+        <div class="searchbar">
+          <span class="searchicon" aria-hidden="true">⌕</span>
+          <input id="searchinput" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Search tutorials, controls, procedures…"
+                 aria-label="Search tutorials, controls, procedures and specialty lessons"
+                 aria-describedby="searchcount">
+          <button class="searchclose" id="searchclose" type="button" aria-label="Close search">✕</button>
+        </div>
+        <p class="searchcount" id="searchcount" role="status" aria-live="polite"></p>
+        <div class="searchresults" id="searchresults"></div>
+      </div>
 
       <main class="shell" id="view-home">
         <section class="hero">
@@ -106,6 +126,21 @@
               <div class="node"><div class="num">7</div><div class="icon red">☆</div><b>Build a full patch</b><p>Create, save and<br>perform your patch.</p></div>
             </div>
           </div>
+        </section>
+
+        <section class="secondary-row" aria-label="Reference and extras">
+          <button class="secondary" type="button" title="Explore the JD-Xi's controls" data-route="#explorer">
+            <span class="sec-ico blue" aria-hidden="true">⌗</span>
+            <span class="sec-text"><b>Hardware Explorer</b><span>Find any control and what it does</span></span>
+          </button>
+          <button class="secondary" type="button" title="Look up a procedure" data-route="#reference">
+            <span class="sec-ico orange" aria-hidden="true">☰</span>
+            <span class="sec-text"><b>Quick Reference</b><span>How to do it again, in a few lines</span></span>
+          </button>
+          <button class="secondary" type="button" title="Optional specialty lessons" data-route="#specialty">
+            <span class="sec-ico purple" aria-hidden="true">✦</span>
+            <span class="sec-text"><b>Specialty</b><span>Microphone features — optional</span></span>
+          </button>
         </section>
 
         <div class="footer-note">
@@ -201,6 +236,9 @@
   <script src="js/hardware-targets.js"></script>
   <script src="js/tutorials.js"></script>
   <script src="js/collections.js"></script>
+  <script src="js/quick-reference.js"></script>
+  <script src="js/specialty.js"></script>
+  <script src="js/explorer.js"></script>
   <script src="js/tutorial-fixtures.js"></script>
   <script src="js/progress.js"></script>
   <script src="js/lesson-renderer.js"></script>

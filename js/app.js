@@ -46,6 +46,43 @@
   const tutorials = () => window.JDXI_TUTORIALS || {};
   const collections = () => window.JDXI_COLLECTIONS || {};
   const progress = () => window.JDXI_PROGRESS;
+  const reference = () => window.JDXI_QUICK_REFERENCE || { order: [], entries: {} };
+  const specialty = () => window.JDXI_SPECIALTY || { order: [], lessons: {} };
+  const explorer = () => window.JDXI_EXPLORER || { views: [], majorGroups: {}, describe: {}, fallbacks: [] };
+  const hardware = () => window.JDXI_HARDWARE_TARGETS || { images: {}, targets: {} };
+  const renderer = () => window.JDXI_LESSON_RENDERER;
+
+  /*
+   * Explorer description lookup. A family of identical controls (the sixteen
+   * step buttons) is described once by prefix rather than sixteen times.
+   */
+  function describeTarget(id) {
+    const E = explorer();
+    if (E.describe[id]) return E.describe[id];
+    const fb = (E.fallbacks || []).filter((f) => id.indexOf(f.prefix) === 0)[0];
+    return fb || null;
+  }
+
+  /*
+   * Which tutorials and specialty lessons touch a hardware target. COMPUTED,
+   * never authored, so an Explorer page cannot claim a tutorial that no longer
+   * mentions the control.
+   */
+  function lessonsUsingTarget(id) {
+    const out = [];
+    const all = tutorials();
+    Object.keys(all).sort().forEach((tid) => {
+      const steps = all[tid].steps.filter((st) => (st.hardwareTargets || []).indexOf(id) >= 0);
+      if (steps.length) out.push({ kind: 'tutorial', id: tid, title: all[tid].title, step: steps[0].id, stepIndex: all[tid].steps.indexOf(steps[0]) });
+    });
+    const sp = specialty();
+    sp.order.forEach((sid) => {
+      const l = sp.lessons[sid];
+      const steps = l.steps.filter((st) => (st.hardwareTargets || []).indexOf(id) >= 0);
+      if (steps.length) out.push({ kind: 'specialty', id: sid, title: l.title, step: steps[0].id, stepIndex: l.steps.indexOf(steps[0]) });
+    });
+    return out;
+  }
 
   function tutorialsInLevel(level) {
     const all = tutorials();
@@ -104,7 +141,11 @@
   const TUTORIAL_ROUTE = /^#tutorial\/([A-Za-z0-9]+)(?:\/step\/(\d+))?$/;
   const LEVEL_ROUTE = /^#level\/([a-z]+)$/;
   const TOPIC_ROUTE = /^#topic\/([a-z0-9-]+)$/;
-  const PLAIN_ROUTES = ['#favorites', '#progress', '#settings'];
+  const SPECIALTY_ROUTE = /^#specialty\/([a-z0-9-]+)(?:\/step\/(\d+))?$/;
+  const REFERENCE_ROUTE = /^#reference\/([a-z0-9-]+)$/;
+  const EXPLORER_VIEW_ROUTE = /^#explorer\/view\/([a-z0-9-]+)$/;
+  const EXPLORER_CONTROL_ROUTE = /^#explorer\/control\/([A-Za-z0-9]+)$/;
+  const PLAIN_ROUTES = ['#favorites', '#progress', '#settings', '#reference', '#specialty', '#explorer'];
 
   function fixture(routeKey) {
     const all = window.JDXI_TUTORIAL_FIXTURES || {};
@@ -116,9 +157,21 @@
     return Object.prototype.hasOwnProperty.call(all, id) ? all[id] : null;
   }
 
-  // Lesson descriptor: { kind, key, tutorial }.
+  function specialtyLesson(id) {
+    const all = specialty().lessons;
+    return Object.prototype.hasOwnProperty.call(all, id) ? all[id] : null;
+  }
+
+  /*
+   * Lesson descriptor: { kind, key, tutorial }.
+   *
+   * A specialty lesson is rendered by the same renderer from the same Step
+   * model, so it is a lesson here - but its `kind` keeps it out of canonical
+   * progress, out of the guided path, and out of x/30.
+   */
   function lesson(kind, key) {
-    const tut = kind === 'dev' ? fixture(key) : canonical(key);
+    const tut =
+      kind === 'dev' ? fixture(key) : kind === 'specialty' ? specialtyLesson(key) : canonical(key);
     return tut ? { kind: kind, key: key, tutorial: tut } : null;
   }
 
@@ -146,8 +199,9 @@
 
   function stepHash(lsn, n) {
     if (lsn.kind === 'dev') return '#dev/' + lsn.key + '/step/' + n;
-    // #tutorial/<id> IS step 1; deeper steps carry the step segment.
-    return n === 1 ? '#tutorial/' + lsn.key : '#tutorial/' + lsn.key + '/step/' + n;
+    const base = lsn.kind === 'specialty' ? '#specialty/' : '#tutorial/';
+    // the bare route IS step 1; deeper steps carry the step segment.
+    return n === 1 ? base + lsn.key : base + lsn.key + '/step/' + n;
   }
 
   /*
@@ -178,8 +232,44 @@
         : { view: 'home', redirect: '#home' };
     }
 
+    m = REFERENCE_ROUTE.exec(hash);
+    if (m) {
+      const e = reference().entries[m[1]];
+      return e
+        ? { view: 'catalog', surface: 'reference-entry', entry: e }
+        : { view: 'home', redirect: '#reference' };
+    }
+
+    m = EXPLORER_VIEW_ROUTE.exec(hash);
+    if (m) {
+      const known = explorer().views.filter((v) => v.id === m[1])[0];
+      return known
+        ? { view: 'catalog', surface: 'explorer-view', explorerView: known }
+        : { view: 'home', redirect: '#explorer' };
+    }
+
+    m = EXPLORER_CONTROL_ROUTE.exec(hash);
+    if (m) {
+      const t = hardware().targets[m[1]];
+      return t
+        ? { view: 'catalog', surface: 'explorer-control', targetId: m[1] }
+        : { view: 'home', redirect: '#explorer' };
+    }
+
     let lsn = null;
     let asked = 1;
+    m = SPECIALTY_ROUTE.exec(hash);
+    if (m) {
+      lsn = lesson('specialty', m[1]);
+      asked = m[2] === undefined ? 1 : parseInt(m[2], 10);
+      if (!lsn) return { view: 'home', redirect: '#specialty' };
+      const totalS = lsn.tutorial.steps.length;
+      if (!(asked >= 1 && asked <= totalS)) {
+        return { view: 'lesson', lesson: lsn, stepIndex: 0, redirect: stepHash(lsn, 1) };
+      }
+      return { view: 'lesson', lesson: lsn, stepIndex: asked - 1 };
+    }
+
     m = DEV_ROUTE.exec(hash);
     if (m) {
       lsn = lesson('dev', m[1]);
@@ -544,25 +634,619 @@
     cat.hint.textContent = '';
   }
 
+  /* ----------------------------------------------- Quick Reference surface */
+
+  function referenceCard(id) {
+    const e = reference().entries[id];
+    const card = el('button', 'ref-card' + (e.destructive ? ' destructive' : ''));
+    card.type = 'button';
+    const top = el('div', 'rc-top');
+    top.appendChild(el('span', 'rc-title', e.title));
+    if (e.destructive) top.appendChild(el('span', 'rc-flag', 'destructive'));
+    card.appendChild(top);
+    card.appendChild(el('div', 'rc-sum', e.summary));
+    card.setAttribute(
+      'aria-label',
+      e.title + '. ' + e.summary + (e.destructive ? ' This procedure is destructive.' : '')
+    );
+    card.addEventListener('click', () => go('#reference/' + id));
+    return card;
+  }
+
+  function renderReference() {
+    const Q = reference();
+    cat.eyebrow.textContent = 'Reference';
+    cat.title.textContent = 'Quick Reference';
+    cat.desc.textContent =
+      'How to do it again, in a few lines. These are reminders rather than lessons — each one names the tutorial that teaches it properly.';
+
+    const grid = el('div', 'ref-grid');
+    Q.order.forEach((id) => grid.appendChild(referenceCard(id)));
+    cat.body.appendChild(grid);
+    cat.hint.textContent = Q.order.length + ' procedures. Anything marked destructive cannot be undone.';
+  }
+
+  function renderReferenceEntry(route) {
+    const e = route.entry;
+    cat.eyebrow.textContent = 'Quick Reference';
+    cat.title.textContent = e.title;
+    cat.desc.textContent = e.summary;
+    cat.actions.appendChild(actionButton('‹ All procedures', '#reference', 'quiet'));
+
+    /* The warning renders ABOVE the procedure, always. A learner who reads
+       top to bottom must meet the risk before the steps that cause it. */
+    if (e.warning) {
+      const w = el('div', 'cat-panel ' + (e.destructive ? 'danger' : 'warn'));
+      w.appendChild(el('h2', null, e.destructive ? 'This destroys data' : 'Before you start'));
+      w.appendChild(el('p', null, e.warning));
+      cat.body.appendChild(w);
+    }
+
+    const proc = el('div', 'cat-panel');
+    proc.appendChild(el('h2', null, 'How to do it'));
+    const ol = el('ol', 'ref-steps');
+    e.steps.forEach((line) => ol.appendChild(el('li', null, line)));
+    proc.appendChild(ol);
+    cat.body.appendChild(proc);
+
+    if (e.notes && e.notes.length) {
+      const n = el('div', 'cat-panel');
+      n.appendChild(el('h2', null, 'Worth knowing'));
+      const ul = el('ul', 'ref-notes');
+      e.notes.forEach((line) => ul.appendChild(el('li', null, line)));
+      n.appendChild(ul);
+      cat.body.appendChild(n);
+    }
+
+    const foot = el('div', 'cat-panel');
+    foot.appendChild(el('h2', null, 'Where this is taught'));
+    if (e.learnIn && e.learnIn.length) {
+      const row = el('div', 'row');
+      e.learnIn.forEach((tid) => {
+        const t = tutorials()[tid];
+        if (!t) return;
+        row.appendChild(actionButton('Learn this in ' + tid + ' · ' + t.title, '#tutorial/' + tid, 'quiet'));
+      });
+      foot.appendChild(row);
+    } else {
+      foot.appendChild(el('p', null,
+        'No guided tutorial covers this one. It is here because you may still need it, and because a destructive procedure is safer written down than guessed at.'));
+    }
+    foot.appendChild(el('p', 'ref-source', 'Source: ' + e.source));
+    cat.body.appendChild(foot);
+    cat.hint.textContent = '';
+  }
+
+  /* ---------------------------------------------------- Specialty surface */
+
+  function renderSpecialty() {
+    const S = specialty();
+    const P = progress();
+    cat.eyebrow.textContent = 'Optional — not part of course completion';
+    cat.title.textContent = 'Specialty';
+    cat.desc.textContent =
+      "Three things the JD-Xi does with the microphone that came with it. None of these counts toward the thirty guided tutorials, and nothing in the course depends on them.";
+
+    const grid = el('div', 'tut-grid cols-3');
+    S.order.forEach((id) => {
+      const l = S.lessons[id];
+      const done = P.isSpecialtyComplete ? P.isSpecialtyComplete(id) : false;
+      const card = el('button', 'tut-card specialty' + (done ? ' done' : ''));
+      card.type = 'button';
+      const top = el('div', 'tc-top');
+      top.appendChild(el('span', 'tc-id', 'Specialty'));
+      const marks = el('span', 'tc-top');
+      if (P.isBookmarked && P.isBookmarked(id)) {
+        const star = el('span', 'tc-star', '★');
+        star.setAttribute('aria-hidden', 'true');
+        marks.appendChild(star);
+      }
+      marks.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
+      top.appendChild(marks);
+      card.appendChild(top);
+      card.appendChild(el('div', 'tc-name', l.title));
+      card.appendChild(el('div', 'tc-sum', l.summary));
+      const meta = el('div', 'tc-meta');
+      meta.appendChild(el('span', null, l.estimatedMinutes + ' min'));
+      meta.appendChild(el('span', null, l.steps.length + ' steps'));
+      card.appendChild(meta);
+      card.setAttribute('aria-label',
+        l.title + '. Specialty lesson, ' + l.estimatedMinutes + ' minutes, ' + l.steps.length + ' steps. Optional.');
+      card.addEventListener('click', () => go('#specialty/' + id));
+      grid.appendChild(card);
+    });
+    cat.body.appendChild(grid);
+
+    const note = el('div', 'cat-panel');
+    note.appendChild(el('h2', null, 'What Specialty is'));
+    note.appendChild(el('p', null,
+      'These use the microphone supplied with the JD-Xi. External microphones, guitars and other outside sources are not covered.'));
+    note.appendChild(el('p', null,
+      'Specialty lessons are searchable and can be bookmarked like any tutorial, and they are tracked separately from your course progress. They never count toward the thirty.'));
+    cat.body.appendChild(note);
+    cat.hint.textContent = 'Optional throughout. The course is complete without them.';
+  }
+
+  /* ----------------------------------------------- Hardware Explorer surface */
+
+  function explorerControlRow(id) {
+    const t = hardware().targets[id];
+    const d = describeTarget(id);
+    const uses = lessonsUsingTarget(id);
+    const row = el('button', 'ctl-row' + (uses.length ? '' : ' uncovered'));
+    row.type = 'button';
+    row.appendChild(el('span', 'ctl-name', t.label));
+    row.appendChild(el('span', 'ctl-what', d ? d.what : ''));
+    if (!uses.length) row.appendChild(el('span', 'ctl-flag', 'Not covered'));
+    row.setAttribute('aria-label', t.label + '. ' + (d ? d.what : '') + (uses.length ? '' : ' Not covered in the guided course.'));
+    row.addEventListener('click', () => go('#explorer/control/' + id));
+    return row;
+  }
+
+  function renderExplorer() {
+    cat.eyebrow.textContent = 'Reference';
+    cat.title.textContent = 'Hardware Explorer';
+    cat.desc.textContent =
+      'Every control on the JD-Xi, what it does in plain language, and which tutorial teaches it. Start with a view, or go straight to a control.';
+
+    const row = el('div', 'exp-views');
+    explorer().views.forEach((v) => {
+      const img = renderer().resolveImage(v.id);
+      const card = el('button', 'exp-view');
+      card.type = 'button';
+      card.appendChild(el('b', null, v.title));
+      card.appendChild(el('span', null, v.blurb));
+      const count = (explorer().majorGroups[v.id] || []).length;
+      card.appendChild(el('span', 'exp-count', count + ' main areas'));
+      card.setAttribute('aria-label', v.title + '. ' + v.blurb + ' ' + count + ' main areas.');
+      card.addEventListener('click', () => go('#explorer/view/' + v.id));
+      if (img) row.appendChild(card);
+    });
+    cat.body.appendChild(row);
+
+    const list = el('div', 'cat-panel');
+    list.appendChild(el('h2', null, 'All main controls'));
+    const cols = el('div', 'ctl-cols');
+    explorer().views.forEach((v) => {
+      const col = el('div', 'ctl-col');
+      col.appendChild(el('h3', null, v.title));
+      (explorer().majorGroups[v.id] || []).forEach((id) => col.appendChild(explorerControlRow(id)));
+      cols.appendChild(col);
+    });
+    list.appendChild(cols);
+    cat.body.appendChild(list);
+    cat.hint.textContent =
+      'Controls the guided course does not teach are shown too, marked "Not covered".';
+  }
+
+  function renderExplorerView(route) {
+    const v = route.explorerView;
+    const ids = explorer().majorGroups[v.id] || [];
+    cat.eyebrow.textContent = 'Hardware Explorer';
+    cat.title.textContent = v.title;
+    cat.desc.textContent = v.blurb;
+    cat.actions.appendChild(actionButton('‹ Explorer', '#explorer', 'quiet'));
+
+    /*
+     * Labels are OFF on the panel. Roland's panel has 99 mapped targets and
+     * even the 26 major groups would cover the instrument in text; the panel
+     * shows where things are, and the list beside it says what they are.
+     */
+    const wrap = el('div', 'exp-panel');
+    wrap.appendChild(renderer().buildPanel(v.id, ids, { labels: false }));
+    cat.body.appendChild(wrap);
+
+    const list = el('div', 'ctl-list');
+    ids.forEach((id) => list.appendChild(explorerControlRow(id)));
+    cat.body.appendChild(list);
+    cat.hint.textContent = 'Open any control for what it does and where it is taught.';
+  }
+
+  function renderExplorerControl(route) {
+    const id = route.targetId;
+    const t = hardware().targets[id];
+    const d = describeTarget(id);
+    const uses = lessonsUsingTarget(id);
+    const parent = t.group ? hardware().targets[t.group] : null;
+    const imageId = t.imageId || hardware().defaultImageId;
+
+    cat.eyebrow.textContent = 'Hardware Explorer';
+    cat.title.textContent = t.label;
+    cat.desc.textContent = d ? d.what : '';
+    cat.actions.appendChild(
+      actionButton(parent ? '‹ ' + parent.label : '‹ Explorer', parent ? '#explorer/control/' + t.group : '#explorer', 'quiet')
+    );
+
+    const wrap = el('div', 'exp-panel detail');
+    const closeup = el('div', 'exp-closeup');
+    closeup.appendChild(el('div', 'vis-cap', 'Close up'));
+    closeup.appendChild(
+      renderer().buildPanel(imageId, [id], { crop: true, labels: false, extraClass: 'exp-crop' })
+    );
+    wrap.appendChild(closeup);
+    const context = el('div', 'exp-context');
+    context.appendChild(el('div', 'vis-cap', 'Where this is'));
+    context.appendChild(renderer().buildPanel(imageId, [id], { labels: false }));
+    wrap.appendChild(context);
+    cat.body.appendChild(wrap);
+
+    const facts = el('div', 'cat-panel');
+    if (t.panelLegend) {
+      const p = el('p', 'ctl-legend');
+      p.appendChild(el('b', null, 'Printed on the panel: '));
+      p.appendChild(document.createTextNode(t.panelLegend));
+      facts.appendChild(p);
+    }
+    if (d && d.safety) {
+      const warn = el('p', 'ctl-safety');
+      warn.appendChild(el('b', null, 'Worth knowing: '));
+      warn.appendChild(document.createTextNode(d.safety));
+      facts.appendChild(warn);
+    }
+    if (d && d.source) facts.appendChild(el('p', 'ref-source', 'Source: ' + d.source));
+    if (facts.childNodes.length) cat.body.appendChild(facts);
+
+    /* Children, when this is a group or a section. */
+    const kids = Object.keys(hardware().targets).filter((k) => hardware().targets[k].group === id);
+    if (kids.length) {
+      const kp = el('div', 'cat-panel');
+      kp.appendChild(el('h2', null, 'Controls in this area'));
+      const list = el('div', 'ctl-list');
+      kids.forEach((k) => list.appendChild(explorerControlRow(k)));
+      kp.appendChild(list);
+      cat.body.appendChild(kp);
+    }
+
+    const learn = el('div', 'cat-panel');
+    learn.appendChild(el('h2', null, 'Where this is taught'));
+    if (uses.length) {
+      const row = el('div', 'row');
+      uses.forEach((u) => {
+        const hash =
+          (u.kind === 'specialty' ? '#specialty/' : '#tutorial/') +
+          u.id +
+          (u.stepIndex ? '/step/' + (u.stepIndex + 1) : '');
+        row.appendChild(actionButton('Learn this in ' + (u.kind === 'specialty' ? u.title : u.id + ' · ' + u.title), hash, 'quiet'));
+      });
+      learn.appendChild(row);
+    } else {
+      learn.appendChild(el('p', 'ctl-uncovered', 'Not covered in the guided course.'));
+      learn.appendChild(el('p', null,
+        'No tutorial teaches this control. It is documented here so you can see it exists and know what it is for.'));
+    }
+    cat.body.appendChild(learn);
+
+    /* Siblings, so an Explorer page is never a dead end. */
+    if (parent) {
+      const sibs = Object.keys(hardware().targets).filter(
+        (k) => hardware().targets[k].group === t.group && k !== id
+      );
+      if (sibs.length) {
+        const strip = el('div', 'topic-strip');
+        strip.appendChild(el('div', 'ts-cap', 'Nearby controls'));
+        const l = el('div', 'ts-list');
+        sibs.slice(0, 10).forEach((k) => {
+          const chip = el('button', 'ts-chip', hardware().targets[k].label);
+          chip.type = 'button';
+          chip.addEventListener('click', () => go('#explorer/control/' + k));
+          l.appendChild(chip);
+        });
+        strip.appendChild(l);
+        cat.body.appendChild(strip);
+      }
+    }
+    cat.hint.textContent = '';
+  }
+
   const SURFACES = {
     level: renderLevel,
     topic: renderTopic,
     favorites: renderFavorites,
     progress: renderProgress,
     settings: renderSettings,
+    reference: renderReference,
+    'reference-entry': renderReferenceEntry,
+    specialty: renderSpecialty,
+    explorer: renderExplorer,
+    'explorer-view': renderExplorerView,
+    'explorer-control': renderExplorerControl,
   };
+
+  /*
+   * The catalog body centres its content and clips overflow, which suits a
+   * grid of ten tutorial cards. The reference surfaces are denser and can
+   * legitimately be taller than the stage, so they top-align and scroll
+   * INSIDE the body - the page itself still never scrolls.
+   */
+  const DENSE_SURFACES = [
+    'reference', 'reference-entry', 'explorer', 'explorer-view', 'explorer-control',
+  ];
 
   function renderCatalog(route) {
     cat.actions.innerHTML = '';
     cat.body.innerHTML = '';
     cat.desc.textContent = '';
     cat.hint.textContent = '';
+    cat.body.classList.toggle('dense', DENSE_SURFACES.indexOf(route.surface) >= 0);
     SURFACES[route.surface](route);
+    /* Highlight labels can only be measured once the nodes are in the
+       document, so the Explorer's panels settle after insertion. */
+    renderer().settlePanels(cat.body);
     /* Focus the heading so keyboard and screen-reader users land on the new
        surface rather than staying where the old one was. */
     cat.title.setAttribute('tabindex', '-1');
     cat.title.focus({ preventScroll: true });
   }
+
+  /* ----------------------------------------------------------------- search */
+
+  /*
+   * Universal search over one in-memory index, built once from the same data
+   * the app renders. No fetch, no server, no second description of the
+   * content that could drift from it.
+   *
+   * A tutorial contributes TWO kinds of entry: one for the tutorial, and one
+   * per step. Step entries carry an exact deep link, which is the difference
+   * between "B06 is about knobs somewhere" and landing on the step that
+   * answers the question.
+   */
+  const SYNONYMS = {
+    volume: 'level master volume loud quiet',
+    brightness: 'cutoff filter bright dark dull',
+    bright: 'cutoff filter',
+    dark: 'cutoff filter muffled',
+    wobble: 'lfo vibrato modulation mod',
+    vibrato: 'lfo mod modulation wobble',
+    echo: 'delay repeat',
+    reverb: 'space room hall',
+    space: 'reverb delay',
+    beat: 'pattern drums sequencer rhythm groove',
+    rhythm: 'pattern beat drums groove',
+    groove: 'pattern beat rhythm',
+    drum: 'drums kit percussion beat',
+    save: 'write store keep persist',
+    write: 'save store',
+    load: 'recall select program favorite',
+    recall: 'favorite load select',
+    undo: 'revert restore recovery unstuck original',
+    stuck: 'unstuck recovery help problem',
+    broken: 'unstuck recovery troubleshooting problem',
+    slide: 'portamento glide',
+    swing: 'shuffle feel bounce',
+    tempo: 'speed bpm fast slow tap',
+    speed: 'tempo rate fast slow',
+    arpeggio: 'arpeggiator arp',
+    chord: 'several keys hold notes together',
+    mic: 'microphone vocoder autopitch auto note',
+    microphone: 'mic vocoder autopitch auto note',
+    robot: 'vocoder voice',
+    voice: 'vocoder autopitch auto note microphone',
+    record: 'sequencer tr-rec step recording pattern',
+    erase: 'delete remove clear step',
+    delete: 'erase remove clear',
+    bass: 'low deep sub analog',
+    pad: 'sustained slow strings',
+    lead: 'bright cutting solo',
+    power: 'on off switch start',
+  };
+
+  function expand(query) {
+    const words = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    const extra = [];
+    words.forEach((w) => {
+      Object.keys(SYNONYMS).forEach((k) => {
+        if (k === w || k.indexOf(w) === 0) extra.push(SYNONYMS[k]);
+      });
+    });
+    return { words: words, haystackExtra: extra.join(' ') };
+  }
+
+  let INDEX = null;
+
+  function buildIndex() {
+    if (INDEX) return INDEX;
+    const out = [];
+
+    const all = tutorials();
+    Object.keys(all).sort().forEach((id) => {
+      const t = all[id];
+      out.push({
+        group: 'Tutorials',
+        title: id + ' · ' + t.title,
+        sub: t.summary,
+        hash: '#tutorial/' + id,
+        text: [id, t.title, t.summary, (t.learningGoals || []).join(' '), t.level].join(' '),
+      });
+      t.steps.forEach((st, i) => {
+        out.push({
+          group: 'Tutorials',
+          title: t.title + ' — ' + (st.title || 'step ' + (i + 1)),
+          sub: st.instruction || '',
+          hash: '#tutorial/' + id + (i ? '/step/' + (i + 1) : ''),
+          text: [id, st.title, st.instruction, st.detail, st.whyItMatters, st.checkpoint, st.recoveryHelp].join(' '),
+          step: true,
+        });
+      });
+    });
+
+    const cols = collections();
+    Object.keys(cols).forEach((cid) => {
+      const c = cols[cid];
+      if (!routableCollection(cid)) return;
+      out.push({
+        group: 'Tutorials',
+        title: c.title,
+        sub: c.description,
+        hash: '#topic/' + cid,
+        text: [c.title, c.description, 'topic collection'].join(' '),
+      });
+    });
+
+    const Q = reference();
+    Q.order.forEach((qid) => {
+      const e = Q.entries[qid];
+      out.push({
+        group: 'Quick Reference',
+        title: e.title,
+        sub: e.summary,
+        hash: '#reference/' + qid,
+        text: [e.title, e.summary, (e.steps || []).join(' '), (e.notes || []).join(' '), e.warning || ''].join(' '),
+      });
+    });
+
+    const H = hardware().targets;
+    Object.keys(H).forEach((tid) => {
+      const t = H[tid];
+      const d = describeTarget(tid);
+      out.push({
+        group: 'Controls',
+        title: t.label,
+        sub: d ? d.what : '',
+        hash: '#explorer/control/' + tid,
+        text: [t.label, t.panelLegend || '', d ? d.what : '', d && d.safety ? d.safety : '', t.kind].join(' '),
+      });
+    });
+
+    const S = specialty();
+    S.order.forEach((sid) => {
+      const l = S.lessons[sid];
+      out.push({
+        group: 'Specialty',
+        title: l.title,
+        sub: l.summary,
+        hash: '#specialty/' + sid,
+        text: [l.title, l.summary, (l.learningGoals || []).join(' '), 'specialty optional microphone'].join(' '),
+      });
+      l.steps.forEach((st, i) => {
+        out.push({
+          group: 'Specialty',
+          title: l.title + ' — ' + (st.title || 'step ' + (i + 1)),
+          sub: st.instruction || '',
+          hash: '#specialty/' + sid + (i ? '/step/' + (i + 1) : ''),
+          text: [st.title, st.instruction, st.detail, st.whyItMatters, st.recoveryHelp].join(' '),
+          step: true,
+        });
+      });
+    });
+
+    out.forEach((r) => { r.hay = (r.text + ' ' + r.title).toLowerCase(); });
+    INDEX = out;
+    return INDEX;
+  }
+
+  const GROUP_ORDER = ['Tutorials', 'Controls', 'Quick Reference', 'Specialty'];
+
+  function searchFor(query) {
+    const q = String(query || '').trim();
+    if (q.length < 2) return [];
+    const ex = expand(q);
+    const scored = [];
+    buildIndex().forEach((r) => {
+      let score = 0;
+      const titleLc = r.title.toLowerCase();
+      ex.words.forEach((w) => {
+        if (!w) return;
+        if (titleLc.indexOf(w) >= 0) score += 8;
+        if (r.hay.indexOf(w) >= 0) score += 3;
+        if (ex.haystackExtra && ex.haystackExtra.indexOf(w) >= 0 && r.hay.indexOf(w) >= 0) score += 1;
+      });
+      /* Synonym expansion: a hit through a synonym counts, but less than a
+         literal one, so "wobble" finds the LFO without outranking "LFO". */
+      if (!score && ex.haystackExtra) {
+        ex.haystackExtra.split(/\s+/).forEach((w) => {
+          if (w.length > 2 && r.hay.indexOf(w) >= 0) score += 1;
+        });
+      }
+      if (!score) return;
+      /* A whole tutorial outranks one of its steps at equal relevance. */
+      if (!r.step) score += 2;
+      scored.push({ r: r, score: score });
+    });
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 40).map((x) => x.r);
+  }
+
+  const search = {
+    btn: document.getElementById('searchbtn'),
+    panel: document.getElementById('searchpanel'),
+    input: document.getElementById('searchinput'),
+    close: document.getElementById('searchclose'),
+    results: document.getElementById('searchresults'),
+    count: document.getElementById('searchcount'),
+  };
+
+  function paintSearch() {
+    const q = search.input.value;
+    search.results.innerHTML = '';
+    const hits = searchFor(q);
+
+    if (q.trim().length < 2) {
+      search.count.textContent = 'Type at least two letters.';
+      return;
+    }
+    if (!hits.length) {
+      search.count.textContent = 'Nothing found for “' + q.trim() + '”.';
+      const empty = el('div', 'search-empty');
+      empty.appendChild(el('p', null,
+        'Try a plainer word — what the thing does rather than what it is called. “bright”, “echo”, “save”, “stuck” and “beat” all find something.'));
+      search.results.appendChild(empty);
+      return;
+    }
+
+    search.count.textContent =
+      hits.length + (hits.length === 1 ? ' result' : ' results') + ' for “' + q.trim() + '”.';
+
+    GROUP_ORDER.forEach((g) => {
+      const inGroup = hits.filter((h) => h.group === g);
+      if (!inGroup.length) return;
+      const sec = el('div', 'search-group');
+      sec.appendChild(el('h3', null, g));
+      inGroup.forEach((h) => {
+        const b = el('button', 'search-hit' + (h.step ? ' step' : ''));
+        b.type = 'button';
+        b.appendChild(el('span', 'sh-title', h.title));
+        if (h.sub) b.appendChild(el('span', 'sh-sub', h.sub));
+        b.setAttribute('aria-label', h.title + (h.sub ? '. ' + h.sub : ''));
+        b.addEventListener('click', () => {
+          closeSearch();
+          go(h.hash);
+        });
+        sec.appendChild(b);
+      });
+      search.results.appendChild(sec);
+    });
+  }
+
+  function openSearch() {
+    search.panel.hidden = false;
+    search.btn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('searching');
+    search.input.focus();
+    search.input.select();
+    paintSearch();
+  }
+
+  function closeSearch() {
+    search.panel.hidden = true;
+    search.btn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('searching');
+  }
+
+  search.btn.addEventListener('click', () => {
+    if (search.panel.hidden) openSearch();
+    else closeSearch();
+  });
+  search.close.addEventListener('click', () => {
+    closeSearch();
+    search.btn.focus();
+  });
+  search.input.addEventListener('input', paintSearch);
+  search.panel.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSearch();
+      search.btn.focus();
+    }
+  });
 
   /* ------------------------------------------------------------- favourites */
 
