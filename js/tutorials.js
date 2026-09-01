@@ -903,6 +903,7 @@ window.JDXI_TUTORIALS = {
           "Octave steps are big jumps. Transpose moves things by the smallest step there is, which is how you match a sound to a song without learning to play in a different key.",
         checkpoint:
           "The display briefly shows a TRANSPOSE value, and what you play sounds slightly higher than it did.",
+        quickReference: ["transpose"],
         recoveryHelp:
           "Hold Shift and press Octave Down once to bring it back to 0. If you have lost track of how far you have shifted, switching the power off and on clears it: Transpose is never saved, and always returns to 0 with the power.",
         nextHint: "Last step: leave things tidy.",
@@ -3567,7 +3568,7 @@ window.JDXI_TUTORIALS = {
         instruction:
           "Read this before you press anything. Then, if you want to, hold Shift and press Enter.",
         detail:
-          "Roland documents that combination as the way back to the original sound after you have edited it. That makes it your before-and-after — and your undo, which is the same thing. Pressing it plays you exactly what you started from, and throws away everything you just did.",
+          "Roland documents that combination as the way back to the original sound after you have edited it. That makes it your before-and-after — and your undo for this sound, which is the same thing. It reaches nothing else. Pressing it plays you exactly what you started from, and throws away everything you just did.",
         hardwareTargets: ["shiftButton", "enterButton"],
         visualMode: "full-plus-inset",
         expectedSound:
@@ -3912,6 +3913,7 @@ window.JDXI_TUTORIALS = {
         whyItMatters:
           "Most of being stuck on this instrument is being in a screen you did not mean to open. Exit solves that class of problem completely, and it cannot make anything worse.",
         checkpoint: "You are at the top screen.",
+        quickReference: ["top-screen", "menu-controls"],
         recoveryHelp:
           "Keep pressing. Exit always moves outward, never further in. If the screen will not change at all, see the step about messages later in this tutorial — the JD-Xi may be refusing until you stop playback.",
         nextHint: "But Exit does not do everything, and that matters.",
@@ -3944,6 +3946,7 @@ window.JDXI_TUTORIALS = {
           "It is the closest thing the JD-Xi has to an undo, and it is worth being precise about its limits: it addresses the sound. It is not a general undo, and Roland does not document it as reaching your effects, your pattern or your program settings.",
         checkpoint:
           "You can point to both buttons and say what the combination does and what it does not reach.",
+        quickReference: ["shortcuts"],
         recoveryHelp:
           "If you have already pressed it and lost an edit you wanted, it is gone. Nothing stored has changed, so the program on the instrument is intact — it is only the unsaved edit that has been discarded.",
         nextHint: "There is a bigger version of the same move, with a bigger cost.",
@@ -3960,6 +3963,7 @@ window.JDXI_TUTORIALS = {
           "It is a real recovery, not a trick — but it is the largest possible one. Reaching for it to fix one bad filter setting costs you everything else you did.",
         checkpoint:
           "You can say what this move restores and what it destroys.",
+        quickReference: ["program-vs-part"],
         recoveryHelp:
           "If you have work you want to keep, save it first: N09 covers that. If you have already lost something this way, it cannot be recovered.",
         nextHint: "One area of the instrument behaves the opposite way.",
@@ -4021,6 +4025,7 @@ window.JDXI_TUTORIALS = {
         whyItMatters:
           "Local Switch off is the one cause that looks exactly like a broken instrument, because every light works and nothing makes a sound.",
         checkpoint: "You have a list to work through rather than a mystery.",
+        quickReference: ["select-part", "power-on"],
         recoveryHelp:
           "If it is Local Switch, correcting it means going into the system settings — and remember those save themselves as you leave, so change only that one thing.",
         nextHint: "The opposite problem has a simpler answer.",
@@ -4036,6 +4041,7 @@ window.JDXI_TUTORIALS = {
         whyItMatters:
           "It is the classic beginner scare on this instrument, and the fix is one button. Worth knowing before it happens rather than during.",
         checkpoint: "You can find Key Hold without hunting for it.",
+        quickReference: ["arpeggiator"],
         recoveryHelp:
           "If notes still will not stop with Key Hold off, check the sound's release setting — a very long release keeps a note sounding long after you let go, which N08 covers.",
         nextHint: "And one for the sequencer.",
@@ -4052,6 +4058,7 @@ window.JDXI_TUTORIALS = {
           "Nothing on the front panel hints at this, so a pattern that will not start looks like a broken sequencer rather than one setting in a menu.",
         checkpoint:
           "You can tell whether the sequencer is running by watching the display, and you know what to check when it is not.",
+        quickReference: ["play-stop-pattern"],
         recoveryHelp:
           "If the numbers do move but you hear nothing, the pattern is running and empty — that program may simply have nothing recorded on the part you are listening to.",
         nextHint: "One last thing, and it is the one to be careful about.",
@@ -4088,6 +4095,7 @@ window.JDXI_TUTORIALS = {
           "Knowing there is no general undo is more useful than hoping there is one. It turns every risky moment into a question with an answer — what exactly do I want back, and which of these five moves returns it?",
         checkpoint:
           "You can name which move fits which kind of problem, and you know none of them is a general undo.",
+        quickReference: ["menu-controls", "shortcuts", "save-program"],
         recoveryHelp:
           "Keep pressing Exit. This is the last step you have to do — the two that follow are optional practice, and you can stop here.",
         nextHint:
@@ -4207,7 +4215,7 @@ window.JDXI_TUTORIALS = {
           "Almost every bass sound on any synthesizer is a bright sound with the top taken off. This one knob does most of the work, and doing it by ear beats any number you could be given.",
         checkpoint: "The sound is round and low rather than buzzy.",
         recoveryHelp:
-          "Turn Cutoff back to the right to undo it by ear. If the sound disappears entirely you have closed the filter all the way — come back right until it returns.",
+          "Turn Cutoff back to the right to reverse it by ear. If the sound disappears entirely you have closed the filter all the way — come back right until it returns.",
         nextHint: "Now decide how much growl you want.",
       },
       {
@@ -4715,6 +4723,7 @@ window.JDXI_TUTORIALS = {
           "It is a strong effect that suits some leads and ruins others, which is why it is offered rather than built in. Quick Reference has the procedure on its own if you want it again later without coming back here.",
         checkpoint:
           "Either you have heard notes slide into each other, or you skipped this step.",
+        quickReference: ["portamento"],
         recoveryHelp:
           "Press Tap again on that screen to turn portamento off, then Exit. If a long press opened the ordinary Menu instead, you released too early — hold it down longer. Note that the tempo knob is setting portamento time on this screen, not tempo.",
         nextHint: "Now the test that matters.",

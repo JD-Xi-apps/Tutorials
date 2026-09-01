@@ -638,8 +638,29 @@ window.JDXI_LESSON_RENDERER = (function () {
 
     var lostBtn = document.getElementById("lsn-lost-btn");
     var lostPanel = document.getElementById("lsn-lost-panel");
-    lostPanel.textContent = step.recoveryHelp || "";
-    lostBtn.hidden = !step.recoveryHelp;
+    lostPanel.innerHTML = "";
+    if (step.recoveryHelp) lostPanel.appendChild(el("p", "lost-text", step.recoveryHelp));
+
+    /*
+     * "I'm lost" may also offer relevant Quick Reference
+     * (PRODUCT-CURRICULUM-MASTER-PLAN.md sec 26). The caller resolves the
+     * entries - this file renders them and knows nothing about routing, so a
+     * link carries its id and the application decides where that goes.
+     */
+    var refs = ctx.quickReference || [];
+    if (refs.length) {
+      var wrap = el("div", "lost-refs");
+      wrap.appendChild(el("div", "lost-refs-cap", "Look it up"));
+      refs.forEach(function (r) {
+        var b = el("button", "qr-link", r.title);
+        b.type = "button";
+        b.setAttribute("data-qr", r.id);
+        b.setAttribute("aria-label", "Quick Reference: " + r.title);
+        wrap.appendChild(b);
+      });
+      lostPanel.appendChild(wrap);
+    }
+    lostBtn.hidden = !step.recoveryHelp && !refs.length;
     closePanel(lostBtn, lostPanel);
 
     // navigation

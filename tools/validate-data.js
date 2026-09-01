@@ -180,6 +180,15 @@ ids.forEach((id) => {
     check(VISUAL_MODES.includes(s.visualMode), `${sat}: invalid visualMode "${s.visualMode}"`);
     check(Array.isArray(s.hardwareTargets), `${sat}: hardwareTargets must be an array`);
 
+    /* A Quick Reference link must resolve, or "I'm lost" offers a dead end
+       to a learner who is by definition already stuck. */
+    (s.quickReference || []).forEach((qid) => {
+      check(
+        !!(reference && reference.entries && reference.entries[qid]),
+        `${sat}: quickReference names unknown entry "${qid}"`
+      );
+    });
+
     /* Coordinates in content are the one thing the architecture forbids
        outright: a re-measured target must fix every tutorial at once. */
     const raw = JSON.stringify(s);

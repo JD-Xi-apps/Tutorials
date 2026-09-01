@@ -586,3 +586,16 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 /* A specialty lesson is real learner content, marked optional - never the
    development-fixture warning. */
 .fixture-badge.specialty { border-color:#d8c4f0; background:#f7f2fd; color:var(--purple); }
+
+/* Quick Reference links inside the "I'm lost" panel. */
+.lost-text { margin:0; }
+.lost-refs { margin-top:9px; padding-top:8px; border-top:1px solid rgba(0,0,0,.08);
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.lost-refs-cap { width:100%; font-size:9px; font-weight:850; letter-spacing:.5px;
+  text-transform:uppercase; opacity:.75; margin-bottom:2px; }
+.qr-link { border:1px solid currentColor; background:transparent; color:inherit;
+  border-radius:999px; padding:3px 10px; font:inherit; font-size:11px; font-weight:700;
+  cursor:pointer; opacity:.85; transition:.12s ease; }
+.qr-link:hover { opacity:1; background:rgba(255,255,255,.5); }
+
+.ctl-trouble { font-size:12.5px !important; line-height:1.5; }

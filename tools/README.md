@@ -180,6 +180,18 @@ the JD-Xi's own hardware feature. The check runs on the shipped UI in both
 directions: `index.html` and `js/app.js` may not use the app wordings, and the
 three tutorials that teach the hardware feature must still name it.
 
+## A navigation trap worth knowing
+
+`page.goto()` to the URL the page is **already** on is a same-document no-op:
+no load, no `hashchange`, so the router never re-runs and the previous view
+stays on screen. It looks exactly like a routing bug.
+
+This bites hardest on the bare tutorial route, which is a decision point —
+visit `#tutorial/B04`, mark it complete, visit `#tutorial/B04` again expecting
+the review overview, and you get the lesson you were already looking at.
+`test-behaviour.js`'s `goto` helper reloads when the target matches the current
+URL, for exactly this reason.
+
 ## Playwright
 
 Playwright is not a dependency of this repository and is not installed by it.

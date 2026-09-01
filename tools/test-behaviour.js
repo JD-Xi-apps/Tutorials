@@ -34,7 +34,18 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   p.on('pageerror', e => errs.push('pageerror ' + e.message));
   p.on('console', m => { if (m.type() === 'error') errs.push('console ' + m.text()); });
 
-  const goto = async (h) => { await p.goto(APP + h); await p.waitForTimeout(260); };
+  /*
+   * Navigating to the URL the page is already on is a same-document no-op:
+   * no load, no hashchange, so the router never re-runs and the previous view
+   * stays on screen. That looks exactly like a routing bug and is not one, so
+   * the helper reloads instead when the target matches where we already are.
+   */
+  const goto = async (h) => {
+    const target = APP + h;
+    if (p.url() === target) await p.reload();
+    else await p.goto(target);
+    await p.waitForTimeout(260);
+  };
   const hash = () => p.evaluate(() => window.location.hash);
 
   /*

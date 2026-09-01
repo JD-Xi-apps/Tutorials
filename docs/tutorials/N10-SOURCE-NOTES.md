@@ -44,9 +44,30 @@ recognition-first tutorial, but it means a learner could finish N10 having never
 recovery move they are most likely to need. The optional pair lets them, on a sound they have
 chosen to sacrifice.
 
-**One item remains outstanding.** The master plan also gives N10 *Quick Reference links*.
-Quick Reference does not exist yet; it is built in the reference-surfaces batch, and the links
-are added when there is something to link to.
+**Quick Reference links are now in place.** The master plan also gives N10 *Quick Reference
+links*, and §26 says the *I'm lost* panel may offer relevant Quick Reference where genuinely
+useful. Both are satisfied by the same mechanism: a Step may carry an optional
+`quickReference` array of entry ids, and the renderer draws them inside the *I'm lost* panel,
+under the recovery text.
+
+Seven N10 steps carry them, chosen where a learner would actually want the procedure rather
+than the explanation:
+
+| Step | Links to |
+|---|---|
+| `N10-S01` The first move, every time | *Get back to the top screen*, *Common menu controls* |
+| `N10-S03` Putting an edited sound back | *Common useful shortcuts* |
+| `N10-S04` Starting over, and what it costs | *Understand Program vs Part* |
+| `N10-S08` No sound at all | *Select a Part*, *Power on safely* |
+| `N10-S09` Notes that will not stop | *Arpeggiator* |
+| `N10-S10` A pattern that will not play | *Play and stop a Pattern* |
+| `N10-S12` There is no undo, and that is workable | *Common menu controls*, *Common useful shortcuts*, *Save a Program* |
+
+The mechanism is generic rather than N10-specific — `B05`'s Transpose step and `I03`'s
+optional Portamento step use it too, which is what the master plan §12 means by Portamento
+being "Quick Reference + optional I03 enrichment". `tools/validate-data.js` checks that every
+`quickReference` id resolves, because a dead link offered to a learner who is by definition
+already stuck is worse than no link.
 
 ## Sources consulted
 

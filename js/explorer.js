@@ -264,7 +264,16 @@ window.JDXI_EXPLORER = {
         "Four effects, shared by the whole program: two slots that change what the sound is made of, plus delay and reverb, which change where it seems to be.",
       safety:
         "The audio always passes through Effect 1, then Effect 2, then Delay, then Reverb, and only the effects that are switched on apply. That order is fixed and cannot be changed. The settings belong to the whole program, though effects can be turned on and off for each part.",
-      source: "Owner's Manual p.3 item 15, p.8, p.9",
+      /*
+       * Roland's own list of why an effect knob can appear dead. It is the
+       * commonest discouraging moment on this instrument and almost never a
+       * fault, so it is documented where a learner would go looking - rather
+       * than as a step in a Beginner tutorial, which is what the brief moved
+       * it out of.
+       */
+      troubleshooting:
+        "If an effect seems to do nothing, Roland lists the causes: the effect may be switched off; the part may not be routed to that effect; the send level to it may be zero; or the effect's own output level, or the delay or reverb level, may be zero. Any one of them makes a knob look dead. The quickest check by ear is to press Effects On/Off and see whether anything changes at all.",
+      source: "Owner's Manual p.3 item 15, p.8, p.9; p.17 Issues Related to Effects",
     },
     effectsOnOffButton: {
       what:

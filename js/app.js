@@ -1038,6 +1038,12 @@
       warn.appendChild(document.createTextNode(d.safety));
       facts.appendChild(warn);
     }
+    if (d && d.troubleshooting) {
+      const t2 = el('p', 'ctl-trouble');
+      t2.appendChild(el('b', null, 'If it seems to do nothing: '));
+      t2.appendChild(document.createTextNode(d.troubleshooting));
+      facts.appendChild(t2);
+    }
     if (d && d.source) facts.appendChild(el('p', 'ref-source', 'Source: ' + d.source));
     if (facts.childNodes.length) cat.body.appendChild(facts);
 
@@ -1655,6 +1661,12 @@
            final action a deliberate one the learner takes. */
         finishLabel:
           onLast && route.lesson.kind !== 'dev' ? 'Finish Tutorial ✓' : null,
+        /* Resolve the step's Quick Reference ids into titles here, so the
+           renderer stays ignorant of both the catalogue and the router. */
+        quickReference: (route.lesson.tutorial.steps[route.stepIndex].quickReference || [])
+          .map((qid) => reference().entries[qid])
+          .filter(Boolean)
+          .map((e) => ({ id: e.id, title: e.title })),
       });
       current = route.stepIndex;
       currentLesson = route.lesson;
@@ -1742,6 +1754,13 @@
     btn: document.getElementById('lsn-lost-btn'),
     panel: document.getElementById('lsn-lost-panel'),
   };
+  /* Delegated, because the panel's contents are rebuilt on every step. */
+  lost.panel.addEventListener('click', (e) => {
+    const link = e.target.closest ? e.target.closest('.qr-link') : null;
+    if (!link) return;
+    go('#reference/' + link.getAttribute('data-qr'));
+  });
+
   why.btn.addEventListener('click', () => R.togglePanel(why.btn, why.panel, [lost]));
   lost.btn.addEventListener('click', () => R.togglePanel(lost.btn, lost.panel, [why]));
 
