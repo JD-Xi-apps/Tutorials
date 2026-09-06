@@ -1614,29 +1614,42 @@
    */
   const continueCard = {
     root: document.getElementById('continue-card'),
+    shell: document.querySelector('.shell'),
     title: document.getElementById('continue-title'),
-    sub: document.getElementById('continue-sub'),
+    step: document.getElementById('continue-step'),
+    stepTitle: document.getElementById('continue-step-title'),
+    bar: document.getElementById('continue-bar'),
   };
 
   function paintContinueCard() {
     if (!continueCard.root) return;
     const r = progress().unfinishedResume();
+    /* Home is laid out in one band fewer when there is nothing to continue.
+       The class carries that, rather than the CSS guessing from [hidden] -
+       :has() would work in both browsers we test but not in every one the
+       owner might open a file:// page in, and this cannot silently half-apply. */
+    if (continueCard.shell) continueCard.shell.classList.toggle('has-continue', !!r);
     if (!r) {
       continueCard.root.hidden = true;
       return;
     }
+    const total = r.tutorial.steps.length;
+    const n = r.stepIndex + 1;
     const step = r.tutorial.steps[r.stepIndex];
     continueCard.root.hidden = false;
     continueCard.title.textContent = r.id + ' · ' + r.tutorial.title;
-    continueCard.sub.textContent =
-      'Step ' + (r.stepIndex + 1) + ' of ' + r.tutorial.steps.length +
-      (step && step.title ? ' — ' + step.title : '');
+    continueCard.step.textContent = 'Step ' + n + ' of ' + total;
+    continueCard.stepTitle.textContent = (step && step.title) || '';
+    /* The bar draws the fraction the line beside it already states - reached,
+       not scored, which is why the step they are on counts. It is decoration
+       for that sentence and carries no number of its own. */
+    continueCard.bar.style.width = (n / total) * 100 + '%';
     continueCard.root.setAttribute(
       'aria-label',
-      'Continue ' + r.tutorial.title + ', step ' + (r.stepIndex + 1) +
-        ' of ' + r.tutorial.steps.length
+      'Continue ' + r.tutorial.title + ', step ' + n + ' of ' + total +
+        (step && step.title ? ': ' + step.title : '')
     );
-    continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, r.stepIndex + 1));
+    continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, n));
   }
 
   function applyRoute() {

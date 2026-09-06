@@ -83,7 +83,7 @@
 
         <section class="cards-row">
           <div class="card">
-            <div class="card-head"><div><h2>1. Guided learning path</h2><div class="eyebrow">Recommended order</div></div><span class="chev">›</span></div>
+            <div class="card-head"><div><h2>1. Guided learning path</h2><div class="eyebrow">Recommended order</div></div></div>
             <div class="level-grid">
               <button class="tile" type="button" title="Open the Beginner path" data-route="#level/beginner"><div class="ico green">♧</div><b>Beginner</b><p>First sounds,<br>keys, knobs</p></button>
               <button class="tile" type="button" title="Open the Novice path" data-route="#level/novice"><div class="ico purple">❖</div><b>Novice</b><p>Menus, patterns,<br>editing basics</p></button>
@@ -92,7 +92,7 @@
           </div>
 
           <div class="card">
-            <div class="card-head"><div><h2>2. Explore by topic</h2><div class="eyebrow">Learn a la carte</div></div><span class="chev">›</span></div>
+            <div class="card-head"><div><h2>2. Explore by topic</h2><div class="eyebrow">Learn a la carte</div></div></div>
             <div class="topic-grid">
               <button class="topic" type="button" title="Open the Getting started topic" data-route="#topic/getting-started"><span class="red">▶</span><span>Getting started</span></button>
               <button class="topic" type="button" title="Open the Navigating menus topic" data-route="#topic/navigating-menus"><span class="orange">☷</span><span>Navigating menus</span></button>
@@ -129,18 +129,31 @@
         </section>
 
         <!--
-          Continue card. Hidden unless there is unfinished canonical work, and
+          Continue banner. Hidden unless there is unfinished canonical work, and
           populated by app.js from the stored resume point - so an empty state
           is genuinely empty rather than a placeholder.
+
+          The whole banner is one button. Its width is divided into what the
+          learner left (tutorial) and where they left it (step), with the bar
+          drawing the same fraction the step line states and the action on the
+          right. Everything here is the resume point; nothing else.
         -->
         <button class="continue-card" id="continue-card" type="button" hidden>
           <span class="cc-ico" aria-hidden="true">▸</span>
-          <span class="cc-text">
+
+          <span class="cc-lead">
             <span class="cc-cap">Continue where you left off</span>
             <b id="continue-title"></b>
-            <span id="continue-sub"></span>
           </span>
-          <span class="cc-go" aria-hidden="true">›</span>
+
+          <span class="cc-step">
+            <span class="cc-cap muted" id="continue-step"></span>
+            <span class="cc-step-title" id="continue-step-title"></span>
+          </span>
+
+          <span class="cc-meter meter" aria-hidden="true"><i id="continue-bar"></i></span>
+
+          <span class="cc-go"><span>Continue</span><span aria-hidden="true"> ›</span></span>
         </button>
 
         <section class="secondary-row" aria-label="Reference and extras">

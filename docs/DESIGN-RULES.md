@@ -52,6 +52,31 @@ Learning levels are visually grouped (currently Beginner, Novice, Intermediate).
 
 Card padding should look balanced on every side. In particular, button rows must have bottom padding comparable to the top and side padding; controls should never appear to sit against the bottom edge of a card.
 
+### An arrow means the thing it sits on goes somewhere
+
+A chevron or arrow is an affordance, not decoration. It belongs only where the
+element carrying it — or the destination immediately beside it — is actually
+interactive.
+
+The two home card headings, *Guided learning path* and *Explore by topic*, each
+carried one and neither the heading nor its card is clickable; the tiles and
+topic buttons **inside** them are. Both were removed in the owner's Home polish
+pass. Arrows stay where the click is real: the Continue banner, which is one
+button end to end, and `.ghost` actions such as *View full roadmap*.
+
+### The Continue banner
+
+Home shows one contextual, primary destination — the Continue banner — above
+three persistent secondary ones: Hardware Explorer, Quick Reference, Specialty.
+Those are **three**, and the banner never joins them as a fourth: it is present
+only while there is unfinished canonical work, and it outranks them while it is.
+
+The banner is one button across its full width, divided into what the learner
+was doing (tutorial id and title), where they had got to (step number, total and
+step title), that same position drawn as a bar, and the way back in. It reports
+the resume point and nothing else — no history, no percentage, no second
+suggestion. Home lays out in one band fewer without it.
+
 ## 5. JD-Xi visual anchor
 
 - The full Roland JD-Xi should usually remain on screen.

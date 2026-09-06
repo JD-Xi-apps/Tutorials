@@ -138,11 +138,45 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await p.waitForTimeout(250);
   ok((await hash()) === '#tutorial/B05', 'Start over goes to step 1');
 
-  /* --- Home offers the Continue card --- */
+  /* --- Home offers the Continue banner --- */
   await goto('#tutorial/B06/step/5');
   await goto('#home');
   ok(!(await p.evaluate(() => document.getElementById('continue-card').hidden)), 'Home shows a Continue card');
   ok((await p.textContent('#continue-title')).includes('B06'), 'the Continue card names the tutorial');
+  /*
+   * The banner reports four things across its width, and each is read from a
+   * different element - so a broken one renders as an empty column rather than
+   * as an error. The bar is checked because a width that never gets set draws a
+   * full rail, which reads as "finished" on a tutorial that is not.
+   */
+  const banner = await p.evaluate(() => {
+    const total = window.JDXI_TUTORIALS.B06.steps.length;
+    return {
+      step: document.getElementById('continue-step').textContent,
+      stepTitle: document.getElementById('continue-step-title').textContent,
+      stepTitleExpected: window.JDXI_TUTORIALS.B06.steps[4].title,
+      bar: document.getElementById('continue-bar').style.width,
+      barExpected: (5 / total) * 100 + '%',
+      label: document.getElementById('continue-card').getAttribute('aria-label'),
+      action: document.querySelector('.cc-go').textContent.trim(),
+      /* Home lays out in one band fewer without it; with it, nothing may fall
+         past the stage, which clips rather than scrolls and would say nothing.
+         offsetHeight, not getBoundingClientRect: the stage is transform-scaled,
+         so the rect is in scaled pixels and scrollHeight is not. */
+      hasContinue: document.querySelector('.shell').classList.contains('has-continue'),
+      overflow: document.querySelector('.shell').scrollHeight -
+        document.querySelector('.shell').offsetHeight,
+    };
+  });
+  ok(banner.step === 'Step 5 of ' + (await p.evaluate(() => window.JDXI_TUTORIALS.B06.steps.length)),
+    'the Continue banner states the step number and the total');
+  ok(banner.stepTitle === banner.stepTitleExpected,
+    'the Continue banner names the step the learner is on');
+  ok(banner.bar === banner.barExpected, 'the Continue banner draws the position it states');
+  ok(/step 5 of/i.test(banner.label || ''), 'the Continue banner has an accessible name with its position');
+  ok(/^Continue/.test(banner.action), 'the Continue banner carries its action affordance');
+  ok(banner.hasContinue, 'Home takes its Continue layout while the banner shows');
+  ok(banner.overflow <= 0, `Home fits the stage with the Continue banner (overflow ${banner.overflow}px)`);
   await p.click('#continue-card'); await p.waitForTimeout(260);
   ok((await hash()) === '#tutorial/B06/step/5', 'the Continue card returns to the right step');
 
@@ -237,6 +271,12 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await goto('#home');
   ok(await p.evaluate(() => document.getElementById('continue-card').hidden),
     'fixture did not become the Continue card');
+  ok(await p.evaluate(() => {
+    const sh = document.querySelector('.shell');
+    return !sh.classList.contains('has-continue') &&
+      getComputedStyle(document.querySelector('.footer-note')).display !== 'none' &&
+      sh.scrollHeight <= sh.offsetHeight;
+  }), 'with nothing to continue, Home returns to its five-band layout and its footer note');
 
   /* --- the lesson badge tells the three kinds apart --- */
   await goto('#tutorial/B03');
