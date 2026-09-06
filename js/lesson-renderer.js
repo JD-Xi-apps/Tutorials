@@ -113,6 +113,10 @@ window.JDXI_LESSON_RENDERER = (function () {
     hl.style.top = pct(box.y);
     hl.style.width = pct(box.width);
     hl.style.height = pct(box.height);
+    /* Opt-in identity for a caller that wires interaction to the box - the
+       Explorer overview links each box to its list entry. Attribute only:
+       the highlight itself is unchanged. */
+    if (opts.tag) hl.setAttribute("data-target", res.id);
     host.appendChild(hl);
 
     if (opts.label === false) return hl;
@@ -286,7 +290,10 @@ window.JDXI_LESSON_RENDERER = (function () {
 
     resolved.forEach(function (res, i) {
       if (res.state !== "ok") return;
-      addHighlight(canvas, res, null, tone(i), { label: opts.labels !== false });
+      addHighlight(canvas, res, null, tone(i), {
+        label: opts.labels !== false,
+        tag: !!opts.tagTargets,
+      });
     });
 
     canvas._resolveLabels = true;
@@ -365,7 +372,10 @@ window.JDXI_LESSON_RENDERER = (function () {
 
     resolved.forEach(function (res, i) {
       if (res.state !== "ok") return;
-      addHighlight(inner, res, toCrop, tone(i), { label: opts.labels === true });
+      addHighlight(inner, res, toCrop, tone(i), {
+        label: opts.labels === true,
+        tag: !!opts.tagTargets,
+      });
     });
 
     frame.appendChild(inner);
@@ -748,8 +758,12 @@ window.JDXI_LESSON_RENDERER = (function () {
    * `ids` are highlighted; ids that do not resolve on this image are skipped
    * rather than guessed at. `opts.labels` and `opts.small` behave as they do
    * for a step's full view. `opts.crop` requests the close-up crop of the
-   * first id that has a zoom, which is how a control detail page shows one
-   * control rather than the whole instrument.
+   * first id that has a zoom, which is how a control detail shows one
+   * control rather than the whole instrument; `opts.zoomFrom` names the
+   * target whose zoom frames the crop instead, so a group can be cropped to
+   * its own area while only its children are highlighted. `opts.tagTargets`
+   * stamps each highlight with its target id for a caller that wires
+   * interaction to the boxes.
    */
   function buildPanel(imageId, ids, opts) {
     opts = opts || {};
@@ -761,14 +775,21 @@ window.JDXI_LESSON_RENDERER = (function () {
     });
 
     if (opts.crop) {
-      var zoomSource = measurable.filter(function (r) {
-        return r.target.zoom;
-      })[0];
+      var zoomSource = null;
+      if (opts.zoomFrom) {
+        var from = resolveTarget(opts.zoomFrom);
+        if (from.state === "ok" && from.imageId === image.id && from.target.zoom) zoomSource = from;
+      } else {
+        zoomSource = measurable.filter(function (r) {
+          return r.target.zoom;
+        })[0];
+      }
       if (zoomSource) {
         var inCrop = containedIn(zoomSource.target.zoom, measurable);
         return buildCrop(image, zoomSource.target.zoom, inCrop, {
           labels: opts.labels === true,
           extraClass: opts.extraClass,
+          tagTargets: !!opts.tagTargets,
         });
       }
     }
@@ -776,6 +797,7 @@ window.JDXI_LESSON_RENDERER = (function () {
     return buildHardwareImage(image, measurable, {
       labels: opts.labels !== false,
       small: !!opts.small,
+      tagTargets: !!opts.tagTargets,
     });
   }
 
