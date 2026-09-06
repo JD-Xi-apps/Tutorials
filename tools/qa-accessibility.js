@@ -166,6 +166,53 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
     }
   }
 
+  /* ---- the Explorer popup is a dialog ----
+     Semantics and focus only; tools/test-explorer.js covers its behaviour. */
+  await p.evaluate(() => { window.location.hash = '#explorer/control/filterSection'; });
+  await p.waitForTimeout(300);
+  {
+    const d = await p.evaluate(() => {
+      const dlg = document.getElementById('exp-modal-dialog');
+      const title = document.getElementById('exp-modal-title');
+      return {
+        open: !document.getElementById('exp-modal').hidden,
+        role: dlg.getAttribute('role'),
+        modal: dlg.getAttribute('aria-modal'),
+        labelled: dlg.getAttribute('aria-labelledby') === title.id && !!title.textContent.trim(),
+        focusInside: dlg.contains(document.activeElement),
+        unnamed: [...dlg.querySelectorAll('button')].filter((b) => {
+          if ((b.getAttribute('aria-label') || '').trim()) return false;
+          const c = b.cloneNode(true);
+          c.querySelectorAll('[aria-hidden="true"]').forEach((n) => n.remove());
+          return !c.textContent.trim();
+        }).length,
+        h1: document.querySelectorAll('main:not([hidden]) h1').length,
+      };
+    });
+    ok(d.open, 'a control route opens the Explorer popup');
+    ok(d.role === 'dialog' && d.modal === 'true', 'the Explorer popup is role=dialog with aria-modal');
+    ok(d.labelled, 'the Explorer popup is labelled by its visible title');
+    ok(d.focusInside, 'opening the Explorer popup moves focus into it');
+    ok(d.unnamed === 0, `every control in the Explorer popup has an accessible name (${d.unnamed} without)`);
+    ok(d.h1 === 1, 'the popup adds no second h1 to the surface');
+    await p.keyboard.press('Tab');
+    const inRing = await p.evaluate(() => {
+      const el = document.activeElement;
+      const dlg = document.getElementById('exp-modal-dialog');
+      return el && el.tagName === 'BUTTON' && dlg.contains(el) && el.matches(':focus-visible');
+    });
+    ok(inRing, 'Tab inside the Explorer popup reaches a button with a visible focus ring');
+    await p.keyboard.press('Escape');
+    await p.waitForTimeout(250);
+    const after = await p.evaluate(() => ({
+      open: !document.getElementById('exp-modal').hidden,
+      hash: window.location.hash,
+      focusOnName: !!document.activeElement && document.activeElement.classList.contains('exp-item'),
+    }));
+    ok(!after.open && after.hash === '#explorer/view/top', 'Escape closes the Explorer popup onto its overview');
+    ok(after.focusOnName, 'closing the Explorer popup puts focus on the area it belonged to');
+  }
+
   /* ---- the topbar's icon-only control ---- */
   await p.evaluate(() => { window.location.hash = '#home'; });
   await p.waitForTimeout(150);

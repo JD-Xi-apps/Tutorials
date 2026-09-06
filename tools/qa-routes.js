@@ -252,8 +252,12 @@ const pw = require('playwright');
       });
       return out;
     });
+    /* The Explorer overviews are the two surfaces that must fit the stage
+       with nothing scrolling - the instrument plus every major area at once -
+       and a control route adds the popup over the fuller of them. */
     const sample = ['#home', '#tutorial/B01', '#level/beginner', '#topic/making-beats',
-                    '#progress', '#settings', '#favorites', routes[routes.length - 1]]
+                    '#progress', '#settings', '#favorites', routes[routes.length - 1],
+                    '#explorer/view/top', '#explorer/view/rear', '#explorer/control/effectsSection']
       .concat(stressed);
     viewportSample = sample;
     for (const [w, h] of VIEWPORTS) {

@@ -73,6 +73,10 @@ error, no failed resource, no page-level scrollbar and a rendered view. Also
 asserts the documented fallbacks (malformed route, unknown tutorial, invalid
 step) and browser Back/Forward.
 
+An Explorer control route (`#explorer/control/<id>`) renders its panel's
+overview with the control's popup open, so it is covered here like any other
+route, and the viewport sweep includes both overviews and one popup.
+
 `--strict-routes` treats a route that falls back to `#home` as a failure. Use it
 once a surface is implemented; without it an unimplemented route passes silently
 because falling back *is* its correct behaviour.
@@ -106,6 +110,32 @@ It also asserts two things that must **not** happen: a development fixture touch
 learner state, and an empty collection rendering a placeholder page. The first of those
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
 the favourite control visible on a fixture.
+
+## `test-explorer.js`
+
+```
+node tools/test-explorer.js [chromium|firefox]
+```
+
+Needs Playwright. The Hardware Explorer is interaction-heavy, so it has its own
+behaviour suite rather than a screenshot: Explorer home is exactly two panel
+choices with no control inventory; each overview lists every major area once,
+by name only, and fits the stage with nothing scrolling, clipped or hidden at
+every supported window shape; pointing at a name lights its box on the
+instrument and vice versa, for the pointer and for keyboard focus alike; a box
+or a name opens the same popup, children step inside it, a parent step goes
+back, and there is never a second popup; the popup behaves as a dialog (focus
+in, Tab trapped, Escape, backdrop and Close all close it, focus returns to what
+opened it); and a control deep link or a search hit lands on the right overview
+with the popup already open, closing leaves the learner there, and browser
+Back and Forward behave.
+
+It also walks **every** registry target through the popup and asserts, on the
+rendered text, that what Roland says it does is there and that none of the
+curriculum-mapping or citation material the owner removed from the Explorer is
+- *Where this is taught*, *Not covered*, *Nearby controls*, *Source:*. Those
+words still appear in the data and the source notes, on purpose; the check is
+on what the learner sees.
 
 ## `qa-runtime.js`
 
