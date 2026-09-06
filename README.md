@@ -1,121 +1,228 @@
 # JD-Xi Tutorial Hub
 
-A desktop-first visual tutorial app for complete beginners learning the Roland JD-Xi synthesizer.
+**Learn the Roland JD-Xi by actually using the Roland JD-Xi.**
 
-The product goal is not to reproduce a conventional manual. The app should keep the physical JD-Xi visible as the learner's visual anchor, explain one action at a time in plain language, highlight the exact hardware controls involved, and use close-up views when menu navigation or dense controls require them.
+JD-Xi Tutorial Hub is a visual, hands-on learning app built for people who want to get comfortable with the synthesizer without reading a manual from front to back or learning a pile of music and synthesis theory first.
 
-## What decides what
+The instrument stays at the center of every lesson. The app shows you **where to look, what to touch, what to listen for, and what to do next** — one practical step at a time.
 
-[`docs/PRODUCT-CURRICULUM-MASTER-PLAN.md`](docs/PRODUCT-CURRICULUM-MASTER-PLAN.md) is the
-owner-approved v1 product and curriculum baseline. It defines the thirty canonical
-tutorials, what each one owns, what v1 deliberately leaves out, and which supporting
-surfaces ship. Read it before changing what a tutorial teaches.
+No account. No installation. No internet connection required.
 
-Official Roland documentation remains the only authority for JD-Xi *procedure*; the master
-plan decides what is taught, Roland decides what is true. See
-[`docs/ROLAND-SOURCE-MAP.md`](docs/ROLAND-SOURCE-MAP.md).
+---
 
-## Current baseline
+## From first sound to full performance
 
-**All thirty canonical tutorials are authored, and reconciled against the master plan.**
-B01–B10 run as one guided sequence, from *Meet your JD-Xi* to a *First 15-minute
-challenge*; N01–N10 continue from *Learn the menu controls* through building patterns and
-sounds to *Save your work* and *Getting unstuck*; I01–I10 go from *Build a bass sound* to
-a *Performance challenge* played on a groove you built and saved yourself.
+The core course contains **30 guided tutorials** across three levels:
 
-The count is exactly thirty and the ids never move. Everything else is a reference to
-them.
+### Beginner
+Get comfortable with the instrument itself.
 
-### The six ways in
+- Meet the JD-Xi
+- Get your first sound
+- Find sounds you like
+- Learn the four Parts
+- Use the keyboard and performance controls
+- Shape sounds with the front-panel knobs
+- Add effects
+- Play patterns
+- Change tempo and feel
+- Finish with a first 15-minute challenge
 
-- **Guided learning path** — Beginner, Novice and Intermediate, each a level page listing
-  its ten tutorials in order with your progress against them.
-- **Topics** — ten collections on the home screen, from *Getting started* to *Mini
-  challenges*, each gathering tutorials from any level. Four more (*Sound design*,
-  *Arpeggiator*, *Troubleshooting*, *Performance*) are reachable from the *Other topics*
-  strip on any topic page.
-- **Hardware Explorer** — every control on the instrument, top panel and rear, with what
-  it does in plain language and which tutorial teaches it. Controls the course does not
-  teach are shown too, marked *Not covered in the guided course*.
-- **Quick Reference** — 21 short procedures for looking something up rather than learning
-  it. Destructive ones carry their warning above the procedure.
-- **Specialty** — three optional lessons for the microphone that came with the JD-Xi:
-  Vocoder, AutoPitch and Auto Note. Optional throughout, and never counted toward the
-  thirty.
-- **Search** — one magnifying glass in the topbar, over everything above. Results are
-  grouped, and a step-level hit links to that exact step.
+### Novice
+Start creating instead of only exploring.
 
-Anything can also be reached by direct link — `index.html#level/novice`,
-`index.html#topic/making-beats`, `index.html#tutorial/B05/step/8`,
-`index.html#reference/save-program`, `index.html#explorer/control/cutoffKnob`.
+- Learn the menu controls
+- Understand Programs and Parts
+- Learn the sequencer
+- Build a drum beat
+- Add a bass line
+- Combine multiple Parts
+- Use the arpeggiator
+- Edit sounds intentionally
+- Save your work safely
+- Learn how to get unstuck
 
-### Progress, and what counts
+### Intermediate
+Turn those skills into something of your own.
 
-A tutorial is complete when you press **Finish Tutorial** on its last step. Reaching the
-last step, or deep-linking to it, does not complete anything.
+- Build bass, pad, and lead sounds
+- Shape filters, envelopes, movement, and effects
+- Build a four-Part Program
+- Create a fuller pattern
+- Save and organize your creation
+- Perform it live with mutes, tempo, Pitch, Mod, effects, and other hands-on controls
 
-Reopening a tutorial you were part-way through offers **Continue** or **Start over**
-rather than choosing for you. Reopening a completed one gives you a review overview where
-any step is one click away. Finishing B10, N10 and I10 closes the Beginner path, the
-Novice path and the course.
+The final tutorials form a practical capstone: **build a groove, save it, then perform it.**
 
-Completions, your place, and your **Bookmarked** lessons are kept in this browser's local
-storage and nowhere else. There is no account and nothing is sent anywhere. If storage is
-unavailable the app stays fully usable and says so; only persistence is lost.
+---
 
-> **Bookmarked is the app feature. Favorite is the JD-Xi's.** The instrument has its own
-> Favorite buttons, which several tutorials teach; the app never uses that word for
-> itself, and `tools/validate-data.js` fails the build if it starts to.
+## See exactly what the lesson is talking about
 
-## Running it
+Every tutorial uses the JD-Xi itself as the visual reference.
 
-Open `index.html` directly in a desktop browser by double-clicking it. There is no build
-step, no install, no package manager and no server — the app is static HTML, CSS and
-classic JavaScript, uses no modules and makes no network requests of any kind, so it
-works from a `file://` URL exactly as it does from anywhere else.
+The app can show:
 
-Firefox is the primary target; it is also verified in Chromium.
+- the full top panel
+- the rear panel
+- highlighted controls
+- close-up views when a control needs more detail
+- display-focused views for menu procedures
 
-## Checking it
+That means instructions such as “press Part Select,” “turn Cutoff,” or “hold Shift and press Enter” are paired with a visual showing exactly where those controls are on the instrument.
 
-Everything in [`tools/`](tools/) is development-only and is never loaded by the app.
+---
 
-```
-node tools/validate-data.js --beta     # catalog, registry, collections, Quick Reference,
-                                       # Specialty and the Explorer (no dependencies)
-node tools/test-progress.js            # local-state failure modes and the schema-1
-                                       # migration (no dependencies)
-node tools/qa-runtime.js               # the runtime contract, plus a cold file:// load of
-                                       # every route family
-node tools/qa-routes.js --strict-routes --viewports
-node tools/test-behaviour.js           # what the learner experiences, end to end
-node tools/qa-accessibility.js
-node tools/frozen-surfaces.js --out <dir> --compare <baseline>
-```
+## Hardware Explorer
 
-Add `--browser firefox` to `qa-routes.js`, or a `firefox` argument to `test-behaviour.js`
-and `qa-accessibility.js`, to run the same suites in the owner's default browser.
+Not sure what a button, knob, jack, or control does?
 
-The first two need nothing installed. The rest need Playwright, which the repository does
-not depend on and does not install.
+**Hardware Explorer** lets you browse the JD-Xi itself.
 
-## Layout contract
+Every mapped control includes:
 
-The app uses a 1440 × 900 reference canvas and scales the entire canvas proportionally to fit the current desktop browser window. There should be no page-level horizontal or vertical scrollbars. Height is the preferred limiting dimension; width limits scale only when required to prevent clipping.
+- its location on the instrument
+- the name printed on the panel
+- a plain-language explanation of what it does
+- related controls
+- links to tutorials that use it
+- safety notes where they matter
 
-See [`docs/DESIGN-RULES.md`](docs/DESIGN-RULES.md) for the authoritative visual and
-interaction rules, and [`docs/TUTORIAL-ARCHITECTURE.md`](docs/TUTORIAL-ARCHITECTURE.md)
-for the authoritative design of the tutorial system.
+Controls that are outside the guided course are still visible, so the Explorer can also work as a practical reference when you are simply trying to understand the panel.
 
-Every technical claim traces to official Roland documentation:
+---
 
-| Where | What it records |
-|---|---|
-| [`docs/ROLAND-SOURCE-MAP.md`](docs/ROLAND-SOURCE-MAP.md) | which Roland document governs which procedure |
-| [`docs/tutorials/`](docs/tutorials/) | a per-step evidence table for every tutorial, and for the Specialty lessons |
-| [`docs/QUICK-REFERENCE-SOURCES.md`](docs/QUICK-REFERENCE-SOURCES.md) | the source behind each of the 21 procedures |
-| [`docs/HARDWARE-EXPLORER-SOURCES.md`](docs/HARDWARE-EXPLORER-SOURCES.md) | the source behind every control description |
-| [`docs/HARDWARE-TARGETS.md`](docs/HARDWARE-TARGETS.md) | the measured hardware registry |
+## Quick Reference
 
-No Roland PDF is committed to this repository — only links, page references and our own
-reconciliation notes.
+Already learned something and just need to remember how to do it?
+
+The **Quick Reference** section contains 21 concise procedures for common tasks, including:
+
+- power on and off safely
+- select a Part
+- find a Tone
+- understand Program vs Part
+- play and stop a Pattern
+- mute Parts
+- change or tap Tempo
+- save a Program
+- register and recall a JD-Xi Favorite
+- correct a sequencer step
+- use TR-REC
+- use Step Recording
+- use the arpeggiator
+- use Transpose
+- use Portamento
+- get back to the top screen
+
+Destructive procedures are clearly identified before you reach the steps that perform them.
+
+---
+
+## Search the whole app
+
+The built-in **Search** can find:
+
+- tutorials
+- individual tutorial steps
+- hardware controls
+- Quick Reference procedures
+- optional Specialty lessons
+- topic collections
+
+Search for what you are trying to do — **save**, **beat**, **cutoff**, **tempo**, **stuck**, **vocoder** — and jump directly to the relevant place.
+
+---
+
+## Optional Specialty lessons
+
+The main 30-tutorial course stays focused on everyday standalone JD-Xi use.
+
+For the microphone features, **Specialty** adds three optional lessons:
+
+- Vocoder
+- AutoPitch
+- Auto Note
+
+These use the microphone supplied with the JD-Xi and are tracked separately from the main course.
+
+---
+
+## Progress that stays simple
+
+The app remembers where you left off.
+
+You can:
+
+- continue an unfinished tutorial
+- start it over
+- mark a tutorial complete with **Finish Tutorial**
+- review completed tutorials and jump directly to any step
+- track Beginner, Novice, Intermediate, and overall course progress
+- bookmark useful tutorials and Specialty lessons
+
+Your progress and bookmarks stay **in your browser on your computer**. There is no account, cloud sync, or online service behind the app.
+
+> **Bookmarked** is the app feature. **Favorite** refers to the JD-Xi's own hardware Favorite system.
+
+---
+
+## Designed for the way the JD-Xi is actually used
+
+The course is deliberately practical.
+
+It emphasizes:
+
+- learning by listening
+- changing one thing at a time
+- understanding the four Parts
+- finding and shaping useful sounds
+- building beats and patterns
+- saving without accidentally overwriting work
+- using the instrument as a standalone groove and performance machine
+
+It does **not** require a music-theory course first, and it does not turn the JD-Xi into a computer/DAW lesson.
+
+The tutorial target is **JD-Xi System 1.51**.
+
+---
+
+## Runs completely offline
+
+JD-Xi Tutorial Hub is a static desktop app.
+
+There is:
+
+- no installer
+- no build process
+- no server
+- no account
+- no network requirement
+
+Once the repository is on your computer, open:
+
+`index.html`
+
+in a desktop browser.
+
+Firefox is the primary target, and the app also works in Chromium-based browsers.
+
+Because everything runs locally, the Tutorial Hub is easy to keep beside the JD-Xi and use whenever you need it.
+
+---
+
+## JD-Xi Tutorial Hub v1.0
+
+Version 1.0 includes:
+
+- **30** guided tutorials
+- **3** optional Specialty lessons
+- **21** Quick Reference procedures
+- a complete Hardware Explorer
+- universal Search
+- progress and Continue support
+- bookmarks
+- full offline operation
+
+The goal is simple:
+
+**Spend less time wondering what the JD-Xi is doing, and more time making sounds, patterns, and performances with it.**
