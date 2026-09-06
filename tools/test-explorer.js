@@ -162,6 +162,7 @@ const VIEWPORTS = [
   ok(!/All main controls/.test(home.text), 'explorer home has no "All main controls" section');
   ok(!/\d+ main areas/.test(home.text), 'explorer home shows no area counts');
   REMOVED.forEach((w) => ok(home.text.indexOf(w) < 0, `explorer home never says "${w}"`));
+  ok(!/Owner's Manual|Parameter Guide/i.test(home.text), 'explorer home has no citation wording');
   await assertFit('explorer home');
   await p.click('.exp-choice.img-top'); await p.waitForTimeout(250);
   ok((await hash()) === '#explorer/view/top', 'the top card opens the top overview');
@@ -192,7 +193,7 @@ const VIEWPORTS = [
       `${v.id}: no description text on the overview`);
     ok(ov.text.indexOf('NOT COVERED') < 0, `${v.id}: no coverage badges`);
     REMOVED.forEach((w) => ok(ov.text.indexOf(w) < 0, `${v.id}: overview never says "${w}"`));
-    ok(!/(Owner's Manual|Parameter Guide) p\.\s*\d/.test(ov.text), `${v.id}: no source citations on the overview`);
+    ok(!/Owner's Manual|Parameter Guide/i.test(ov.text), `${v.id}: no source citations on the overview`);
     await assertFit(v.id + ' overview');
 
     /* hover linkage, both ways */
@@ -266,15 +267,20 @@ const VIEWPORTS = [
     if (st.title !== t.label) bad.push('title');
     if (st.view !== viewOf(id)) bad.push('wrong overview ' + st.view);
     if (t.what && st.text.indexOf(t.what) < 0) bad.push('what missing');
-    if (t.legend && st.text.indexOf('Printed on the panel: ' + t.legend) < 0) bad.push('legend missing');
+    /* The legend is shown as printed, minus a parenthetical that only points
+       at the manual - the MIC jack's "(See Owner's Manual)" - which reads as
+       a citation. Everything else, parentheses included, must be verbatim. */
+    const shownLegend = t.legend ? t.legend.replace(/\s*\((?:see )?(?:the )?owner'?s manual\)/i, '').trim() : null;
+    if (t.legend && st.text.indexOf('Printed on the panel: ' + shownLegend) < 0) bad.push('legend missing');
+    if (id === 'micJack' && !/Printed on the panel: MIC(?![^\n]*\()/.test(st.text)) bad.push('MIC legend not shown as plain "MIC"');
     if (!t.legend && /Printed on the panel/.test(st.text)) bad.push('legend invented');
     if (t.safety && st.text.indexOf('Worth knowing: ' + t.safety) < 0) bad.push('safety missing');
     if (t.trouble && st.text.indexOf('If it seems to do nothing: ' + t.trouble) < 0) bad.push('troubleshooting missing');
     if (t.source && st.text.indexOf(t.source) >= 0) bad.push('source shown');
     REMOVED.forEach((w) => { if (st.text.indexOf(w) >= 0) bad.push('says "' + w + '"'); });
-    /* A page citation, as the data records one. The MIC jack's printed
-       legend really says "See Owner's Manual", and that is panel text. */
-    if (/(Owner's Manual|Parameter Guide) p\.\s*\d/.test(st.text)) bad.push('citation shown');
+    /* No citation-style wording anywhere in the popup - not the recorded
+       source, and not the MIC jack's printed pointer to the manual either. */
+    if (/Owner's Manual|Parameter Guide/i.test(st.text)) bad.push('citation shown');
     if (st.chips.length !== t.kids.length || t.kids.some((k) => st.chips.indexOf(k) < 0)) bad.push('children ' + st.chips.length + '/' + t.kids.length);
     if (st.dialogs !== 1) bad.push(st.dialogs + ' dialogs');
     if (st.contexts !== 0) bad.push('full-instrument context image inside the popup');

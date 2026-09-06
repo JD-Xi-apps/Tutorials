@@ -1215,6 +1215,18 @@
     return { node: fig, placement: aspect > 2 ? 'top' : 'side' };
   }
 
+  /*
+   * The legend as the popup shows it. The registry records what is printed,
+   * and the MIC jack's printed legend is literally "MIC (See Owner's Manual)".
+   * The owner asked for no citation-style wording in the Explorer, so a
+   * parenthetical that only points at the manual is dropped here, at
+   * presentation. Nothing else is touched: every other legend, parentheses
+   * included ("Menu / Write (Write boxed)"), is shown as printed.
+   */
+  function shownLegend(legend) {
+    return legend ? legend.replace(/\s*\((?:see )?(?:the )?owner'?s manual\)/i, '').trim() : legend;
+  }
+
   function fact(host, cap, text, cls) {
     if (!text) return;
     const p = el('p', 'exp-mfact ' + cls);
@@ -1247,7 +1259,7 @@
     const text = el('div', 'exp-mtext');
     if (d && d.what) text.appendChild(el('p', 'exp-mwhat', d.what));
     const facts = el('div', 'exp-mfacts');
-    fact(facts, 'Printed on the panel', t.panelLegend, 'legend');
+    fact(facts, 'Printed on the panel', shownLegend(t.panelLegend), 'legend');
     fact(facts, 'Worth knowing', d && d.safety, 'safety');
     fact(facts, 'If it seems to do nothing', d && d.troubleshooting, 'trouble');
     if (facts.childNodes.length) text.appendChild(facts);
