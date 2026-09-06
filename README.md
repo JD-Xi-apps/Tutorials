@@ -8,6 +8,10 @@ The JD-Xi stays at the center of every lesson. The app shows you **where to look
 
 ## How to use it
 
+**[Run JD-Xi Tutorial Hub in your browser](https://jd-xi-apps.github.io/Tutorials/)**
+
+Or run it locally:
+
 1. Download or clone this repository.
 2. Open the downloaded `Tutorials` folder.
 3. Open `index.html` in a desktop browser.
