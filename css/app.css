@@ -477,40 +477,119 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 /* specialty */
 .tut-card.specialty .tc-id { color:var(--purple); }
 
-/* hardware explorer */
-.exp-views { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-.exp-view { border:1px solid var(--line); background:#fff; border-radius:13px;
-  padding:12px 14px; text-align:left; cursor:pointer; transition:.12s ease;
-  display:flex; flex-direction:column; gap:4px; box-shadow:var(--shadow); }
-.exp-view:hover { border-color:#bebebb; transform:translateY(-1px); }
-.exp-view b { font-size:13px; }
-.exp-view span { font-size:11.5px; line-height:1.35; color:var(--muted); }
-.exp-count { font-size:10px !important; font-weight:800; letter-spacing:.3px;
-  text-transform:uppercase; }
-.exp-panel { background:#fff; border:1px solid var(--line); border-radius:13px;
-  padding:10px; box-shadow:var(--shadow); }
-.exp-panel.detail { display:grid; grid-template-columns:1.35fr 1fr; gap:10px; align-items:center; }
-.ctl-list { display:grid; grid-template-columns:repeat(2,1fr); gap:6px;
-  overflow:auto; min-height:0; align-content:start; padding-right:2px; }
-.ctl-cols { display:grid; grid-template-columns:1.6fr 1fr; gap:14px;
+/* ---------------------------------------------------------- hardware explorer
+   Two screens and one popup. Home is a two-way choice; the overview is the
+   instrument and its major areas as names, each pair linked by hover and
+   focus through data-target (.is-hot); detail opens in the popup over the
+   overview. Everything fits the stage: nothing here scrolls. */
+
+/* home: which side of the instrument */
+.exp-choices { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; width:100%;
+  max-width:1200px; margin:0 auto; }
+.exp-choice { display:flex; flex-direction:column; align-items:center; gap:5px;
+  border:1px solid var(--line); background:#fff; border-radius:16px; padding:24px 26px 22px;
+  cursor:pointer; transition:.12s ease; box-shadow:var(--shadow); text-align:center; }
+.exp-choice:hover { border-color:#bebebb; transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(0,0,0,.10); }
+.exp-choice-fig { display:flex; align-items:center; justify-content:center; width:100%;
+  height:300px; margin-bottom:10px; }
+.exp-choice-img { max-width:100%; max-height:100%; display:block;
+  filter:drop-shadow(0 7px 9px rgba(0,0,0,.13)); }
+.exp-choice b { font-size:21px; letter-spacing:-.4px; }
+.exp-choice-sub { font-size:12.5px; line-height:1.4; color:var(--muted); max-width:440px; }
+
+/* overview: the instrument above, its major areas below, both filling the
+   body exactly. The top view is height-bound (its width follows from the
+   image's aspect); the rear strip is width-bound. The stage is a fixed
+   1440x900, so these resolve to one deterministic layout. */
+.exp-overview { flex:1 1 auto; min-height:0; width:100%; display:grid;
+  grid-template-rows:minmax(0,1fr) auto; gap:10px; justify-items:center; }
+.exp-map { min-height:0; width:100%; display:flex; align-items:center; justify-content:center;
+  background:#fff; border:1px solid var(--line); border-radius:13px; padding:8px 12px;
+  box-shadow:var(--shadow); }
+.exp-map .jdxi-canvas { flex:none; }
+.exp-map .jdxi-canvas.img-top { height:100%; width:auto; max-width:100%; }
+.exp-map .jdxi-canvas.img-rear { width:100%; height:auto; }
+/* The rear strip is short; its overview hugs the image and centres rather
+   than stretching a white box around it. */
+.exp-overview[data-view="rear"] { grid-template-rows:auto auto; align-content:center; }
+
+/* names only - what a thing is called; the popup says what it does */
+.exp-names { width:100%; display:grid; gap:5px 6px; }
+.exp-names.cols-5 { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.exp-names.cols-6 { grid-template-columns:repeat(6,minmax(0,1fr)); }
+.exp-item { display:flex; align-items:center; gap:8px; min-width:0;
+  border:1px solid var(--line); background:#fff; border-radius:9px; padding:6px 10px;
+  font-size:12px; font-weight:720; line-height:1.25; text-align:left; cursor:pointer;
+  transition:.12s ease; }
+.exp-face-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.exp-dot { flex:none; width:8px; height:8px; border-radius:50%; background:var(--t);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--t) 22%,transparent); }
+.tone-a { --t:var(--blue); } .tone-b { --t:var(--orange); } .tone-c { --t:var(--green); }
+
+/* the linked pair: a lit name and a lit box, everything else stepping back */
+.exp-item:hover, .exp-item.is-hot,
+.exp-chip:hover, .exp-chip.is-hot { border-color:var(--t);
+  background:color-mix(in srgb,var(--t) 9%,#fff);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--t) 22%,transparent); }
+.exp-map .hl, .exp-mfigure .hl { pointer-events:auto;
+  transition:background .12s ease, box-shadow .12s ease, opacity .12s ease; }
+.exp-map .hl { cursor:pointer; }
+.exp-overview.has-hot .hl:not(.is-hot), .exp-mbody.has-hot .hl:not(.is-hot) { opacity:.38; }
+.exp-overview .hl.is-hot, .exp-mbody .hl.is-hot { z-index:2;
+  background:color-mix(in srgb,currentColor 36%,transparent);
+  box-shadow:0 0 0 4px color-mix(in srgb,currentColor 40%,transparent),
+    0 0 18px color-mix(in srgb,currentColor 60%,transparent); }
+
+/* popup: over the whole stage, inside it, never scrolling the page */
+.exp-modal { position:absolute; inset:0; z-index:60; display:grid; place-items:center; }
+.exp-modal[hidden] { display:none; }
+.exp-backdrop { position:absolute; inset:0; background:rgba(20,20,20,.46); }
+.exp-dialog { position:relative; width:900px; max-width:calc(100% - 80px); max-height:780px;
+  background:#fff; border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 24px 60px rgba(0,0,0,.28); display:flex; flex-direction:column; overflow:hidden; }
+.exp-mhead { display:flex; align-items:flex-start; gap:14px; padding:18px 20px 12px 24px;
+  border-bottom:1px solid var(--line); }
+.exp-mback { flex:none; margin-top:7px; border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:6px 12px; font-size:12px; font-weight:750; cursor:pointer;
+  transition:.12s ease; white-space:nowrap; }
+.exp-mback:hover { border-color:#bebebb; background:#fcfcfb; }
+.exp-mback[hidden] { display:none; }
+.exp-mident { flex:1; min-width:0; }
+.exp-mkicker { display:block; font-size:10.5px; font-weight:850; letter-spacing:.5px;
+  text-transform:uppercase; color:var(--red); }
+.exp-mtitle { margin:2px 0 0; font-size:24px; letter-spacing:-.6px; line-height:1.1; }
+.exp-mtitle:focus, .exp-mtitle:focus-visible { outline:none; }
+.exp-mclose { flex:none; width:32px; height:32px; border:1px solid var(--line); background:#fff;
+  border-radius:50%; cursor:pointer; font-size:13px; color:var(--muted); display:grid;
+  place-items:center; padding:0; transition:.12s ease; }
+.exp-mclose:hover { background:#f1f1ee; color:var(--ink); }
+.exp-mbody { padding:18px 24px 22px; display:grid; gap:22px; align-items:start;
   overflow:auto; min-height:0; }
-.ctl-col h3 { margin:0 0 6px; font-size:11px; font-weight:850; letter-spacing:.4px;
-  text-transform:uppercase; color:var(--muted); }
-.ctl-col { display:flex; flex-direction:column; gap:5px; }
-.ctl-row { display:grid; grid-template-columns:minmax(120px,auto) 1fr auto; gap:9px;
-  align-items:baseline; border:1px solid var(--line); background:#fff; border-radius:9px;
-  padding:7px 10px; text-align:left; cursor:pointer; transition:.12s ease; }
-.ctl-row:hover { border-color:#bebebb; background:#fcfcfb; }
-.ctl-name { font-size:12px; font-weight:720; }
-.ctl-what { font-size:11px; line-height:1.35; color:var(--muted);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.ctl-flag { font-size:9px; font-weight:800; letter-spacing:.3px; text-transform:uppercase;
-  color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:1px 6px;
-  white-space:nowrap; }
-.ctl-row.uncovered { background:#fbfbf9; }
-.ctl-legend, .ctl-safety { font-size:12.5px !important; line-height:1.5; }
-.ctl-safety { color:#7a4400 !important; }
-.ctl-uncovered { font-weight:750; color:var(--ink) !important; }
+.exp-mbody.side { grid-template-columns:minmax(0,1fr) auto; }
+.exp-mbody.top { grid-template-columns:minmax(0,1fr); justify-items:center; }
+.exp-mbody.top .exp-mtext { justify-self:stretch; }
+.exp-mtext { min-width:0; display:flex; flex-direction:column; gap:12px; }
+.exp-mwhat { margin:0; font-size:14px; line-height:1.55; }
+.exp-mfacts { display:flex; flex-direction:column; gap:8px; }
+.exp-mfact { margin:0; font-size:12.5px; line-height:1.5; color:var(--muted); }
+.exp-mfact b { color:var(--ink); }
+.exp-mfact.safety { color:#7a4400; background:#fff4e5; border:1px solid #f0c98a;
+  border-radius:10px; padding:8px 11px; }
+.exp-mfact.safety b { color:#7a4400; }
+.exp-mkids { border-top:1px solid var(--line); padding-top:12px; }
+.exp-mkids-cap { font-size:10px; font-weight:850; letter-spacing:.5px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:7px; }
+.exp-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.exp-chip { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line);
+  background:#fff; border-radius:999px; padding:5px 12px 5px 9px; font-size:11.5px;
+  font-weight:700; cursor:pointer; transition:.12s ease; }
+/* the crop: sized from its own aspect (set by the renderer), beside the text
+   when squarish, across the top when it is a strip */
+.exp-mfigure { min-width:0; display:flex; justify-content:center; }
+.exp-mbody.side .crop-frame.exp-mcrop { width:min(380px,calc(250px * var(--crop-aspect,1))); height:auto; }
+.exp-mbody.top .crop-frame.exp-mcrop { width:min(100%,calc(190px * var(--crop-aspect,1))); height:auto; }
+.exp-mbody.top .exp-mfigure { width:100%; }
 
 /* search */
 .searchwrap { position:absolute; top:36px; left:0; right:0; z-index:40;
@@ -544,19 +623,6 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 
 /* Dense reference surfaces: top-aligned, scrolling inside the body only. */
 .cat-body.dense { justify-content:flex-start; overflow:auto; padding-right:4px; }
-
-/* Explorer view: keep the instrument readable but leave the list room. */
-.exp-panel { max-width:1020px; margin:0 auto; width:100%; }
-.exp-view .exp-count { color:var(--muted); }
-#view-catalog .exp-panel .jdxi-canvas { width:100%; }
-.ctl-list { grid-template-columns:repeat(3,1fr); overflow:visible; }
-
-/* Explorer control detail: a bounded close-up beside a small context view. */
-.exp-panel.detail { display:grid; grid-template-columns:1fr 300px; gap:16px;
-  align-items:start; max-width:1100px; }
-.exp-closeup, .exp-context { display:flex; flex-direction:column; min-width:0; }
-.crop-frame.exp-crop { width:100%; height:250px; }
-.exp-context .jdxi-canvas { width:100%; }
 
 /* ------------------------------------------ learner state and completion ---
    Continue card, review overview, resume choice, Finish action and the
@@ -638,5 +704,3 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
   border-radius:999px; padding:3px 10px; font:inherit; font-size:11px; font-weight:700;
   cursor:pointer; opacity:.85; transition:.12s ease; }
 .qr-link:hover { opacity:1; background:rgba(255,255,255,.5); }
-
-.ctl-trouble { font-size:12.5px !important; line-height:1.5; }

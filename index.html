@@ -258,6 +258,30 @@
           <button class="lsn-nav back" id="cat-back" type="button">&lsaquo; Home</button>
           <span class="foot-hint" id="cat-hint"></span>
         </div>
+
+        <!--
+          Hardware Explorer popup. One dialog, filled by app.js with whichever
+          control is on show; it sits over the panel overview rather than being
+          a route of its own, so closing it leaves you on that overview. Lives
+          inside the catalog view so it is hidden with it.
+        -->
+        <div class="exp-modal" id="exp-modal" hidden>
+          <div class="exp-backdrop" id="exp-modal-backdrop"></div>
+          <div class="exp-dialog" id="exp-modal-dialog" role="dialog" aria-modal="true"
+               aria-labelledby="exp-modal-title">
+            <div class="exp-mhead">
+              <button class="exp-mback" id="exp-modal-back" type="button" aria-label="Back" hidden></button>
+              <div class="exp-mident">
+                <span class="exp-mkicker" id="exp-modal-kicker"></span>
+                <h2 class="exp-mtitle" id="exp-modal-title" tabindex="-1"></h2>
+              </div>
+              <button class="exp-mclose" id="exp-modal-close" type="button" aria-label="Close">
+                <span aria-hidden="true">✕</span>
+              </button>
+            </div>
+            <div class="exp-mbody" id="exp-modal-body"></div>
+          </div>
+        </div>
       </main>
     </div>
   </div>

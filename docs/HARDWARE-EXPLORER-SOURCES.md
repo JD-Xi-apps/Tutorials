@@ -59,10 +59,12 @@ parent `stepButtons` carries the fuller description, including the measure-switc
 
 The master plan (§35) wants omitted features to stay **visible**, so that the owner can notice
 what v1 left out and say whether they want it later. The Explorer therefore shows every
-control, and labels the ones no tutorial or Specialty lesson reaches as *Not covered in the
-guided course*.
+control. It no longer says which tutorial teaches a control or marks the untaught ones — the
+Explorer is about the hardware itself — so the set below is recorded here, for the owner,
+rather than shown to the learner.
 
-That set is computed, so it moves with the curriculum. As of this reconciliation it is:
+That set is computed from the catalogue, so it moves with the curriculum. As of this
+reconciliation it is:
 
 - **`realTimeRecButton`, `lfoWaveformControl`, `pulseWidthKnob`, `levelKnob`,
   `effect2TypeButton`, `analogOscSection`** — controls the curriculum reconciliation
@@ -96,6 +98,6 @@ that:
   deliberate exception of `rearPanel`'s children, which *are* the rear panel's major items.
 - The panel views are rendered with `labels: false`. The instrument shows **where** things are;
   the list beside it says **what** they are.
-- Finer targets are reached by opening their parent, which lists its children, or through the
-  *Nearby controls* strip on any control page — so every one of the 99 is reachable without any
-  view ever drawing more than its own major groups.
+- Finer targets are reached by opening their parent, whose popup lists its children and steps
+  back to it — so every one of the 99 is reachable without any view ever drawing more than its
+  own major groups.

@@ -13,15 +13,16 @@
  * - Function is NEVER inferred from an internal target name. Every `what`
  *   traces to the Roland page in `source`, reconciled in
  *   docs/HARDWARE-EXPLORER-SOURCES.md.
- * - Which tutorials teach a control is COMPUTED from the catalogue, never
- *   authored here, so it cannot go stale.
- * - A control no tutorial reaches is not hidden. It is shown and labelled
- *   "Not covered in the guided course", which is how the master plan (sec 35)
- *   wants omitted features to stay visible.
+ * - `source` is provenance for the data checks (tools/validate-data.js
+ *   requires one per description). The Explorer does not display it.
+ * - A control no tutorial reaches is not hidden: every registry target is
+ *   described and reachable here, which is how the master plan (sec 35)
+ *   wants omitted features to stay visible. Whether the guided course
+ *   teaches a control is not something the Explorer says either way.
  *
- * `majorGroups` is what the landing view shows: the top-level controls and
+ * `majorGroups` is what each panel overview shows: the top-level controls and
  * sections only, so the learner meets a readable panel rather than 99
- * simultaneous labels. Drilling into a group reveals its children.
+ * simultaneous labels. Opening a group reveals its children.
  *
  * Classic script on purpose - the app runs from file://; no modules, no fetch.
  */

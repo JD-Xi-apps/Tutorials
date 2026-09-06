@@ -66,27 +66,6 @@
     return fb || null;
   }
 
-  /*
-   * Which tutorials and specialty lessons touch a hardware target. COMPUTED,
-   * never authored, so an Explorer page cannot claim a tutorial that no longer
-   * mentions the control.
-   */
-  function lessonsUsingTarget(id) {
-    const out = [];
-    const all = tutorials();
-    Object.keys(all).sort().forEach((tid) => {
-      const steps = all[tid].steps.filter((st) => (st.hardwareTargets || []).indexOf(id) >= 0);
-      if (steps.length) out.push({ kind: 'tutorial', id: tid, title: all[tid].title, step: steps[0].id, stepIndex: all[tid].steps.indexOf(steps[0]) });
-    });
-    const sp = specialty();
-    sp.order.forEach((sid) => {
-      const l = sp.lessons[sid];
-      const steps = l.steps.filter((st) => (st.hardwareTargets || []).indexOf(id) >= 0);
-      if (steps.length) out.push({ kind: 'specialty', id: sid, title: l.title, step: steps[0].id, stepIndex: l.steps.indexOf(steps[0]) });
-    });
-    return out;
-  }
-
   function tutorialsInLevel(level) {
     const all = tutorials();
     return Object.keys(all)
@@ -112,6 +91,12 @@
   function showView(name) {
     Object.keys(views).forEach((k) => { views[k].hidden = k !== name; });
     document.body.classList.toggle('in-lesson', name === 'lesson');
+    /* The Explorer popup belongs to its overview; leaving the catalog view
+       leaves both behind. */
+    if (name !== 'catalog') {
+      explorerShown = null;
+      hideModal();
+    }
   }
 
   function el(tag, cls, text) {
@@ -132,6 +117,10 @@
    *   discovery surfaces     #level/<level>             derived from the catalog
    *                          #topic/<collection-id>     js/collections.js
    *                          #bookmarks #progress #settings
+   *   hardware explorer      #explorer                  js/explorer.js
+   *                          #explorer/view/<view>
+   *                          #explorer/control/<id>     the view the control is
+   *                                                     on, with its popup open
    *
    * Nothing is hardcoded per tutorial or per collection: adding either needs
    * only a data entry.
@@ -268,11 +257,13 @@
         : { view: 'home', redirect: '#explorer' };
     }
 
+    /* A control route is its panel's overview with the control's popup open:
+       the same surface, carrying a target. */
     m = EXPLORER_CONTROL_ROUTE.exec(hash);
     if (m) {
-      const t = hardware().targets[m[1]];
-      return t
-        ? { view: 'catalog', surface: 'explorer-control', targetId: m[1] }
+      const view = viewForTarget(m[1]);
+      return view
+        ? { view: 'catalog', surface: 'explorer-view', explorerView: view, targetId: m[1] }
         : { view: 'home', redirect: '#explorer' };
     }
 
@@ -924,180 +915,394 @@
 
   /* ----------------------------------------------- Hardware Explorer surface */
 
-  function explorerControlRow(id) {
-    const t = hardware().targets[id];
-    const d = describeTarget(id);
-    const uses = lessonsUsingTarget(id);
-    const row = el('button', 'ctl-row' + (uses.length ? '' : ' uncovered'));
-    row.type = 'button';
-    row.appendChild(el('span', 'ctl-name', t.label));
-    row.appendChild(el('span', 'ctl-what', d ? d.what : ''));
-    if (!uses.length) row.appendChild(el('span', 'ctl-flag', 'Not covered'));
-    row.setAttribute('aria-label', t.label + '. ' + (d ? d.what : '') + (uses.length ? '' : ' Not covered in the guided course.'));
-    row.addEventListener('click', () => go('#explorer/control/' + id));
-    return row;
+  /*
+   * The Explorer is two screens and one popup:
+   *
+   *   #explorer                a two-way choice: Top panel or Rear panel
+   *   #explorer/view/<view>    the instrument with its major areas boxed, and
+   *                            the same areas as a list of names. Pointing at
+   *                            either face of an area lights the other.
+   *   #explorer/control/<id>   the SAME overview for the panel the control
+   *                            lives on, with that control's detail open in a
+   *                            popup - so a search hit or a saved link lands
+   *                            on the popup, and closing it leaves the learner
+   *                            on the overview rather than sending them home.
+   *
+   * Detail is about the hardware only: what a control does, what is printed
+   * beside it, and what is worth knowing. Which tutorial teaches it, whether
+   * the course covers it, and the Roland page it was reconciled against are
+   * deliberately not shown here; the source stays in js/explorer.js as
+   * provenance for the data checks.
+   */
+
+  const KIND_LABEL = {
+    button: 'Button',
+    knob: 'Knob',
+    control: 'Control',
+    section: 'Section',
+    group: 'Group of controls',
+    keys: 'Keys',
+    display: 'Display',
+  };
+
+  const targetsOf = () => hardware().targets;
+  const majorIds = (viewId) => explorer().majorGroups[viewId] || [];
+  const childrenOf = (id) => Object.keys(targetsOf()).filter((k) => targetsOf()[k].group === id);
+
+  /* Which overview a target belongs on: the view whose image it is drawn in. */
+  function viewForTarget(id) {
+    const t = targetsOf()[id];
+    if (!t) return null;
+    const imageId = t.imageId || hardware().defaultImageId;
+    return explorer().views.filter((v) => v.id === imageId)[0] || null;
   }
+
+  /* The major area a target sits under on its overview: itself, or the
+     nearest ancestor that is one. */
+  function majorAncestor(id) {
+    const view = viewForTarget(id);
+    if (!view) return null;
+    const majors = majorIds(view.id);
+    let cur = id;
+    while (cur && targetsOf()[cur]) {
+      if (majors.indexOf(cur) >= 0) return cur;
+      cur = targetsOf()[cur].group;
+    }
+    return null;
+  }
+
+  /* The parent the popup can step back to. A parent that is neither a major
+     area nor a child of one - the rear panel as a whole - IS the overview
+     behind the popup, so it is not offered as a step. */
+  function navigableParent(id) {
+    const t = targetsOf()[id];
+    const pid = t && t.group;
+    const p = pid ? targetsOf()[pid] : null;
+    if (!p) return null;
+    const view = viewForTarget(pid);
+    const isMajor = !!view && majorIds(view.id).indexOf(pid) >= 0;
+    return isMajor || p.group ? pid : null;
+  }
+
+  /*
+   * Two-way hover and focus linkage. Everything inside `scope` carrying
+   * data-target is a face of the same control - a box on the image, a name in
+   * the list, a chip in the popup - and pointing at any face lights all of
+   * them. Keyboard focus is treated exactly like the pointer. One delegated
+   * listener set per scope, so rebuilt contents need no rewiring.
+   */
+  function linkTargets(scope) {
+    const faces = (id) => scope.querySelectorAll('[data-target="' + id + '"]');
+    const set = (node, on) => {
+      if (!node) return;
+      faces(node.getAttribute('data-target')).forEach((n) => n.classList.toggle('is-hot', on));
+      scope.classList.toggle('has-hot', !!scope.querySelector('.is-hot'));
+    };
+    const face = (e) => {
+      const n = e.target && e.target.closest ? e.target.closest('[data-target]') : null;
+      return n && scope.contains(n) ? n : null;
+    };
+    /* Moving between children of one face is not leaving it. */
+    const within = (e, n) => !!e.relatedTarget && n.contains(e.relatedTarget);
+    scope.addEventListener('mouseover', (e) => { const n = face(e); if (n && !within(e, n)) set(n, true); });
+    scope.addEventListener('mouseout', (e) => { const n = face(e); if (n && !within(e, n)) set(n, false); });
+    scope.addEventListener('focusin', (e) => set(face(e), true));
+    scope.addEventListener('focusout', (e) => set(face(e), false));
+  }
+
+  /* The highlight tone the renderer gave each box, so a name or chip can wear
+     the same colour as its box. Read back rather than recomputed: the renderer
+     owns that sequence. */
+  function tonesIn(host) {
+    const out = {};
+    host.querySelectorAll('.hl[data-target]').forEach((h) => {
+      const m = /\bhl-([abc])\b/.exec(h.className);
+      out[h.getAttribute('data-target')] = m ? m[1] : 'a';
+    });
+    return out;
+  }
+
+  function targetFace(id, cls, tone) {
+    const b = el('button', cls + ' tone-' + (tone || 'a'));
+    b.type = 'button';
+    b.setAttribute('data-target', id);
+    const dot = el('i', 'exp-dot');
+    dot.setAttribute('aria-hidden', 'true');
+    b.appendChild(dot);
+    b.appendChild(el('span', 'exp-face-name', targetsOf()[id].label));
+    return b;
+  }
+
+  /* ----- Explorer home: which side of the instrument ----- */
 
   function renderExplorer() {
     cat.eyebrow.textContent = 'Reference';
     cat.title.textContent = 'Hardware Explorer';
-    cat.desc.textContent =
-      'Every control on the JD-Xi, what it does in plain language, and which tutorial teaches it. Start with a view, or go straight to a control.';
+    cat.desc.textContent = 'Which side of the JD-Xi do you want to explore?';
 
-    const row = el('div', 'exp-views');
+    const row = el('div', 'exp-choices');
     explorer().views.forEach((v) => {
       const img = renderer().resolveImage(v.id);
-      const card = el('button', 'exp-view');
+      if (!img) return;
+      const card = el('button', 'exp-choice img-' + v.id);
       card.type = 'button';
+      const fig = el('span', 'exp-choice-fig');
+      const pic = new Image();
+      pic.className = 'exp-choice-img';
+      pic.src = img.src;
+      pic.alt = '';
+      pic.setAttribute('aria-hidden', 'true');
+      fig.appendChild(pic);
+      card.appendChild(fig);
       card.appendChild(el('b', null, v.title));
-      card.appendChild(el('span', null, v.blurb));
-      const count = (explorer().majorGroups[v.id] || []).length;
-      card.appendChild(el('span', 'exp-count', count + ' main areas'));
-      card.setAttribute('aria-label', v.title + '. ' + v.blurb + ' ' + count + ' main areas.');
+      card.appendChild(el('span', 'exp-choice-sub', v.blurb));
+      card.setAttribute('aria-label', v.title + '. ' + v.blurb);
       card.addEventListener('click', () => go('#explorer/view/' + v.id));
-      if (img) row.appendChild(card);
+      row.appendChild(card);
     });
     cat.body.appendChild(row);
-
-    const list = el('div', 'cat-panel');
-    list.appendChild(el('h2', null, 'All main controls'));
-    const cols = el('div', 'ctl-cols');
-    explorer().views.forEach((v) => {
-      const col = el('div', 'ctl-col');
-      col.appendChild(el('h3', null, v.title));
-      (explorer().majorGroups[v.id] || []).forEach((id) => col.appendChild(explorerControlRow(id)));
-      cols.appendChild(col);
-    });
-    list.appendChild(cols);
-    cat.body.appendChild(list);
-    cat.hint.textContent =
-      'Controls the guided course does not teach are shown too, marked "Not covered".';
+    cat.hint.textContent = 'Pick a side, then point at anything on it to find out what it is.';
   }
+
+  /* ----- Panel overview: the instrument and its major areas ----- */
+
+  /* The overview on screen, kept while its popup opens, steps and closes. */
+  let explorerShown = null;
 
   function renderExplorerView(route) {
     const v = route.explorerView;
-    const ids = explorer().majorGroups[v.id] || [];
+    const ids = majorIds(v.id);
     cat.eyebrow.textContent = 'Hardware Explorer';
     cat.title.textContent = v.title;
     cat.desc.textContent = v.blurb;
     cat.actions.appendChild(actionButton('‹ Explorer', '#explorer', 'quiet'));
 
     /*
-     * Labels are OFF on the panel. Roland's panel has 99 mapped targets and
-     * even the 26 major groups would cover the instrument in text; the panel
-     * shows where things are, and the list beside it says what they are.
+     * Labels are OFF on the panel: even the major areas would cover the
+     * instrument in text. The panel shows where things are; the names below
+     * say what they are; hovering either lights the other.
      */
-    const wrap = el('div', 'exp-panel');
-    wrap.appendChild(renderer().buildPanel(v.id, ids, { labels: false }));
-    cat.body.appendChild(wrap);
+    const scope = el('div', 'exp-overview');
+    scope.setAttribute('data-view', v.id);
+    const map = el('div', 'exp-map');
+    const canvas = renderer().buildPanel(v.id, ids, { labels: false, tagTargets: true });
+    map.appendChild(canvas);
+    scope.appendChild(map);
 
-    const list = el('div', 'ctl-list');
-    ids.forEach((id) => list.appendChild(explorerControlRow(id)));
-    cat.body.appendChild(list);
-    cat.hint.textContent = 'Open any control for what it does and where it is taught.';
+    const tones = tonesIn(canvas);
+    const names = el('div', 'exp-names cols-' + (ids.length <= 12 ? 6 : 5));
+    ids.forEach((id) => names.appendChild(targetFace(id, 'exp-item', tones[id])));
+    scope.appendChild(names);
+
+    linkTargets(scope);
+    scope.addEventListener('click', (e) => {
+      const n = e.target.closest ? e.target.closest('[data-target]') : null;
+      if (!n || !scope.contains(n)) return;
+      const id = n.getAttribute('data-target');
+      /* Box or name, focus comes back to the name: the boxes are pointer-only
+         so the keyboard meets each area exactly once. */
+      openControl(id, names.querySelector('[data-target="' + id + '"]') || n);
+    });
+    cat.body.appendChild(scope);
+    cat.hint.textContent = 'Point at a name to see where it is, or at the instrument to see what it is. Select either to learn more.';
+    explorerShown = { viewId: v.id, scope: scope };
   }
 
-  function renderExplorerControl(route) {
-    const id = route.targetId;
-    const t = hardware().targets[id];
+  /* ----- The popup ----- */
+
+  const modal = {
+    root: document.getElementById('exp-modal'),
+    backdrop: document.getElementById('exp-modal-backdrop'),
+    dialog: document.getElementById('exp-modal-dialog'),
+    back: document.getElementById('exp-modal-back'),
+    kicker: document.getElementById('exp-modal-kicker'),
+    title: document.getElementById('exp-modal-title'),
+    close: document.getElementById('exp-modal-close'),
+    body: document.getElementById('exp-modal-body'),
+  };
+  let modalId = null;      // the control on show, or null while hidden
+  let modalOpener = null;  // where focus returns when the popup closes
+
+  /* Opening pushes the control route: one history entry for the popup. */
+  function openControl(id, opener) {
+    modalOpener = opener || null;
+    go('#explorer/control/' + id);
+  }
+
+  /* Stepping to a child or parent INSIDE the popup replaces the entry rather
+     than pushing one, so the hash always names what is on show - a reload or a
+     copied link lands here - while browser Back still closes the popup in one
+     press however far the learner wandered inside it. */
+  function stepControl(id) {
+    window.location.replace('#explorer/control/' + id);
+  }
+
+  function closeControl() {
+    if (!explorerShown) return;
+    const wasShowing = modalId;
+    hideModal();
+    go('#explorer/view/' + explorerShown.viewId);
+    /* Back to the name that opened it. A popup opened by a link or a search
+       hit had no opener, so focus lands on the area it belongs to. */
+    let dest = modalOpener && document.contains(modalOpener) ? modalOpener : null;
+    if (!dest && wasShowing) {
+      const major = majorAncestor(wasShowing);
+      dest = major ? explorerShown.scope.querySelector('.exp-item[data-target="' + major + '"]') : null;
+    }
+    modalOpener = null;
+    if (dest) dest.focus({ preventScroll: true });
+  }
+
+  function hideModal() {
+    modal.root.hidden = true;
+    modalId = null;
+  }
+
+  function syncModal(id) {
+    if (!id || !targetsOf()[id]) {
+      hideModal();
+      return;
+    }
+    paintModal(id);
+    modal.root.hidden = false;
+    renderer().settlePanels(modal.body);
+    /* The title takes focus on every change of control, so a screen reader
+       announces what the popup now shows and keyboard focus is inside it. */
+    modal.title.focus({ preventScroll: true });
+  }
+
+  /*
+   * A picture only where it explains something the overview behind the popup
+   * does not: how a group's children sit together, the display, a control
+   * that shares its close-up with neighbours - where the crop is what tells
+   * them apart - or a dial whose printed legend is a list. An isolated single
+   * control is already pointed out on the overview, so it gets text alone.
+   */
+  function modalFigure(id, kids) {
+    const T = targetsOf();
+    const t = T[id];
+    if (!t.zoom) return null;
+    const image = renderer().resolveImage(t.imageId || hardware().defaultImageId);
+    if (!image) return null;
+
+    const ancestors = [];
+    for (let cur = t.group; cur && T[cur] && ancestors.indexOf(cur) < 0; cur = T[cur].group) ancestors.push(cur);
+    const z = t.zoom;
+    const eps = 1e-4;
+    const sharesCrop = (k) => {
+      const o = T[k];
+      if (!o.region || (o.imageId || hardware().defaultImageId) !== image.id) return false;
+      if (ancestors.indexOf(k) >= 0) return false;
+      const r = o.region;
+      return r.x >= z.x - eps && r.y >= z.y - eps &&
+        r.x + r.width <= z.x + z.width + eps && r.y + r.height <= z.y + z.height + eps;
+    };
+    const crowded = !kids.length && Object.keys(T).some((k) => k !== id && sharesCrop(k));
+    const listLegend = /[,;]/.test(t.panelLegend || '');
+    if (!(kids.length || t.kind === 'display' || crowded || listLegend)) return null;
+
+    const frame = renderer().buildPanel(image.id, kids.length ? kids : [id], {
+      crop: true,
+      zoomFrom: id,
+      labels: false,
+      tagTargets: true,
+      extraClass: 'exp-mcrop',
+    });
+    const aspect = (z.width * image.width) / (z.height * image.height);
+    const fig = el('div', 'exp-mfigure');
+    fig.appendChild(frame);
+    /* A strip goes across the top; anything squarer sits beside the text. */
+    return { node: fig, placement: aspect > 2 ? 'top' : 'side' };
+  }
+
+  function fact(host, cap, text, cls) {
+    if (!text) return;
+    const p = el('p', 'exp-mfact ' + cls);
+    p.appendChild(el('b', null, cap + ': '));
+    p.appendChild(document.createTextNode(text));
+    host.appendChild(p);
+  }
+
+  function paintModal(id) {
+    const t = targetsOf()[id];
     const d = describeTarget(id);
-    const uses = lessonsUsingTarget(id);
-    const parent = t.group ? hardware().targets[t.group] : null;
-    const imageId = t.imageId || hardware().defaultImageId;
+    const view = viewForTarget(id);
+    const parent = navigableParent(id);
+    const kids = childrenOf(id);
+    modalId = id;
+    modal.dialog.setAttribute('data-target-id', id);
 
-    cat.eyebrow.textContent = 'Hardware Explorer';
-    cat.title.textContent = t.label;
-    cat.desc.textContent = d ? d.what : '';
-    cat.actions.appendChild(
-      actionButton(parent ? '‹ ' + parent.label : '‹ Explorer', parent ? '#explorer/control/' + t.group : '#explorer', 'quiet')
-    );
+    modal.kicker.textContent = (view ? view.title : 'Hardware') + ' · ' + (KIND_LABEL[t.kind] || 'Control');
+    modal.title.textContent = t.label;
+    modal.back.hidden = !parent;
+    modal.back.textContent = parent ? '‹ ' + targetsOf()[parent].label : '';
+    modal.back.setAttribute('aria-label', parent ? 'Back to ' + targetsOf()[parent].label : 'Back');
+    if (parent) modal.back.setAttribute('data-parent', parent);
+    else modal.back.removeAttribute('data-parent');
 
-    const wrap = el('div', 'exp-panel detail');
-    const closeup = el('div', 'exp-closeup');
-    closeup.appendChild(el('div', 'vis-cap', 'Close up'));
-    closeup.appendChild(
-      renderer().buildPanel(imageId, [id], { crop: true, labels: false, extraClass: 'exp-crop' })
-    );
-    wrap.appendChild(closeup);
-    const context = el('div', 'exp-context');
-    context.appendChild(el('div', 'vis-cap', 'Where this is'));
-    context.appendChild(renderer().buildPanel(imageId, [id], { labels: false }));
-    wrap.appendChild(context);
-    cat.body.appendChild(wrap);
+    modal.body.innerHTML = '';
+    const figure = modalFigure(id, kids);
+    modal.body.className = 'exp-mbody ' + (figure ? figure.placement : 'text-only');
 
-    const facts = el('div', 'cat-panel');
-    if (t.panelLegend) {
-      const p = el('p', 'ctl-legend');
-      p.appendChild(el('b', null, 'Printed on the panel: '));
-      p.appendChild(document.createTextNode(t.panelLegend));
-      facts.appendChild(p);
-    }
-    if (d && d.safety) {
-      const warn = el('p', 'ctl-safety');
-      warn.appendChild(el('b', null, 'Worth knowing: '));
-      warn.appendChild(document.createTextNode(d.safety));
-      facts.appendChild(warn);
-    }
-    if (d && d.troubleshooting) {
-      const t2 = el('p', 'ctl-trouble');
-      t2.appendChild(el('b', null, 'If it seems to do nothing: '));
-      t2.appendChild(document.createTextNode(d.troubleshooting));
-      facts.appendChild(t2);
-    }
-    if (d && d.source) facts.appendChild(el('p', 'ref-source', 'Source: ' + d.source));
-    if (facts.childNodes.length) cat.body.appendChild(facts);
+    const text = el('div', 'exp-mtext');
+    if (d && d.what) text.appendChild(el('p', 'exp-mwhat', d.what));
+    const facts = el('div', 'exp-mfacts');
+    fact(facts, 'Printed on the panel', t.panelLegend, 'legend');
+    fact(facts, 'Worth knowing', d && d.safety, 'safety');
+    fact(facts, 'If it seems to do nothing', d && d.troubleshooting, 'trouble');
+    if (facts.childNodes.length) text.appendChild(facts);
 
-    /* Children, when this is a group or a section. */
-    const kids = Object.keys(hardware().targets).filter((k) => hardware().targets[k].group === id);
     if (kids.length) {
-      const kp = el('div', 'cat-panel');
-      kp.appendChild(el('h2', null, 'Controls in this area'));
-      const list = el('div', 'ctl-list');
-      kids.forEach((k) => list.appendChild(explorerControlRow(k)));
-      kp.appendChild(list);
-      cat.body.appendChild(kp);
+      const tones = figure ? tonesIn(figure.node) : {};
+      const kp = el('div', 'exp-mkids');
+      kp.appendChild(el('div', 'exp-mkids-cap', 'Controls in this area'));
+      const chips = el('div', 'exp-chips');
+      kids.forEach((k) => chips.appendChild(targetFace(k, 'exp-chip', tones[k])));
+      kp.appendChild(chips);
+      text.appendChild(kp);
     }
 
-    const learn = el('div', 'cat-panel');
-    learn.appendChild(el('h2', null, 'Where this is taught'));
-    if (uses.length) {
-      const row = el('div', 'row');
-      uses.forEach((u) => {
-        const hash =
-          (u.kind === 'specialty' ? '#specialty/' : '#tutorial/') +
-          u.id +
-          (u.stepIndex ? '/step/' + (u.stepIndex + 1) : '');
-        row.appendChild(actionButton('Learn this in ' + (u.kind === 'specialty' ? u.title : u.id + ' · ' + u.title), hash, 'quiet'));
-      });
-      learn.appendChild(row);
-    } else {
-      learn.appendChild(el('p', 'ctl-uncovered', 'Not covered in the guided course.'));
-      learn.appendChild(el('p', null,
-        'No tutorial teaches this control. It is documented here so you can see it exists and know what it is for.'));
-    }
-    cat.body.appendChild(learn);
-
-    /* Siblings, so an Explorer page is never a dead end. */
-    if (parent) {
-      const sibs = Object.keys(hardware().targets).filter(
-        (k) => hardware().targets[k].group === t.group && k !== id
-      );
-      if (sibs.length) {
-        const strip = el('div', 'topic-strip');
-        strip.appendChild(el('div', 'ts-cap', 'Nearby controls'));
-        const l = el('div', 'ts-list');
-        sibs.slice(0, 10).forEach((k) => {
-          const chip = el('button', 'ts-chip', hardware().targets[k].label);
-          chip.type = 'button';
-          chip.addEventListener('click', () => go('#explorer/control/' + k));
-          l.appendChild(chip);
-        });
-        strip.appendChild(l);
-        cat.body.appendChild(strip);
-      }
-    }
-    cat.hint.textContent = '';
+    if (figure && figure.placement === 'top') modal.body.appendChild(figure.node);
+    modal.body.appendChild(text);
+    if (figure && figure.placement === 'side') modal.body.appendChild(figure.node);
   }
+
+  modal.close.addEventListener('click', closeControl);
+  modal.backdrop.addEventListener('click', closeControl);
+  modal.back.addEventListener('click', () => {
+    const p = modal.back.getAttribute('data-parent');
+    if (p) stepControl(p);
+  });
+  /* A chip, or the box in the crop that a chip names, steps into that child.
+     The same popup, its contents replaced - never a second popup. */
+  modal.body.addEventListener('click', (e) => {
+    const n = e.target.closest ? e.target.closest('[data-target]') : null;
+    if (!n) return;
+    const id = n.getAttribute('data-target');
+    if (id !== modalId && modal.body.querySelector('.exp-chip[data-target="' + id + '"]')) stepControl(id);
+  });
+  linkTargets(modal.body);
+
+  /* Escape closes; Tab stays inside. Focus that has somehow left the dialog
+     is pulled back in rather than allowed to wander the page underneath. */
+  document.addEventListener('keydown', (e) => {
+    if (modal.root.hidden) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeControl();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const stops = [].slice.call(modal.dialog.querySelectorAll('button')).filter((b) => !b.hidden && !b.disabled && b.offsetParent !== null);
+    if (!stops.length) return;
+    const at = stops.indexOf(document.activeElement);
+    if (e.shiftKey) {
+      if (at <= 0) { e.preventDefault(); stops[stops.length - 1].focus(); }
+    } else if (at === stops.length - 1 || at < 0) {
+      e.preventDefault();
+      stops[0].focus();
+    }
+  });
 
   /* ---------------------------------- completion, review and resume choice */
 
@@ -1269,7 +1474,6 @@
     specialty: renderSpecialty,
     explorer: renderExplorer,
     'explorer-view': renderExplorerView,
-    'explorer-control': renderExplorerControl,
     complete: renderComplete,
     review: renderReview,
     'resume-choice': renderResumeChoice,
@@ -1282,11 +1486,26 @@
    * INSIDE the body - the page itself still never scrolls.
    */
   const DENSE_SURFACES = [
-    'reference', 'reference-entry', 'explorer', 'explorer-view', 'explorer-control',
+    'reference', 'reference-entry',
     'settings', 'review',
   ];
 
   function renderCatalog(route) {
+    /*
+     * The Explorer overview is kept, not rebuilt, while its popup opens,
+     * steps between controls and closes: the route changes underneath and the
+     * screen stays put, so hover state, scroll-free layout and the element
+     * focus returns to all survive.
+     */
+    if (
+      route.surface === 'explorer-view' && explorerShown &&
+      explorerShown.viewId === route.explorerView.id && cat.body.contains(explorerShown.scope)
+    ) {
+      syncModal(route.targetId || null);
+      return;
+    }
+    explorerShown = null;
+    hideModal();
     cat.actions.innerHTML = '';
     cat.body.innerHTML = '';
     cat.desc.textContent = '';
@@ -1296,6 +1515,11 @@
     /* Highlight labels can only be measured once the nodes are in the
        document, so the Explorer's panels settle after insertion. */
     renderer().settlePanels(cat.body);
+    /* A control deep link opens its popup, which takes the focus instead. */
+    if (route.surface === 'explorer-view' && route.targetId) {
+      syncModal(route.targetId);
+      return;
+    }
     /* Focus the heading so keyboard and screen-reader users land on the new
        surface rather than staying where the old one was. */
     cat.title.setAttribute('tabindex', '-1');
