@@ -49,11 +49,15 @@ the defect renders perfectly and nothing else would see it:
   a learner reads the line rather than the entry.
 - **Specialty** must hold exactly 3 lessons whose ids — and step ids — cannot be
   mistaken for canonical ones, in either direction, and whose instructional text
-  never strays into the external-audio input v1 excludes. Specialty is **also**
-  checked for discard/overwrite risk by the protect-your-work preflight check
-  below, with no exemption of its own: the risk is a property of the instrument,
-  not of a lesson's status, and restricting that check to `B##`/`N##`/`I##` let a
-  real defect ship.
+  never strays into the external-audio input v1 excludes. Each also needs a
+  `shortTitle` and resolvable `prerequisites`, both of which became load-bearing
+  when the discovery surfaces started reading them: without the first a compact
+  row silently falls back to the full title, and an unresolvable prerequisite id
+  would now read as "Recommended first: B99" to a learner rather than staying
+  invisible. Specialty is **also** checked for discard/overwrite risk by the
+  protect-your-work preflight check below, with no exemption of its own: the
+  risk is a property of the instrument, not of a lesson's status, and
+  restricting that check to `B##`/`N##`/`I##` let a real defect ship.
 - **The Hardware Explorer** must describe every registry target with a Roland
   source, describe nothing that is not a target, and list only top-level targets
   as major groups, so the landing view cannot become 99 simultaneous labels.
