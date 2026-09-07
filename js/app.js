@@ -362,42 +362,96 @@
     return b;
   }
 
+  /*
+   * One rich card, drawn the same way for both discovery grids.
+   *
+   * The canonical levels/topics and Specialty used to build this markup twice,
+   * side by side, and had already drifted: only one of them guarded
+   * `isBookmarked` before calling it. Anything that changes how a card reads -
+   * a new state, a new line of metadata - now lands on both grids or on
+   * neither, which is the only version of that change that can be reviewed.
+   *
+   * The caller supplies the wording. Deciding here what a card is CALLED would
+   * put "Specialty lesson" and "B04" in the same function, and those two
+   * belong to their surfaces, not to the card.
+   */
+  function richCard(spec) {
+    const card = el(
+      'button',
+      'tut-card' + (spec.cls ? ' ' + spec.cls : '') +
+        (spec.done ? ' done' : '') + (spec.current ? ' here' : '')
+    );
+    card.type = 'button';
+
+    const top = el('div', 'tc-top');
+    top.appendChild(el('span', 'tc-id', spec.badge));
+    const marks = el('span', 'tc-top');
+    if (spec.bookmarked) {
+      const star = el('span', 'tc-star', '★');
+      star.setAttribute('aria-hidden', 'true');
+      marks.appendChild(star);
+    }
+    marks.appendChild(el('span', 'tc-tick' + (spec.done ? ' done' : ''), spec.done ? '✓' : ''));
+    top.appendChild(marks);
+    card.appendChild(top);
+
+    card.appendChild(el('div', 'tc-name', spec.title));
+    card.appendChild(el('div', 'tc-sum', spec.summary));
+
+    const meta = el('div', 'tc-meta');
+    meta.appendChild(el('span', null, spec.minutes + ' min'));
+    meta.appendChild(el('span', null, spec.steps + ' steps'));
+    card.appendChild(meta);
+
+    /* One accessible name carrying everything the visual card conveys. */
+    card.setAttribute('aria-label', spec.ariaLabel);
+    card.addEventListener('click', () => go(spec.hash));
+    return card;
+  }
+
   /* A rich card, for bounded lists: a level (10) or a topic (at most 8). */
   function tutorialCard(id, currentId) {
     const t = tutorials()[id];
     const P = progress();
     const done = P.isComplete(id);
-    const card = el('button', 'tut-card' + (done ? ' done' : '') + (id === currentId ? ' here' : ''));
-    card.type = 'button';
+    const marked = P.isBookmarked(id);
+    return richCard({
+      badge: id,
+      title: t.title,
+      summary: t.summary,
+      minutes: t.estimatedMinutes,
+      steps: t.steps.length,
+      done: done,
+      bookmarked: marked,
+      current: id === currentId,
+      ariaLabel:
+        `${t.title}. ${id}, ${t.estimatedMinutes} minutes, ${t.steps.length} steps.` +
+        (done ? ' Completed.' : '') + (marked ? ' Bookmarked.' : ''),
+      hash: '#tutorial/' + id,
+    });
+  }
 
-    const top = el('div', 'tc-top');
-    top.appendChild(el('span', 'tc-id', id));
-    const marks = el('span', 'tc-top');
-    if (P.isBookmarked(id)) {
-      const star = el('span', 'tc-star', '★');
-      star.setAttribute('aria-hidden', 'true');
-      marks.appendChild(star);
-    }
-    marks.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
-    top.appendChild(marks);
-    card.appendChild(top);
-
-    card.appendChild(el('div', 'tc-name', t.title));
-    card.appendChild(el('div', 'tc-sum', t.summary));
-
-    const meta = el('div', 'tc-meta');
-    meta.appendChild(el('span', null, t.estimatedMinutes + ' min'));
-    meta.appendChild(el('span', null, t.steps.length + ' steps'));
-    card.appendChild(meta);
-
-    /* One accessible name carrying everything the visual card conveys. */
-    card.setAttribute(
-      'aria-label',
-      `${t.title}. ${id}, ${t.estimatedMinutes} minutes, ${t.steps.length} steps.` +
-        (done ? ' Completed.' : '') + (P.isBookmarked(id) ? ' Bookmarked.' : '')
-    );
-    card.addEventListener('click', () => go('#tutorial/' + id));
-    return card;
+  /* The same card for a Specialty lesson. Specialty is never the guided
+     path's current tutorial, so it never carries the current state. */
+  function specialtyCard(id) {
+    const l = specialty().lessons[id];
+    const P = progress();
+    const done = P.isSpecialtyComplete ? P.isSpecialtyComplete(id) : false;
+    return richCard({
+      cls: 'specialty',
+      badge: 'Specialty',
+      title: l.title,
+      summary: l.summary,
+      minutes: l.estimatedMinutes,
+      steps: l.steps.length,
+      done: done,
+      bookmarked: !!(P.isBookmarked && P.isBookmarked(id)),
+      current: false,
+      ariaLabel:
+        l.title + '. Specialty lesson, ' + l.estimatedMinutes + ' minutes, ' +
+        l.steps.length + ' steps. Optional.',
+      hash: '#specialty/' + id,
+    });
   }
 
   /* A compact row, for unbounded lists: Bookmarked and Progress (up to 30). */
@@ -931,40 +985,13 @@
 
   function renderSpecialty() {
     const S = specialty();
-    const P = progress();
     cat.eyebrow.textContent = 'Optional — not part of course completion';
     cat.title.textContent = 'Specialty';
     cat.desc.textContent =
       "Three things the JD-Xi does with the microphone that came with it. None of these counts toward the thirty guided tutorials, and nothing in the course depends on them.";
 
     const grid = el('div', 'tut-grid cols-3');
-    S.order.forEach((id) => {
-      const l = S.lessons[id];
-      const done = P.isSpecialtyComplete ? P.isSpecialtyComplete(id) : false;
-      const card = el('button', 'tut-card specialty' + (done ? ' done' : ''));
-      card.type = 'button';
-      const top = el('div', 'tc-top');
-      top.appendChild(el('span', 'tc-id', 'Specialty'));
-      const marks = el('span', 'tc-top');
-      if (P.isBookmarked && P.isBookmarked(id)) {
-        const star = el('span', 'tc-star', '★');
-        star.setAttribute('aria-hidden', 'true');
-        marks.appendChild(star);
-      }
-      marks.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
-      top.appendChild(marks);
-      card.appendChild(top);
-      card.appendChild(el('div', 'tc-name', l.title));
-      card.appendChild(el('div', 'tc-sum', l.summary));
-      const meta = el('div', 'tc-meta');
-      meta.appendChild(el('span', null, l.estimatedMinutes + ' min'));
-      meta.appendChild(el('span', null, l.steps.length + ' steps'));
-      card.appendChild(meta);
-      card.setAttribute('aria-label',
-        l.title + '. Specialty lesson, ' + l.estimatedMinutes + ' minutes, ' + l.steps.length + ' steps. Optional.');
-      card.addEventListener('click', () => go('#specialty/' + id));
-      grid.appendChild(card);
-    });
+    S.order.forEach((id) => grid.appendChild(specialtyCard(id)));
     cat.body.appendChild(grid);
 
     const note = el('div', 'cat-panel');
