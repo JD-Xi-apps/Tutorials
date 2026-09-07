@@ -22,11 +22,17 @@
  *   label        preferred learner-facing wording
  *   panelLegend  what is physically printed on the instrument (null if nothing)
  *   kind         "button" | "knob" | "control" | "section" | "group" |
- *                "keys" | "display" | "off-image"
+ *                "keys" | "display"
+ *                ("off-image" is a LEGACY/RESERVED value: no target in this
+ *                file uses it, and none has since Phase 4C moved powerSwitch
+ *                and dcInJack onto the measured rear image. It is a label
+ *                only - the renderer never branched on it.)
  *   imageId      optional id in `images`; absent/null means defaultImageId
  *   region       { x, y, width, height } normalized within the referenced
- *                image, or null for a target visible in no registered image
- *                (kind "off-image")
+ *                image. Every target here has one. `null` is the reserved
+ *                "visible in no registered image" case, and it is the ABSENT
+ *                REGION - not the kind - that makes lesson-renderer.js
+ *                degrade to its off-image notice rather than invent geometry.
  *   group        id of the parent target, or null
  *   zoom         optional normalized crop (same image) for close-up
  *                presentation, or null

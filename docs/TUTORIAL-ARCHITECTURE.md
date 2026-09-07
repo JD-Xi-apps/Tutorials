@@ -69,7 +69,7 @@ Consequences that bind the rest of this document:
 These are the load-bearing rules. Changing any of them is a redesign, not a revision.
 
 1. **One canonical tutorial content object; many ways to discover it.** Content exists
-   exactly once. Guided levels, topic collections, Favorites, challenges, and
+   exactly once. Guided levels, topic collections, Bookmarked, challenges, and
    recommended-next lists are all *references*, never copies.
 2. **One reusable lesson renderer; tutorials are primarily data.** Adding a tutorial
    must not mean writing a new screen.
@@ -155,7 +155,7 @@ A canonical tutorial may simultaneously belong to:
 
 - exactly **one** guided level (its `level` + `order`);
 - **any number** of topic collections;
-- the learner's **Favorites**;
+- the learner's **Bookmarked** list;
 - one or more **challenge sequences**;
 - one or more **recommended-next** lists.
 
@@ -230,6 +230,8 @@ each in this proposal. That is acceptable at launch but was a content gap to tra
 >
 > The Vocoder collection remains empty and is therefore **not routable** — an empty topic
 > page would be a placeholder. It is kept in the data so the content gap stays visible.
+> The Specialty *Use the Vocoder* lesson does not close it: a collection lists canonical
+> tutorial IDs, and Specialty is deliberately outside that set.
 
 ### Planned future collections
 
@@ -242,7 +244,7 @@ disturbing the frozen baseline.
 | Arpeggiator | N07 | Needs more content before it earns a tile. |
 | Troubleshooting | N10 | Likely grows from real learner failure modes. |
 | Performance | I07, I10 | |
-| Vocoder | *(none yet)* | The instrument has a vocoder; no canonical tutorial covers it. Content gap. |
+| Vocoder | *(none yet)* | No **canonical** tutorial covers the vocoder. The Specialty *Use the Vocoder* lesson does, but Specialty lessons are not canonical tutorials and a collection references canonical IDs, so the collection stays empty and the gap stands. |
 
 ## 6. Tutorial model
 
@@ -254,7 +256,7 @@ Tutorial
   level             "beginner" | "novice" | "intermediate"
   order             position within its level (drives the guided path)
   title             full student-facing title
-  shortTitle        compact form for tiles, breadcrumbs, and progress lists
+  shortTitle        compact form intended for tiles, breadcrumbs and progress lists
   summary           one or two plain sentences: what you will be able to do afterwards
   estimatedMinutes  honest expectation, used for planning and for challenge framing
   prerequisites[]   tutorial IDs assumed already done
@@ -284,6 +286,13 @@ Field notes:
   but it is generated, never authored, and never written back.
 - **`learningGoals`** are written for the learner ("you'll be able to find a sound you
   like"), not for a curriculum document.
+- **`shortTitle`** is authored on every tutorial, every Specialty lesson and both
+  fixtures, and `tools/validate-data.js` fails a tutorial that lacks one — so it can be
+  relied on to exist. **No surface renders it yet.** It is held ready for the compact
+  rows and other space-constrained places where the full `title` does not fit, and
+  keeping it authored and validated means adopting it there is a rendering change alone,
+  with no content pass. Until a surface uses it, treat its wording as reviewed but
+  unproven in layout.
 
 ## 7. Step model
 
@@ -358,16 +367,30 @@ HardwareTarget
   label         preferred learner-facing wording; accurate to the hardware but not
                 required to be identical to the printed legend
   panelLegend   exact wording/symbols physically printed on the instrument, if any
-  kind          button | knob | control | section | group | keys | display | off-image
+  kind          button | knob | control | section | group | keys | display
+                (plus off-image, legacy/reserved — see below; no target uses it)
   imageId       optional ID of the hardware image the target lives on; omitted means
                 the registry's default image (the top view)
-  region        normalized geometry within the referenced image, or null for an
-                off-image target
+  region        normalized geometry within the referenced image. Required in practice:
+                every registered target has one. `null` is the reserved "visible in no
+                registered image" case, and it is `region`, not `kind`, that the
+                renderer degrades on
   zoom          optional normalized crop, within the same image, for magnified
                 presentation
   group         optional parent target ID
   notes         concise implementation caveats; not lesson prose
 ```
+
+**`off-image` is legacy, and reserved.** Through Phase 4B, `powerSwitch` and `dcInJack`
+were registered as `kind: "off-image"` with `region: null`, because the only image was a
+top view and no coordinates were ever going to be fabricated. Phase 4C added the rear
+image and measured them, so they are ordinary `control` targets today: **there are no
+`kind: "off-image"` entries in the registry and no null regions.** The value is kept in
+the enumeration for a future target that no registered image can show, not because
+anything uses it. It never drove rendering in the first place — the renderer's
+`resolveTarget` degrades on `region` being absent, whatever `kind` says
+(`docs/HARDWARE-TARGETS.md` §7, `docs/LESSON-RENDERER.md` *Off-image, unknown and
+bad-image targets*).
 
 `label` and `panelLegend` are deliberately distinct fields: `label` is what the
 tutorial may call the thing for a beginner, `panelLegend` is what the learner
@@ -512,9 +535,10 @@ build step, and no framework.
 | `#topic/making-beats` | Topic collection index |
 | `#tutorial/B02` | Tutorial, at its first step |
 | `#tutorial/N01/step/3` | Tutorial, at a specific step |
-| `#favorites` | |
+| `#bookmarks` | |
 | `#progress` | |
 | `#settings` | |
+| `#favorites` | legacy redirect to `#bookmarks` |
 
 Requirements:
 
@@ -530,8 +554,8 @@ being permanent but step lists being editable.
 > **Implemented in Phase 6D.** Every route in the table above works, from `file://`,
 > with browser Back and Forward. The router is generic: levels are derived from the
 > catalog's own `level` and `order`, topics from `Collection.tutorialIds[]`, and
-> Favorites, Progress and Settings share one catalog view — so a new tutorial or a new
-> collection needs a data entry and no router change.
+> Bookmarked, My Progress and Settings share one catalog view — so a new tutorial or a
+> new collection needs a data entry and no router change.
 >
 > Two resolution rules were added to the ones above, both following the same
 > degrade-to-a-defined-destination principle:
@@ -545,15 +569,22 @@ being permanent but step lists being editable.
 
 The local-browser progress model. **Implemented in Phase 6D** as `js/progress.js`.
 
+The shipped record is **schema 2**, written by `js/progress.js`:
+
 ```
 ProgressState
-  schemaVersion          integer; the shape version of this stored record
-  completedTutorialIds[] canonical tutorial IDs the learner has finished
-  currentTutorialId      where the learner was last working
-  currentStepId          which step within that tutorial
-  favoriteTutorialIds[]  canonical tutorial IDs the learner has starred
-  completionByTutorial{} optional cached per-tutorial percentage, keyed by tutorial ID
+  schemaVersion            integer; the shape version of this stored record (2)
+  completedTutorialIds[]   canonical tutorial IDs the learner has finished
+  completedSpecialtyIds[]  Specialty lesson ids the learner has finished; never
+                           counted in x/30
+  currentTutorialId        where the learner was last working
+  currentStepId            which step within that tutorial
+  bookmarkedIds[]          lesson ids the learner has bookmarked; canonical and
+                           Specialty share the one list
 ```
+
+The schema-1 shape this replaced is described in the postscript at the end of this
+section, because a schema-1 record on disk is still migrated on read.
 
 ### Storage
 
@@ -585,12 +616,22 @@ ProgressState
 - **`completedTutorialIds`** records canonical tutorial IDs (§4). Because those IDs are
   permanent and never renumbered, a completion record stays meaningful even as titles,
   ordering, and step lists evolve. This is a large part of why the IDs are permanent.
+- **`completedSpecialtyIds`** records finished Specialty lessons. It is kept apart from
+  `completedTutorialIds` so a Specialty lesson can never move the x/30 counter, which
+  counts the canonical thirty and nothing else.
 - **`currentTutorialId`** and **`currentStepId`** together allow resume.
-- **`favoriteTutorialIds`** powers Favorites and the `#favorites` route.
-- **`completionByTutorial`** is optional, derived, cached percentage information. It is
-  a convenience for rendering and **must never become more authoritative than actual
-  completion state**. Where the two disagree, `completedTutorialIds` and the real step
-  records win, and the cache is recomputed from them.
+- **`bookmarkedIds`** powers the Bookmarked surface and the `#bookmarks` route. One list
+  covers canonical and Specialty lessons alike, because a learner bookmarks a lesson
+  without caring which data model it lives in. `#favorites` survives only as a redirect
+  to `#bookmarks`, for links saved before the rename.
+- **No cached completion percentage is stored.** An earlier draft of this section
+  described an optional `completionByTutorial{}` map of derived per-tutorial
+  percentages; nothing has ever written or read one, and no such field exists in the
+  shipped record. Percentages are computed at render time from `completedTutorialIds`
+  and the catalog's own step counts, which is the only arrangement in which the two
+  cannot disagree. Should a cache ever be added, the rule it would have to obey is the
+  one that motivated the original note: it must never become more authoritative than
+  actual completion state.
 
 ### Stale references must fail safely
 
@@ -606,9 +647,9 @@ a guarantee:
   now say. Navigation is unaffected — the index is still usable either way;
 - a `currentTutorialId` that no longer exists yields **no resume point**, and the
   learner is returned to `#home`;
-- unknown IDs in `completedTutorialIds` or `favoriteTutorialIds` are **ignored on read**
-  and dropped on the next write, rather than raising an error or rendering as broken
-  entries.
+- unknown IDs in `completedTutorialIds`, `completedSpecialtyIds` or `bookmarkedIds` are
+  **ignored on read** and dropped on the next write, rather than raising an error or
+  rendering as broken entries.
 
 This mirrors the routing rule in §11: an unresolvable reference degrades to a defined
 safe destination instead of failing.
@@ -618,11 +659,18 @@ safe destination instead of failing.
 Resetting progress must be possible later through Settings (`#settings`). With a single
 namespaced record, reset is the deletion of that one key.
 
-> **Implemented in Phase 6D.** Settings offers a reset that clears completion, the
-> resume point and favourites in one action. It requires **two deliberate presses**: the
-> first arms the control and relabels it, the second acts, and a Cancel appears alongside
-> — a single click on a control that erases the learner's whole record is exactly the
-> accident this guards against.
+> **Implemented in Phase 6D, and since split in three.** Settings offers **Reset
+> Progress** (completions, Specialty completions and the resume point; bookmarks kept),
+> **Reset Bookmarks** (bookmarks only; progress kept) and **Reset Everything** (both,
+> returning the app to first-open state). They are separate because they destroy
+> different things and a learner may well want one without the other — clearing a stale
+> resume point is not the same decision as throwing away thirty bookmarks. Each requires
+> **two deliberate presses**: the first arms the control and relabels it, the second
+> acts, and a Cancel appears alongside — a single click on a control that erases the
+> learner's record is exactly the accident this guards against. Reset Everything is also
+> the one operation allowed to delete a record written by a newer build (see
+> `schemaVersion` above), because it deletes rather than rewrites and the learner asked
+> for it.
 
 ### How the implementation reads storage
 

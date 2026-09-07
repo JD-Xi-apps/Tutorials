@@ -127,15 +127,20 @@ window.JDXI_COLLECTIONS = {
 
   /*
    * A documented content gap, not an oversight. The JD-Xi has a vocoder and an
-   * AutoPitch function, both fully documented by Roland, and no canonical
-   * tutorial covers either - so this collection has nothing to reference. It is
-   * kept here so the gap is visible rather than forgotten. Being empty, it is
-   * not routable: an empty topic page would be a placeholder.
+   * AutoPitch function, both fully documented by Roland, and no CANONICAL
+   * tutorial covers either - so this collection has nothing to reference: a
+   * collection lists canonical tutorial ids, and the Specialty lessons that do
+   * cover both (`js/specialty.js`: "vocoder", "auto-pitch") are deliberately
+   * outside that set. It is kept here so the gap is visible rather than
+   * forgotten. Being empty, it is not routable: an empty topic page would be a
+   * placeholder, so this `description` is maintainer-facing and reaches no
+   * learner surface - it must still be true, because the day the collection
+   * gains content is the day it starts being read.
    */
   vocoder: {
     id: "vocoder",
     title: "Vocoder",
-    description: "Not yet covered by any tutorial. Recorded as a content gap.",
+    description: "Not yet covered by a canonical tutorial. Recorded as a content gap.",
     status: "planned",
     tutorialIds: [],
   },

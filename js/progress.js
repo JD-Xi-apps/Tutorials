@@ -66,7 +66,13 @@ window.JDXI_PROGRESS = (function () {
      while the app is still open. */
   var state = null;
   var storageWorks = null; // null = not yet probed
-  var migratedFrom = null; // for diagnostics and the Settings surface
+  /* Which schemaVersion the stored record announced when it was migrated up to
+     the current one, or null if no migration happened. DIAGNOSTIC ONLY: it is
+     exposed as `_migratedFrom()` for tools/test-progress.js, which asserts that
+     a schema-1 record is recognised as migrated and a schema-2 record is not.
+     No learner-facing surface reads it - Settings does not - and nothing should
+     start without deciding what a learner would do with the answer. */
+  var migratedFrom = null;
 
   /*
    * Set only when the stored record announced a schemaVersion this build does
