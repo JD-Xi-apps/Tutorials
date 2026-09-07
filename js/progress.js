@@ -36,6 +36,22 @@
  * because the rule changed underneath them would be the wrong trade.
  * --------------------------------------------------------------------------
  *
+ * --------------------------------------------------------------------------
+ * TWO INTEGRITY RULES that are easy to state and easy to lose:
+ *
+ * 1. A record written by a NEWER build is never overwritten by this one.
+ *    Rejecting it on read is only half the guarantee - the next write would
+ *    put our shape back over it. So a future record additionally puts
+ *    persistence into READ-ONLY for the session: the learner keeps a fully
+ *    working in-memory state, and the stored record survives untouched for
+ *    the build that understands it. Only an explicit `resetEverything`, which
+ *    deletes rather than rewrites, is allowed past that lock.
+ *
+ * 2. A stored step id that no longer resolves is NOT a claim that the learner
+ *    was on step 1. `resume()` says which of the two it is, so a caller can
+ *    word it honestly instead of inventing a position (see `resume`).
+ * --------------------------------------------------------------------------
+ *
  * Classic script on purpose - no modules, no fetch.
  */
 
@@ -51,6 +67,17 @@ window.JDXI_PROGRESS = (function () {
   var state = null;
   var storageWorks = null; // null = not yet probed
   var migratedFrom = null; // for diagnostics and the Settings surface
+
+  /*
+   * Set only when the stored record announced a schemaVersion this build does
+   * not understand. While set, `persist` writes nothing: the session runs on
+   * the in-memory state and the newer record is left exactly as we found it.
+   * Ordinary corruption does NOT set this - a record we cannot parse carries
+   * no data worth protecting, and locking on it would strand the learner with
+   * unsaveable progress for the rest of the session.
+   */
+  var readOnlyReason = null;   // null | "future-schema"
+  var futureSchemaVersion = null; // what the newer record claimed, for diagnostics
 
   function empty() {
     return {
@@ -127,7 +154,12 @@ window.JDXI_PROGRESS = (function () {
       return empty();
     }
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return empty();
-    if (typeof raw.schemaVersion !== "number" || raw.schemaVersion > SCHEMA_VERSION) {
+    /* No usable version marker: corrupt, not future. Nothing to protect. */
+    if (typeof raw.schemaVersion !== "number") return empty();
+    /* Future. Unreadable AND unwritable - see rule 1 in the header. */
+    if (raw.schemaVersion > SCHEMA_VERSION) {
+      readOnlyReason = "future-schema";
+      futureSchemaVersion = raw.schemaVersion;
       return empty();
     }
 
@@ -163,8 +195,14 @@ window.JDXI_PROGRESS = (function () {
     return state;
   }
 
+  /*
+   * The single write path. Everything that changes learner state goes through
+   * here, which is what makes the read-only lock a guarantee rather than a
+   * convention: there is no second place a v2 record could be written from.
+   */
   function persist() {
     if (!state) return false;
+    if (readOnlyReason) return false;
     return writeRaw(JSON.stringify(state));
   }
 
@@ -206,6 +244,29 @@ window.JDXI_PROGRESS = (function () {
   function isAvailable() {
     load();
     return probe();
+  }
+
+  /*
+   * Whether this session may write, and why not when it may not. Kept separate
+   * from `isAvailable`, which answers a different question - "does this browser
+   * give us storage at all" - and whose answer drives learner-facing wording
+   * about the BROWSER. A future record is not a browser problem, and saying so
+   * would be inaccurate, so it is reported as its own reason.
+   */
+  function persistence() {
+    load();
+    var usable = probe();
+    return {
+      writable: usable && !readOnlyReason,
+      reason: readOnlyReason ? readOnlyReason : usable ? "ok" : "unavailable",
+      storedSchemaVersion: futureSchemaVersion,
+    };
+  }
+
+  /* Convenience for the common check. True only in the future-record case. */
+  function isReadOnly() {
+    load();
+    return readOnlyReason !== null;
   }
 
   function completed() {
@@ -277,9 +338,24 @@ window.JDXI_PROGRESS = (function () {
   /* --------------------------------------------------------------- resume */
 
   /*
-   * Where the learner was last working. A stored step that no longer exists
-   * resolves to the tutorial's first step; a stored tutorial that no longer
-   * exists yields no resume point at all.
+   * Where the learner was last working, or null when the stored tutorial no
+   * longer exists.
+   *
+   * `stepIndex` is still always a usable index, so every existing caller keeps
+   * working unchanged. What is NEW is that the result says whether that index
+   * is the learner's actual recorded position or a fallback:
+   *
+   *   stepStatus "exact"   - the stored step id resolved; stepIndex IS where
+   *                          they were, and `stepResolved` is true
+   *   stepStatus "stale"   - a step id was stored but the curriculum no longer
+   *                          contains it (steps renumbered, a step removed)
+   *   stepStatus "missing" - the record named a tutorial but never a step
+   *
+   * For the last two, stepIndex falls back to 0 so navigation still works, but
+   * `stepResolved` is false and a caller must not word it as "you were on step
+   * 1" - the honest statement is that the exact place could not be recovered.
+   * Silently presenting the fallback as a remembered position is the defect
+   * this flag exists to make impossible.
    *
    * Canonical only. A specialty lesson is optional and outside the guided
    * path, so it never becomes the thing Home offers to continue.
@@ -288,16 +364,25 @@ window.JDXI_PROGRESS = (function () {
     var s = load();
     var tut = s.currentTutorialId && catalog()[s.currentTutorialId];
     if (!tut) return null;
-    var index = 0;
-    if (s.currentStepId) {
+    var storedStepId = typeof s.currentStepId === "string" ? s.currentStepId : null;
+    var found = -1;
+    if (storedStepId) {
       for (var i = 0; i < tut.steps.length; i++) {
-        if (tut.steps[i].id === s.currentStepId) {
-          index = i;
+        if (tut.steps[i].id === storedStepId) {
+          found = i;
           break;
         }
       }
     }
-    return { id: s.currentTutorialId, tutorial: tut, stepIndex: index };
+    var resolved = found >= 0;
+    return {
+      id: s.currentTutorialId,
+      tutorial: tut,
+      stepIndex: resolved ? found : 0,
+      stepResolved: resolved,
+      stepStatus: resolved ? "exact" : storedStepId ? "stale" : "missing",
+      storedStepId: storedStepId,
+    };
   }
 
   /* The resume point, but only when there is something left to do in it. */
@@ -353,6 +438,13 @@ window.JDXI_PROGRESS = (function () {
   /*
    * Three separate resets, because they destroy different things and a learner
    * may well want one without the other (master plan sec 25).
+   *
+   * The partial resets go through `persist`, so while a future record holds the
+   * read-only lock they clear the session but cannot be saved - writing a v2
+   * record over a newer one is exactly what the lock prevents, and a reset is
+   * not a special case. `resetEverything` is different: it DELETES the key
+   * rather than rewriting it, which destroys nothing this build could have
+   * misread, so it is allowed through and releases the lock afterwards.
    */
   function resetProgress() {
     var s = load();
@@ -373,6 +465,10 @@ window.JDXI_PROGRESS = (function () {
     state = empty();
     try {
       window.localStorage.removeItem(KEY);
+      /* The newer record is gone, so there is nothing left to protect and
+         this session can persist normally again. */
+      readOnlyReason = null;
+      futureSchemaVersion = null;
     } catch (e) {
       storageWorks = false;
     }
@@ -380,6 +476,8 @@ window.JDXI_PROGRESS = (function () {
 
   return {
     isAvailable: isAvailable,
+    persistence: persistence,
+    isReadOnly: isReadOnly,
 
     completed: completed,
     isComplete: isComplete,
@@ -404,7 +502,6 @@ window.JDXI_PROGRESS = (function () {
     resetEverything: resetEverything,
 
     _schemaVersion: SCHEMA_VERSION,
-    _key: KEY,
     _migratedFrom: function () { return migratedFrom; },
   };
 })();

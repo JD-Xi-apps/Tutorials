@@ -95,6 +95,22 @@ storage that throws on read or on write.
 The contract under test is that the app stays fully navigable when storage misbehaves —
 only persistence may degrade.
 
+Two sections are worth naming, because both guard defects that were invisible from the
+outside — the app rendered correctly while the data underneath it was wrong:
+
+- **future schema.** Rejecting a newer record on *read* is only half the guarantee; the
+  next write put a v2 record over the top of it. Every write path is now asserted
+  separately against a v99 record carrying a field this build cannot know about, because
+  one unguarded path is enough to destroy it. The session still works entirely in memory,
+  and `resetEverything` — which *deletes* rather than rewrites — is the one deliberate
+  exception. Ordinary corruption is asserted **not** to trigger the lock: one bad byte
+  must not leave a learner unable to save for the rest of the session.
+- **step resolution.** A stored step id that no longer resolves still falls back to index
+  0 so navigation works, but the result was indistinguishable from a learner genuinely on
+  step 1 — which let the app claim it remembered a position it had invented. `resume()`
+  now reports `stepResolved` / `stepStatus`, and the tests pin all three cases (`exact`,
+  `stale`, `missing`) against a real catalog id rather than a spelled-out one.
+
 ## `test-behaviour.js`
 
 ```
