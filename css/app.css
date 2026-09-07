@@ -21,11 +21,20 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 /* Source PNG is solid black on transparency with no padding; invert it to
    white so it matches the nav on the dark bar without rewriting the asset. */
 .brand-logo { display:block; width:auto; height:18px; max-width:150px; object-fit:contain; filter:brightness(0) invert(1); }
-.homebtn,.navbtn { border:0; background:transparent; color:#fff; display:flex; align-items:center; gap:6px; height:24px; padding:0 2px; font-weight:650; cursor:pointer; font-size:12px; }
+/* QoL E - hit areas. The bar is 36px, so a 32px control is the largest that
+   still sits inside it; the growth is padding and box height, not type. The
+   nav is a flex row, so wider controls close on each other but can never
+   overlap - a flex gap is between borders, not between glyphs. The gap comes
+   down 16 -> 12 to pay for some of the new padding, which keeps the nav close
+   to the width it had while every target inside it grows. */
+.homebtn,.navbtn { border:0; background:transparent; color:#fff; display:flex; align-items:center; gap:6px; height:32px; padding:0 9px; border-radius:8px; font-weight:650; cursor:pointer; font-size:12px; }
 .homebtn { margin-right:auto; }
-.nav { display:flex; gap:16px; align-items:center; }
-.navbtn.settings { width:26px; justify-content:center; padding:0; }
-.topbar button:hover { opacity:.72; }
+.nav { display:flex; gap:12px; align-items:center; }
+.navbtn.settings, .navbtn.search { width:32px; justify-content:center; padding:0; }
+/* Hover paints the target rather than fading the label, so the control shows
+   both that it is interactive and how big it actually is. It also has to be
+   able to lift the in-lesson de-emphasis below, which dimming could not. */
+.topbar button:hover { background:rgba(255,255,255,.16); }
 .iconline { font-size:14px; line-height:1; }
 /* At one font-size the house and gear glyphs draw far smaller than the box and
    star. Size them by drawn height instead so all four icons read alike. */
@@ -162,9 +171,12 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 
 /* ============================================================================
    LESSON VIEW (Phase 4B)
-   Appended only. No rule above this banner is modified, so the frozen home
-   view renders byte-for-byte as before. Everything here is scoped to the
-   lesson view's own classes.
+   Appended when written, and scoped to the lesson view's own classes. The
+   original claim that no rule above this banner is modified no longer holds:
+   the QoL visual-stability pass (see the banner at the end of this file)
+   revisits the topbar controls above it for hit-area reasons, and revisits
+   rules inside this section for progress, hierarchy and layout stability.
+   Home's own rules are still untouched.
    Both views live inside the SAME 1440x900 stage - there is no second
    page-scaling system.
    ========================================================================= */
@@ -183,20 +195,69 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 /* Canonical tutorial: same badge geometry, level colouring instead of the
    development warning. Fixtures never carry this class. */
 .fixture-badge.canonical { background:#eef7f0; color:#1f7a3f; border-color:#bfe0c9; }
-.lesson-title { margin:0; font-size:19px; letter-spacing:-.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* QoL D - the lesson title is persistent chrome: it says which lesson you are
+   in, which you already know, and it was set at the same size and weight as
+   the instruction, which changes every step and is the thing to do next. It
+   stays legible and stays first; it stops competing. */
+.lesson-title { margin:0; font-size:16px; font-weight:700; color:#3d3d3d; letter-spacing:-.25px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .lesson-prog { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:none; }
-.prog-text { font-size:12px; font-weight:750; color:var(--muted); }
-.prog-track { display:flex; gap:5px; }
-.prog-track .pip { width:26px; height:5px; border-radius:3px; background:#e2e2de; }
+/* QoL A - progress feedback.
+   The track used to be as wide as its tutorial was long: 305px at ten steps,
+   460px at fifteen, so the same element changed size by half between lessons
+   and the head reflowed around it. The track is now a fixed rail and the pips
+   flex inside it, which is also what makes a pip mean "a share of this
+   tutorial" rather than "26px". The text is strengthened by one weight step
+   and taken off the muted grey - it is the sentence that actually says where
+   you are - without becoming a headline. */
+.prog-text { font-size:12.5px; font-weight:800; color:var(--ink); letter-spacing:-.1px; }
+.prog-track { display:flex; gap:5px; width:300px; }
+.prog-track .pip { flex:1 1 0; min-width:5px; height:6px; border-radius:3px; background:#e2e2de; }
 .prog-track .pip.done { background:var(--red); }
 .prog-track .pip.here { background:var(--ink); }
 
 .lesson-body { display:grid; grid-template-columns:392px 1fr; gap:22px; min-height:0; }
 
 /* ---- instruction column ---- */
-.lesson-instr { align-self:start; max-height:100%; background:#fff; border:1px solid var(--line); border-radius:17px; box-shadow:var(--shadow); padding:16px 18px 14px; display:flex; flex-direction:column; min-height:0; }
+/*
+ * QoL B - a stable action area.
+ *
+ * The card used to be sized by its content, so the row holding Why? / I'm lost
+ * sat wherever that step's instruction, detail and cards happened to end.
+ * Measured over every step of all 30 tutorials that put the row anywhere
+ * across a 216px band, and up to 169px apart between two CONSECUTIVE steps of
+ * the same tutorial: the controls moved out from under the pointer between one
+ * step and the next, for no reason the learner could see.
+ *
+ * The fix is a floor plus an auto margin, and nothing else. The card is never
+ * shorter than --instr-floor, and .disclosure's margin-top:auto hands every
+ * leftover pixel to the gap ABOVE the row - so the variance lands in whitespace
+ * instead of in the controls, and the row sits on the card's bottom edge like
+ * the footer it is. Content is untouched: it still sizes itself, still starts
+ * at the top, and is still what pushes the card taller when there is more of it.
+ *
+ * 544px is measured, not guessed. The tallest instruction stack in the catalog
+ * needs 515px of card in Chromium and 519px in Firefox - Firefox's text metrics
+ * run slightly taller, so the floor is set from the larger of the two with
+ * ~25px of headroom for later content. max-height:100% is kept, so a step that
+ * one day exceeds the floor grows the card rather than clipping, and only that
+ * step loses the pinning.
+ *
+ * One honest trade. Opening a panel now raises the row by up to the panel's own
+ * height, where before the card grew downwards and the row held still. That is
+ * the direct cost of not pinning: inside a fixed box a panel can only take its
+ * space from the auto margin. Reserving a permanent panel-sized band underneath
+ * the row would buy the row back in both states, and it was built and looked at
+ * - it strands the buttons above 175px of empty card on every screen, which is
+ * a worse thing to see all the time than a shift you asked for by clicking. The
+ * open state still fits everywhere: the worst case in the catalog needs 690px
+ * of the column's 704, no panel scrolls, and nothing is clipped.
+ */
+.lesson-instr { --instr-floor:544px; align-self:start; min-height:var(--instr-floor); max-height:100%; background:#fff; border:1px solid var(--line); border-radius:17px; box-shadow:var(--shadow); padding:16px 18px 14px; display:flex; flex-direction:column; }
 .step-kicker { font-size:11.5px; font-weight:800; color:var(--red); letter-spacing:.4px; text-transform:uppercase; }
-.instr { margin:8px 0 0; font-size:19px; line-height:1.3; font-weight:700; letter-spacing:-.2px; }
+/* QoL D - the current instruction is the one thing on the screen that changes
+   every step and the one thing being asked for, so it outranks the title
+   rather than matching it. One size step and one weight step, no more. */
+.instr { margin:8px 0 0; font-size:21px; line-height:1.28; font-weight:750; letter-spacing:-.3px; }
 .instr-detail { margin:9px 0 0; font-size:12.5px; line-height:1.45; color:var(--muted); }
 
 .icard { margin-top:11px; border:1px solid var(--line); border-radius:11px; padding:8px 11px; background:#fcfcfb; }
@@ -212,12 +273,30 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .check-card { background:#f6f8fd; border-color:#d5e0f3; }
 .check-card .icard-cap { color:var(--blue); }
 
-.disclosure { display:flex; gap:8px; margin-top:12px; }
-.disc-btn { border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 12px; font-size:12px; font-weight:750; cursor:pointer; transition:.12s ease; }
-.disc-btn:hover { border-color:#bebebb; background:#fcfcfb; }
+/*
+ * QoL C - the two disclosures are not peers and should not have looked like
+ * peers. Why? is optional background for a learner who is already succeeding;
+ * I'm lost is the way out for one who is not. So Why? steps back to an outline
+ * on the card, and I'm lost carries a filled, bordered, heavier chip that
+ * reads as an available action.
+ *
+ * It stays a soft tint rather than a warning: recovery is a normal thing to
+ * need, and an alarm-coloured button would make asking for help feel like an
+ * error state. Neither is hidden and neither is enlarged out of the card.
+ *
+ * QoL E - both are padded to a ~35px target from 31px.
+ */
+/* margin-top:auto is the whole of item B's step-to-step fix: it hands every
+   pixel of leftover card to the gap ABOVE this row, so the row itself lands
+   at the same place whatever the step above it turned out to be. The 12px
+   becomes padding so the separation survives the case where there is no
+   leftover at all and the auto margin collapses to zero. */
+.disclosure { display:flex; gap:8px; margin-top:auto; padding-top:12px; flex:none; }
+.disc-btn { border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:9px; padding:9px 14px; font-size:12px; font-weight:700; cursor:pointer; transition:.12s ease; }
+.disc-btn:hover { border-color:#bebebb; background:#fcfcfb; color:var(--ink); }
 .disc-btn[aria-expanded="true"] { background:var(--ink); color:#fff; border-color:var(--ink); }
-.disc-btn.lost { color:var(--red); border-color:#f3cdcb; }
-.disc-btn.lost:hover { background:var(--redsoft); }
+.disc-btn.lost { color:var(--red); background:var(--redsoft); border-color:#f0bdb9; font-weight:800; }
+.disc-btn.lost:hover { background:#ffe6e2; border-color:#e8a9a4; color:var(--red); }
 .disc-btn.lost[aria-expanded="true"] { background:var(--red); color:#fff; border-color:var(--red); }
 
 /* Bounded area: an open panel can never grow the page or cause page scrolling. */
@@ -311,14 +390,14 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .lsn-nav:active { transform:translateY(0); }
 .lsn-nav.next { background:var(--ink); color:#fff; }
 .lsn-nav.next:hover { background:#2c2c2c; }
-.lsn-nav.next.finish { background:var(--green); border-color:var(--green); }
 .lsn-nav.back { color:var(--muted); border-color:var(--line); }
 
 /* ============================================================================
    CATALOG VIEW (Phase 6D) — levels, topics, Favorites, Progress, Settings
-   Appended only. No rule above this banner is modified, so the frozen home and
-   lesson views render exactly as before. Everything here is scoped to the
-   catalog view's own classes, plus the lesson-screen favourite toggle.
+   Appended when written, and scoped to the catalog view's own classes plus the
+   lesson-screen favourite toggle. As with the Phase 4B banner above, the QoL
+   visual-stability pass does modify rules above this point, so this section no
+   longer inherits an unchanged lesson view.
    All three views live inside the SAME 1440x900 stage.
    ========================================================================= */
 
@@ -360,7 +439,7 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .tut-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; align-content:start; min-height:0; }
 .tut-grid.cols-4 { grid-template-columns:repeat(4,1fr); }
 .tut-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
-.tut-card { min-height:164px; position:relative; text-align:left; border:1px solid var(--line); background:#fff; border-radius:13px; padding:11px 12px 10px; cursor:pointer; transition:.12s ease; display:flex; flex-direction:column; gap:5px; min-height:0; box-shadow:0 3px 10px rgba(0,0,0,.035); }
+.tut-card { position:relative; text-align:left; border:1px solid var(--line); background:#fff; border-radius:13px; padding:11px 12px 10px; cursor:pointer; transition:.12s ease; display:flex; flex-direction:column; gap:5px; min-height:0; box-shadow:0 3px 10px rgba(0,0,0,.035); }
 .tut-card:hover { transform:translateY(-1px); border-color:#bebebb; background:#fcfcfb; }
 .tut-card:active { transform:translateY(0); }
 .tut-card .tc-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
@@ -424,7 +503,15 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
    this, the favourite control stays visible on a development fixture, which
    is the one lesson that must never offer it. */
 .favstar[hidden], .cat-btn[hidden] { display:none; }
-.favstar { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:#fff; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:750; color:var(--muted); cursor:pointer; transition:.12s ease; flex:none; }
+/* QoL E - 21px was the smallest target on the screen. Padding takes it to
+   28px without changing the pill's type or colour.
+   28 rather than 30 because this pill is what sets the height of the whole
+   badge-and-title stack, and that stack has to fit the lesson head's fixed
+   54px. At 30px Firefox measured the stack at 53 - it fitted, with 1px to
+   spare, which is not a margin worth shipping when a different system font
+   stack could spend it. At 28px both browsers leave 3px and the target is
+   still a third larger than it was. */
+.favstar { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 12px; min-height:28px; font-size:11px; font-weight:750; color:var(--muted); cursor:pointer; transition:.12s ease; flex:none; }
 .favstar:hover { border-color:#bebebb; background:#fcfcfb; }
 .favstar[aria-pressed="true"] { background:#fff7ec; border-color:#f0c98a; color:#8a5a00; }
 .favstar[aria-pressed="true"] .favstar-ico { color:var(--orange); }
@@ -469,7 +556,11 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .ref-steps li { font-size:12.5px; line-height:1.5; color:var(--muted); margin-bottom:5px; }
 .ref-notes { margin:0; padding-left:18px; }
 .ref-notes li { font-size:12px; line-height:1.45; color:var(--muted); margin-bottom:4px; }
-.ref-source { font-size:10.5px !important; color:var(--muted); font-style:italic; margin-top:8px !important; }
+/* Qualified rather than flagged: .cat-panel p is what set the size and the
+   margin, and .cat-panel p.ref-source outranks it without !important. It
+   deliberately still does not set margin-bottom, so .cat-panel p:last-child
+   keeps zeroing it exactly as before. */
+.cat-panel p.ref-source { font-size:10.5px; color:var(--muted); font-style:italic; margin-top:8px; }
 .cat-panel.danger { background:var(--redsoft); border-color:#f3cdcb; }
 .cat-panel.danger h2 { color:var(--red); }
 .cat-panel.danger p { color:#8a2d28; }
@@ -686,7 +777,8 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 /* Settings */
 .reset-head { margin:14px 0 4px; font-size:12.5px; }
 .reset-status { font-size:12px; color:var(--muted); }
-.setting-value { margin-bottom:6px !important; }
+/* Same story as .ref-source above: outrank .cat-panel p instead of flagging. */
+.cat-panel p.setting-value { margin-bottom:6px; }
 .setting-value b { color:var(--ink); font-size:14px; }
 .tut-row.specialty .tr-id { color:var(--purple); }
 
@@ -704,3 +796,112 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
   border-radius:999px; padding:3px 10px; font:inherit; font-size:11px; font-weight:700;
   cursor:pointer; opacity:.85; transition:.12s ease; }
 .qr-link:hover { opacity:1; background:rgba(255,255,255,.5); }
+
+/* ============================================================================
+   QoL PASS 1 — VISUAL STABILITY AND POLISH
+   The rest of this pass is edited in place, next to the rules it changes:
+   progress (A) and layout stability (B) in the lesson section, hierarchy
+   (C, D) beside the controls they rank, hit areas (E) on the controls
+   themselves. What is left here is the work that has no existing rule to sit
+   next to - a state (F, G), a cue (H), and an accessibility guard (I).
+   Nothing here adds a surface; every selector attaches to markup or to
+   standard state that already exists.
+   ========================================================================= */
+
+/* ---------------------------------------------------------- F: lesson chrome
+   Inside a lesson the instruction is the whole point of the screen and the
+   global bar is somewhere to go afterwards, so the bar steps back while a
+   lesson is open. body.in-lesson is already maintained by the router.
+
+   It is a de-emphasis, not a disappearance, and the numbers are deliberate:
+   at .68 the white nav resolves to about #b0b0b0 on the #151515 bar, which is
+   roughly 8:1 - comfortably legible, and above the 4.5:1 the un-dimmed bar
+   would need anyway. Nothing is hidden, moved or made smaller, so a learner
+   who is looking for Search or Home finds it exactly where it was.
+
+   Both ways back to full strength are covered, because they answer different
+   questions. Hover answers "is this a control?"; focus answers "where am I?",
+   and a keyboard user gets it without a pointer. :focus is included beside
+   :focus-visible so the restore cannot depend on which of the two the browser
+   decides applies. */
+body.in-lesson .topbar .brand-logo { opacity:.5; }
+body.in-lesson .homebtn,
+body.in-lesson .navbtn { opacity:.68; }
+body.in-lesson .homebtn:hover,
+body.in-lesson .navbtn:hover,
+body.in-lesson .homebtn:focus,
+body.in-lesson .navbtn:focus,
+body.in-lesson .homebtn:focus-visible,
+body.in-lesson .navbtn:focus-visible { opacity:1; }
+/* The search panel is a deliberate act, not chrome: while it is open the bar
+   is being used, so it comes back. */
+body.in-lesson .navbtn[aria-expanded="true"] { opacity:1; }
+.topbar .brand-logo,
+.topbar .homebtn,
+.topbar .navbtn { transition:opacity .14s ease, background-color .14s ease; }
+
+/* ------------------------------------------------- G: unavailable navigation
+   Written for whichever way the control ends up saying it is unavailable:
+   a real disabled attribute, or aria-disabled on a button that stays
+   focusable. Both are matched, so this holds regardless of which lands, and
+   it is inert until one of them is actually set.
+
+   The button keeps its box. Removing it would move Next across the footer the
+   moment step 1 became step 2, which is the same class of instability item B
+   exists to remove. It keeps its focus ring too: an aria-disabled button is
+   still reachable by keyboard, and a control you can land on has to show that
+   you have landed on it.
+
+   The greyed treatment is intentionally below normal text contrast. That is
+   the signal, and WCAG 1.4.3 exempts an inactive control for exactly this
+   reason - #a3a39f on #f7f7f5 still resolves the glyphs while reading, at a
+   glance, as not available. */
+.lsn-nav:disabled, .lsn-nav[aria-disabled="true"],
+.cat-btn:disabled, .cat-btn[aria-disabled="true"] {
+  color:#a3a39f; background:#f7f7f5; border-color:#e8e8e4;
+  box-shadow:none; cursor:default; }
+.lsn-nav:disabled:hover, .lsn-nav[aria-disabled="true"]:hover,
+.cat-btn:disabled:hover, .cat-btn[aria-disabled="true"]:hover {
+  transform:none; color:#a3a39f; background:#f7f7f5; border-color:#e8e8e4; }
+.lsn-nav:disabled:active, .lsn-nav[aria-disabled="true"]:active,
+.cat-btn:disabled:active, .cat-btn[aria-disabled="true"]:active { transform:none; }
+
+/* ------------------------------------------- H: hardware target re-entry cue
+   A learner who has just changed step looks back at the instrument and has to
+   find the highlight again. This is the one-shot answer to "which one is it
+   now": a ring that expands out of the existing highlight and fades, once.
+
+   It is a reacquisition cue, so it is not a pulse. It runs a single iteration,
+   it carries no fill mode, and it ends on the highlight's own resting
+   box-shadow, so when it finishes the element is byte-for-byte the .hl it
+   already was - nothing to unset, and no state left behind if the class is
+   never removed. Colour is currentColor throughout, so .hl-a / .hl-b / .hl-c
+   keep owning the palette and no hardware colour is redefined here.
+
+   Three hooks, because the JS that decides WHEN this fires is not on this
+   branch: the class on the highlight itself, the class on any ancestor, or a
+   data attribute on any ancestor. Whichever the other worker chooses, this is
+   already listening; until one of them is set, none of it applies. */
+@keyframes jdxi-hl-enter {
+  from { box-shadow:0 0 0 3px color-mix(in srgb,currentColor 16%,transparent),
+                    0 0 0 3px color-mix(in srgb,currentColor 52%,transparent); }
+  to   { box-shadow:0 0 0 3px color-mix(in srgb,currentColor 16%,transparent),
+                    0 0 0 17px color-mix(in srgb,currentColor 0%,transparent); }
+}
+.hl.hl-enter,
+.hl-enter .hl,
+[data-hl-enter] .hl { animation:jdxi-hl-enter 620ms ease-out 1; }
+
+/* ---------------------------------------------------------- I: reduced motion
+   Scoped to the motion this pass introduced, and to nothing else. The app's
+   existing .12s hover transitions are not this pass's to decide about, and
+   quietly switching them off here would be an unrelated change hiding inside
+   an accessibility query. */
+@media (prefers-reduced-motion: reduce) {
+  .hl.hl-enter,
+  .hl-enter .hl,
+  [data-hl-enter] .hl { animation:none; }
+  .topbar .brand-logo,
+  .topbar .homebtn,
+  .topbar .navbtn { transition:none; }
+}
