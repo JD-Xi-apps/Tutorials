@@ -137,6 +137,28 @@ learner state, and an empty collection rendering a placeholder page. The first o
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
 the bookmark control visible on a fixture.
 
+Three discovery sections were added with the QoL work, and each pins the *absence* of
+something as hard as its presence:
+
+- **advisory prerequisites.** Every expectation is read from the same catalog the card
+  was built from, so a curriculum edit cannot leave the test asserting a prerequisite a
+  tutorial no longer has. The non-gating half is the point: no card disabled, dimmed,
+  `aria-disabled`, removed from the tab order or reordered, no copy saying required or
+  locked, and a tutorial with every prerequisite in its level outstanding still opening
+  directly on its first step. No tutorial has two outstanding prerequisites today, so the
+  test amends the catalog in the page to prove two are listed together and reloads to put
+  it back — the presentation must not assume a shape the data happens to have.
+- **compact titles.** Rows show the authored `shortTitle`; rich cards, the Specialty
+  grid and the lesson heading show the full one; the accessible name and the tooltip
+  carry the full title either way. Nothing truncates at 1440 today and that is asserted
+  rather than assumed.
+- **completed / current / not started.** Exactly one card is current, because the model
+  stores exactly one; finishing it retires both the cue and the offer to continue it; the
+  not-started mark draws no fill that could be read as a radio control but keeps its
+  footprint, so completing a tutorial moves nothing. Sizing is pinned across all three
+  states, and clipping is measured on `.cat-body` — the fixed-height `.catalog` around it
+  hides overflow and can never report any.
+
 ## `test-explorer.js`
 
 ```
@@ -197,6 +219,14 @@ a real `<button>` with an accessible name, icon-only controls carry explicit lab
 decorative glyphs are hidden so they do not pollute a control's spoken name, each surface
 has exactly one `h1`, the bookmark toggle exposes `aria-pressed`, and the destructive
 reset states its consequence before it acts.
+
+A sweep over the discovery surfaces covers the advisory prerequisites and the current-
+tutorial cue, read from an empty record so there is actually something to announce. A
+card is itself a button with an explicit accessible name, so anything added inside it is
+invisible to assistive technology unless the name is updated too — the advisory rendering
+perfectly and being readable by nobody who is not looking at it is the failure mode this
+exists for. The reverse risk is checked in the same pass: an advisory that someone later
+makes into a link would put a second tab stop inside a button.
 
 The focus check tabs to a control rather than calling `.focus()`, because `:focus-visible`
 is exactly the distinction between a keyboard user, who must see the ring, and a mouse

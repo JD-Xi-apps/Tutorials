@@ -460,6 +460,59 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
   ok(ring && ring.outline !== 'none' && ring.width > 0,
     `a tabbed-to button shows a visible focus ring (${ring ? ring.outline + ' ' + ring.width : 'none'})`);
 
+  /*
+   * ---- the discovery cards' new advisory text ----
+   *
+   * A card is itself a button with an explicit accessible name, so anything
+   * added inside it is invisible to assistive technology unless the name is
+   * updated too. That is the failure mode worth sweeping every discovery
+   * route for: the prerequisite advisory rendering perfectly and being
+   * readable by nobody who is not looking at it.
+   *
+   * The second half is the reverse risk. A "Recommended first: B01" that
+   * someone later makes into a link would put a second tab stop inside a
+   * button, which is invalid and traps keyboard users in a control that has
+   * no meaning of its own.
+   */
+  const discovery = await p.evaluate(() => {
+    const out = ['#specialty'];
+    ['beginner', 'novice', 'intermediate'].forEach((l) => out.push('#level/' + l));
+    const C = window.JDXI_COLLECTIONS || {};
+    Object.keys(C).forEach((c) => { if ((C[c].tutorialIds || []).length) out.push('#topic/' + c); });
+    return out;
+  });
+
+  /* Read from an empty record, so every prerequisite in the catalog is
+     outstanding and there is actually something to announce. */
+  await p.evaluate(() => { window.localStorage.removeItem('jdxi.tutorial-hub.progress'); });
+  for (const r of discovery) {
+    await p.evaluate((h) => { window.location.hash = h; }, r);
+    await p.waitForTimeout(200);
+    const cards = await p.evaluate(() =>
+      [...document.querySelectorAll('#cat-body .tut-card')].map((c) => {
+        const line = c.querySelector('.tc-prereq');
+        const now = c.querySelector('.tc-now');
+        return {
+          advice: line ? line.textContent.trim() : null,
+          named: line ? (c.getAttribute('aria-label') || '').indexOf(line.textContent.trim()) >= 0 : true,
+          nested: line ? line.querySelectorAll('a,button,input,select,[tabindex],[role]').length : 0,
+          badge: now ? now.textContent.trim() : null,
+          badgeNamed: now ? /\bCurrent\b/.test(c.getAttribute('aria-label') || '') : true,
+          disabled: c.disabled || c.getAttribute('aria-disabled') !== null,
+        };
+      }));
+    ok(cards.length > 0, `${r} renders discovery cards`);
+    ok(cards.every((c) => c.named),
+      `${r}: every advisory reaches the card's accessible name`);
+    ok(cards.every((c) => c.nested === 0),
+      `${r}: no advisory adds a control inside a card that is itself a control`);
+    ok(cards.every((c) => c.badgeNamed),
+      `${r}: a Current badge is in the accessible name, not only in the pixels`);
+    ok(cards.every((c) => !c.disabled),
+      `${r}: an advisory never disables the card it is on`);
+    ok(cards.some((c) => c.advice), `${r}: something is actually being advised`);
+  }
+
   /* ---- the whole app is reachable by keyboard from the topbar ---- */
   await p.evaluate(() => { window.location.hash = '#home'; });
   await p.waitForTimeout(180);
