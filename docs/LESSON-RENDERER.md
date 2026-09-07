@@ -14,7 +14,8 @@ registry, and about nothing else.
 | File | Role |
 |---|---|
 | `js/hardware-targets.js` | Canonical target registry. **Loaded, never edited by the renderer.** |
-| `js/tutorials.js` | `window.JDXI_TUTORIALS` — canonical learner-facing tutorials (B01, B02, N01). Source record per tutorial in `docs/tutorials/`. |
+| `js/tutorials.js` | `window.JDXI_TUTORIALS` — the thirty canonical learner-facing tutorials (B01–B10, N01–N10, I01–I10). Source record per tutorial in `docs/tutorials/`. |
+| `js/specialty.js` | `window.JDXI_SPECIALTY` — the three optional Specialty lessons, drawn by this same renderer. Real learner content, deliberately outside the canonical thirty. |
 | `js/tutorial-fixtures.js` | Development fixture only. No canonical content. |
 | `js/lesson-renderer.js` | `window.JDXI_LESSON_RENDERER` — builds the lesson view from a Step. |
 | `js/app.js` | Stage fitting (unchanged) plus the hash router. |
@@ -38,13 +39,29 @@ cannot be mistaken for a tutorial or picked up by the guided path or a collectio
 
 ## Lesson badge
 
-The badge above the lesson title (`#lsn-badge`) is renderer-aware. The router tells
-`render()` whether it is drawing a canonical tutorial (`canonical: true`) or a
-development fixture (default). A fixture keeps the exact **DEVELOPMENT FIXTURE — NOT
-A TUTORIAL** text and warning styling; a canonical tutorial shows its level and
-guided-path position derived from the Tutorial object (B01 → **BEGINNER • TUTORIAL
-1**) with the `.canonical` modifier. Fixture rendering is pixel-identical to before the
-badge became dynamic.
+The badge above the lesson title (`#lsn-badge`) is renderer-aware. The router names
+the **kind** it is rendering on the render context — `kind: "tutorial"`,
+`"specialty"` or `"fixture"` — and `setBadge` branches on that:
+
+| `kind` | Badge | Classes |
+|---|---|---|
+| `tutorial` | level and guided-path position derived from the Tutorial object (B01 → **BEGINNER • TUTORIAL 1**) | `.canonical` |
+| `specialty` | **SPECIALTY • OPTIONAL** | `.canonical .specialty` |
+| `fixture` | the exact **DEVELOPMENT FIXTURE — NOT A TUTORIAL** text and warning styling | neither |
+
+**Three kinds, not two, and the third is why.** The contract was originally the
+boolean `canonical: true` / default-false, which had only one place to put anything
+that was not a canonical tutorial: the fixture branch. That labelled the Specialty
+lessons **DEVELOPMENT FIXTURE — NOT A TUTORIAL**, which was worse than useless —
+Specialty is real learner content on the same instrument, and must never be marked
+as a development artefact. Specialty is therefore *not canonical* and *not a
+fixture*, and the badge has to be able to say so.
+
+`render()` still accepts the old boolean as a fallback —
+`setBadge(ctx.kind || (ctx.canonical ? "tutorial" : "fixture"), tut)` — so a caller
+that supplies only `canonical` keeps its previous behaviour. `js/app.js` supplies
+both, and `kind` is the field that decides. Fixture rendering is pixel-identical to
+before the badge became dynamic.
 
 ## Canonical tutorials
 
@@ -325,7 +342,9 @@ Hash routing, so direct links and Back/Forward work from `file://` with no serve
 | `#dev/rear-panel/step/1..6` | Rear-panel fixture step |
 | `#level/beginner` `#level/novice` `#level/intermediate` | Guided level index |
 | `#topic/<collection-id>` | Topic collection index, for any collection with content |
-| `#favorites` `#progress` `#settings` | Learner-state surfaces |
+| `#specialty/<id>` | Specialty lesson `<id>` (resolved in `window.JDXI_SPECIALTY`), step 1 |
+| `#specialty/<id>/step/<n>` | Specialty lesson, step *n* |
+| `#bookmarks` `#progress` `#settings` | Learner-state surfaces (`#favorites` redirects to `#bookmarks`) |
 | out-of-range step (tutorial or fixture) | replaced with step 1 (`#tutorial/<id>` / fixture step 1) |
 | unknown tutorial id, unknown level, empty or unknown collection, `#tutorial/<id>/anything-else`, anything else | replaced with `#home` |
 
@@ -335,21 +354,22 @@ fixture routes stay separate and unchanged.
 
 ### One catalog view renders five surfaces
 
-The three guided levels, every topic collection, Favorites, Progress and Settings are
-not five screens. They are one `#view-catalog` with a shared head, body and foot, and a
+The three guided levels, every topic collection, Bookmarked, My Progress and Settings
+are not five screens. They are one `#view-catalog` with a shared head, body and foot, and a
 per-surface render function chosen from a small table. They differ in what they list,
 not in how they are built.
 
 Two list layouts, chosen by whether the list is bounded:
 
 - **rich cards** for a level (always ten) and a topic (at most eight) — id, title,
-  summary, minutes, step count, completion tick and a favourite star;
-- **compact rows** for Favorites and Progress, which can hold all thirty. The stage is a
-  fixed height that never scrolls, so an unbounded list cannot use a layout that grows.
+  summary, minutes, step count, completion tick and a bookmark star;
+- **compact rows** for Bookmarked and My Progress, which can hold all thirty. The stage
+  is a fixed height that never scrolls, so an unbounded list cannot use a layout that
+  grows.
 
 Development fixtures are excluded from every one of these surfaces, and from learner
 state entirely: a fixture is not a tutorial, so it never becomes a resume point, never
-appears in Progress, and shows no favourite control.
+appears in My Progress, and shows no bookmark control.
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
 and Back write the hash, so browser history follows step navigation naturally.
@@ -546,12 +566,9 @@ list, and no step has yet needed a close-up without the full view beside it.
 
 ## Deferred
 
-- **(no longer deferred)** tutorial content: all thirty canonical tutorials are
-  authored — B01–B10, N01–N10 and I01–I10 — each with source notes in
-  `docs/tutorials/`;
-- **(no longer deferred)** the production route catalog — levels, topics, Favorites,
-  Progress and Settings all route and render;
-- **(no longer deferred)** progress persistence, in `js/progress.js`;
+Items that were once listed here and have since shipped are recorded under
+*Delivered since*, below, rather than left in this list contradicting it.
+
 - exact display character dimensions (source-map Q4) — hence a labelled preview, not an
   emulator. The preview is a presentation surface: it will render whatever lines a step
   supplies, and it is content review, not the renderer, that keeps invented screens out
@@ -559,4 +576,16 @@ list, and no step has yet needed a close-up without the full view beside it.
 - Steps that mix hardware images (same-image constraint above);
 - rear connectors beyond those a canonical tutorial has needed (B02 uses OUTPUT and
   PHONES; the rest of the OM p.3 strip is registered but unused by any tutorial);
-- Favorites, My Progress, Settings views.
+- `control-closeup`, which exists in the renderer and in the validator's mode list and
+  which no step has yet needed.
+
+### Delivered since
+
+- tutorial content: all thirty canonical tutorials are authored — B01–B10, N01–N10 and
+  I01–I10 — each with source notes in `docs/tutorials/`;
+- the production route catalog — levels, topics, **Bookmarked**, My Progress and
+  Settings all route and render, and share one catalog view;
+- progress persistence, in `js/progress.js`;
+- the three secondary destinations Home offers beside the guided path — Hardware
+  Explorer, Quick Reference and Specialty — all of which route and render, with the
+  Specialty lessons drawn by this renderer.

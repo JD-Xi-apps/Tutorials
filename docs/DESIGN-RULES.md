@@ -38,8 +38,13 @@ baseline unless a later owner decision explicitly changes them.
   carries no Roland branding: this is a JD-Xi learning tool, not an official
   Roland application. The logo is placed with CSS sizing only; the source PNG
   is never resized, recolored, or recompressed.
-- My Progress and Favorites may show icon + text.
-- Settings is **gear icon only**. Use an accessible label and tooltip/title; no visible `Settings` text.
+- My Progress and Bookmarked may show icon + text.
+- Search and Settings are **icon only**. Each uses an accessible label and a
+  tooltip/title; neither shows visible text. Search opens the universal search
+  panel beneath the bar rather than routing anywhere.
+- The app-level feature is **Bookmarked**. *Favorite* is reserved for the JD-Xi's
+  own hardware feature and never names an app surface; `tools/validate-data.js`
+  enforces that in both directions.
 
 ## 4. Main menu
 
@@ -227,12 +232,58 @@ recovery.
 
 ## 8. Current implementation state
 
+Every item below is shipped and routable from `file://` today. Nothing here is
+aspirational; a surface that does not yet exist is not listed.
+
+**Screens and routing**
+
 - Home screen, and a reusable lesson screen that renders every tutorial from data.
-- Hash routing for tutorials and their steps, working from `file://`.
+- Hash routing for tutorials and their steps, working from `file://`, with browser
+  Back and Forward.
 - **All thirty canonical tutorials are authored: B01–B10, N01–N10 and I01–I10.**
-- Level, topic, Favorites, My Progress and Settings all route and render. **No
+- Level, topic, Bookmarked, My Progress and Settings all route and render. **No
   placeholder controls remain on the home screen.**
-- Local progress, resume and favourites persist in this browser. No accounts, no
-  cloud, no audio, no MIDI.
+- Unknown, malformed and empty destinations degrade to a defined route rather than
+  failing. `#favorites` is kept only as a legacy redirect to `#bookmarks`.
+
+**The three secondary destinations on Home** (§4) are all built:
+
+- **Hardware Explorer** (`#explorer`) — two panel views, top and rear, each listing
+  its major areas by name. All 99 registry targets open a popup describing what
+  Roland says the control does, each traced to an Owner's Manual page (83 described
+  individually; the 16 step buttons share one prefix description, because they are
+  sixteen instances of one control). Every target is deep-linkable at
+  `#explorer/control/<id>`.
+- **Quick Reference** (`#reference`) — 21 recall procedures, each sourced to an
+  official Roland page and each naming the tutorial that teaches it.
+- **Specialty** (`#specialty`) — three optional lessons (Vocoder, AutoPitch, Auto
+  Note), drawn by the same lesson renderer as the canonical thirty, badged
+  **SPECIALTY • OPTIONAL**, and counted separately from x/30.
+
+**Search**
+
+- One universal search, opened from the icon-only control in the top bar, over a
+  single in-memory index built from the same data the app renders — no fetch, no
+  second description of the content. Results are grouped as Tutorials (including
+  one deep-linked entry per step, and the topic collections), Quick Reference,
+  Controls and Specialty.
+
+**Learner state**
+
+- Local progress, resume point and bookmarks persist in this browser. No accounts,
+  no cloud, no audio, no MIDI.
+- Completion is explicit: only **Finish Tutorial** completes a lesson.
+- A resume point whose stored step the curriculum no longer contains is offered as
+  a resume from the beginning, never worded as a remembered position.
+- A progress record written by a **newer** build of the app is neither read nor
+  overwritten. The session runs in memory, says so without blaming the browser or
+  calling the record corrupt, and only Reset Everything is allowed past that lock.
+- Settings offers **three separate resets** — Reset Progress, Reset Bookmarks and
+  Reset Everything — because they destroy different things. Each needs two
+  deliberate presses, offers a Cancel, and none of them changes anything on the
+  learner's JD-Xi.
+
+**Baseline**
+
 - The baseline remains plain HTML/CSS/JavaScript with no build system, no modules and
   no runtime `fetch`; it opens by double-clicking `index.html`.

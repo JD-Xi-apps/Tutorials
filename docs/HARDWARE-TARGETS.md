@@ -56,8 +56,11 @@ target references**, not against a global master:
 - values are stored at 4 decimal places (≈ 0.3 px of the top master, ≈ 0.25 px of the
   rear image at full size — well inside the blur radius of either photograph)
 
-A target visible in no registered image would have `region: null` and
-`kind: "off-image"`. As of Phase 4C there are none — see §7.
+A target visible in no registered image would have `region: null`, and would be marked
+`kind: "off-image"` by convention. **There are none, and there have been none since
+Phase 4C** — all 99 targets carry a region and none carries that kind (§7, §8). Note
+which of the two the renderer actually acts on: it degrades when `region` is absent,
+not when `kind` says `off-image`.
 
 The rear asset was validated read-only before use: 2520 × 371, 79,049 bytes, SHA-256
 `c041233eb4c1f24f00dd176c621b6b719a0c572ad1a2983ab7e26136074fa868`, complete JPEG
@@ -72,9 +75,13 @@ source map.
 id           permanent internal identifier (never reused, never renumbered)
 label        preferred learner-facing wording
 panelLegend  what the learner physically sees printed on the instrument (null if nothing)
-kind         button | knob | control | section | group | keys | display | off-image
+kind         button | knob | control | section | group | keys | display
+             ("off-image" is retained as a legacy/reserved value — see §7 — and is
+             used by no target)
 imageId      optional image id (§2); absent/null = the registry default image (top)
-region       normalized geometry within the referenced image, or null for off-image targets
+region       normalized geometry within the referenced image. Every registered target
+             has one; null is the reserved no-registered-image case, and null is what
+             the renderer degrades on
 group        optional parent target id (a child references the same image as its parent)
 zoom         optional normalized crop, within the same image, for inset/close-up use
 notes        concise implementation information, not lesson prose
@@ -396,8 +403,17 @@ stand-ins for the controls.
 Phase 4C added the rear image to the registry and measured both controls on it, so
 they are now ordinary measurable `control` targets with `imageId: "rear"`, grouped
 under the new `rearPanel` section target. Their IDs are unchanged, so any future step
-referencing them needs no edit. The `off-image` kind stays in the schema for any
-future target that no registered image can show; no current target uses it.
+referencing them needs no edit. **Rear-panel targeting is therefore the ordinary
+mechanism** — a second registered image plus measured regions — and not a special case.
+
+The `off-image` kind stays in the schema as a **legacy/reserved** value, for a future
+target that no registered image can show. **No current target uses it, and no target
+has a null region** (§8). It is worth being precise about what it never was: the kind
+is a label, not a switch. The renderer's `resolveTarget` returns state `off-image`
+when a target has no `region`, whatever its `kind` — so the defensive off-image
+rendering path is driven by missing geometry, and it stays in the renderer whether or
+not the kind is ever used again. Retiring the kind would not remove that path, and
+removing that path is not what retiring the kind would mean.
 
 Phase 4C.1 completed the rear map with the remaining OM p.3 items (§5). What the rear
 image does **not** establish: power-on order, voltage/adapter requirements, connection

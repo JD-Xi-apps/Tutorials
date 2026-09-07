@@ -9,6 +9,30 @@ The validators deliberately read the *same* classic scripts the browser reads,
 rather than a parallel description of the data, so a check can never pass
 against a copy that has drifted from what ships.
 
+## `load-catalog.js`
+
+Not a check of its own — the **shared loader** the validators build on. It runs
+the app's classic browser scripts (`js/hardware-targets.js`, `js/tutorials.js`,
+`js/tutorial-fixtures.js`, and the optional `js/collections.js`,
+`js/quick-reference.js`, `js/specialty.js`, `js/explorer.js`) inside a Node `vm`
+context whose only host object is a bare `window`, then hands back what they
+assigned: `{ root, registry, tutorials, fixtures, collections, reference,
+specialty, explorer }`.
+
+It exists so a check reads **the same bytes the browser reads**. The alternative
+— a JSON export, or a second description of the catalog kept beside it — can
+drift from what ships, and a validator passing against a drifted copy is worse
+than no validator. Nothing in it is a user-facing or build dependency:
+`index.html` never loads it, `require()` appears here and not in the shipped
+app, and the runtime contract (no build, no modules, no server) is untouched.
+
+The three registry scripts are required and a missing one throws by name; the
+four catalog scripts are optional and simply come back `null`, so a caller can
+run against a partial tree rather than crashing on it.
+
+Currently consumed by `validate-data.js`. Any new dependency-free check should
+use it rather than parsing `js/` again.
+
 ## `validate-data.js`
 
 ```
@@ -77,9 +101,11 @@ An Explorer control route (`#explorer/control/<id>`) renders its panel's
 overview with the control's popup open, so it is covered here like any other
 route, and the viewport sweep includes both overviews and one popup.
 
-`--strict-routes` treats a route that falls back to `#home` as a failure. Use it
-once a surface is implemented; without it an unimplemented route passes silently
-because falling back *is* its correct behaviour.
+`--strict-routes` treats a generated route that does not stay where it was sent as
+a failure. Every surface the catalog generates is now built, so a fallback means a
+regression — a lost surface, a mis-parsed route, a renamed id — and not an
+unfinished screen. Run with the flag; without it a redirect is only reported, and
+a route that quietly lands on `#home` still renders a valid page and passes.
 
 ## `test-progress.js`
 
@@ -118,9 +144,9 @@ node tools/test-behaviour.js [chromium|firefox]
 ```
 
 Needs Playwright. Drives the real app from a real `file://` URL and asserts what the
-learner experiences: favouriting from a lesson and finding it on Favorites, persistence
-across a reload, the resume point, completion counting, the two-press Settings reset and
-its cancel path, and browser Back/Forward across the new surfaces.
+learner experiences: bookmarking from a lesson and finding it on Bookmarked, persistence
+across a reload, the resume point, completion counting, the two-press Settings resets and
+their cancel path, and browser Back/Forward across the new surfaces.
 
 It also covers what the learner is **told** about their stored progress, which is where
 the same defect keeps reappearing in different clothes — the app stating something about
@@ -135,7 +161,7 @@ a session that rendered several surfaces and pressed a control that ordinarily w
 It also asserts two things that must **not** happen: a development fixture touching
 learner state, and an empty collection rendering a placeholder page. The first of those
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
-the favourite control visible on a fixture.
+the bookmark control visible on a fixture.
 
 ## `test-explorer.js`
 
@@ -195,8 +221,9 @@ Needs Playwright. Not a broad audit and not trying to be — it asserts the spec
 properties this app has to hold, on every route the catalog generates: every control is
 a real `<button>` with an accessible name, icon-only controls carry explicit labels,
 decorative glyphs are hidden so they do not pollute a control's spoken name, each surface
-has exactly one `h1`, the favourite toggle exposes `aria-pressed`, and the destructive
-reset states its consequence before it acts.
+has exactly one `h1`, the bookmark toggle exposes `aria-pressed`, and the Settings reset
+panel states its consequence — what it clears, and that it cannot be undone — before any
+of its controls act.
 
 The focus check tabs to a control rather than calling `.focus()`, because `:focus-visible`
 is exactly the distinction between a keyboard user, who must see the ring, and a mouse
