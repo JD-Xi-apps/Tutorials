@@ -792,8 +792,24 @@ if (specialty) {
     check(!/^[BNI]\d\d$/i.test(id), `${at}: id looks like a canonical tutorial id`);
 
     check(!!l.title, `${at}: no title`);
+    /* Load-bearing since Bookmarked started drawing rows from it: a Specialty
+       lesson without one falls back to its full title in a compact row, which
+       is the difference the field exists to make. Canonical tutorials have
+       always been checked for it; Specialty had not been. */
+    check(!!l.shortTitle, `${at}: no shortTitle`);
     check(!!l.summary, `${at}: no summary`);
     check(Array.isArray(l.steps) && l.steps.length > 0, `${at}: no steps`);
+
+    /*
+     * Specialty prerequisites name CANONICAL tutorials, and the discovery
+     * cards now print them. An unresolvable id was previously invisible;
+     * it would now read as "Recommended first: B99" to a learner.
+     */
+    check(Array.isArray(l.prerequisites), `${at}: prerequisites must be an array`);
+    (l.prerequisites || []).forEach((pre) => {
+      check(!!(tutorials || {})[pre],
+        `${at}: prerequisite "${pre}" is not a canonical tutorial`);
+    });
 
     (l.steps || []).forEach((st, i) => {
       const sat = `${at} step ${i + 1}`;
