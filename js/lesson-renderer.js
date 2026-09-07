@@ -676,23 +676,46 @@ window.JDXI_LESSON_RENDERER = (function () {
     // navigation
     var back = document.getElementById("lsn-back");
     var next = document.getElementById("lsn-next");
-    back.textContent = n === 1 ? "‹ Home" : "‹ Back";
-    /* The last step's forward button is the completion action when the caller
-       supplies a label for it, which lets the app style it as the deliberate
-       act it is rather than as one more Next. */
-    next.classList.toggle("finish", n === total && !!ctx.finishLabel);
+    /*
+     * Back always says Back. On step 1 there is nothing behind it inside the
+     * lesson, so it is genuinely unavailable rather than quietly becoming a
+     * second Home button - Home is already in the global topbar, and a control
+     * that changes destination is worse than one that is honestly inert. The
+     * button stays in the footer so the row does not reflow between steps.
+     *
+     * Native `disabled` rather than aria-disabled: it is the standards-correct
+     * representation of "cannot be used", it cannot be clicked or activated by
+     * accident, it needs no scripted guard of its own, and this file already
+     * treats it as the idiom (the Explorer dialog's focus trap skips
+     * `b.disabled`). Nothing in the QA contract tabs through the lesson footer,
+     * so removing it from the focus order at step 1 breaks no existing
+     * assertion. `:disabled` is the state hook for styling.
+     */
+    var backHadFocus = document.activeElement === back;
+    back.textContent = "‹ Back";
+    back.disabled = n === 1;
+    /* A disabled control cannot keep focus: the browser drops it to <body> and
+       the learner's next Tab restarts at the top of the page. Read before
+       disabling, because disabling blurs it synchronously. */
+    if (back.disabled && backHadFocus) next.focus();
     /*
      * The last step's forward button depends on whether the guided path
      * continues. The renderer does not look that up - the caller resolves it
      * (ctx.nextTutorial) so this file still knows nothing about any
      * particular tutorial, and a lesson with no follow-on simply finishes.
-     * Either way the last step keeps the completion styling.
      */
     next.textContent =
       n === total
         ? ctx.finishLabel || (ctx.nextTutorial ? "Next tutorial ›" : "Return home")
         : "Next ›";
-    next.classList.toggle("finish", n === total);
+    /* The last step's forward button is the completion action ONLY when the
+       caller supplies a label for it, which lets the app style it as the
+       deliberate act it is rather than as one more Next. Reaching the last step
+       of something that completes nothing - a development fixture, whose action
+       is "Return home" - is not an achievement and must not be dressed as one.
+       This toggle is the single one: a second, unconditional toggle used to
+       follow it and silently overrode the documented condition. */
+    next.classList.toggle("finish", n === total && !!ctx.finishLabel);
     document.getElementById("lsn-hint").textContent = step.nextHint || "";
   }
 

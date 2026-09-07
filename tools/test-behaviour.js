@@ -12,6 +12,10 @@
  * must NOT happen - a development fixture touching learner state, and an empty
  * collection rendering a placeholder page.
  *
+ * It also covers moving around inside a lesson: the footer Back and Next, the
+ * keyboard path they share, which surface owns Escape when more than one could
+ * answer it, and what the last step's action is allowed to look like.
+ *
  * tools/test-progress.js covers the storage layer's failure modes directly and
  * without a browser; this covers the wiring on top of it.
  */
@@ -127,6 +131,12 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await p.evaluate(() => document.querySelectorAll('.step-chip')[2].click());
   await p.waitForTimeout(250);
   ok((await hash()) === '#tutorial/B04/step/3', 'a review chip jumps straight to its step');
+  await goto('#tutorial/B04');
+  await p.evaluate(() => document.querySelector('#cat-actions .cat-btn').click());
+  await p.waitForTimeout(250);
+  ok((await hash()) === '#tutorial/B04/step/1', 'Start from step 1 leaves the review overview');
+  ok(!(await p.evaluate(() => document.getElementById('view-lesson').hidden)),
+    'Start from step 1 lands in the lesson');
 
   /* --- an unfinished tutorial offers Continue / Start over --- */
   await goto('#tutorial/B05/step/4');
@@ -134,9 +144,16 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   const choice = await p.textContent('#cat-body');
   ok(choice.includes('Continue at step 4'), 'reopening offers Continue at the saved step');
   ok(choice.includes('Start over'), 'reopening also offers Start over');
+  /*
+   * Start over asks for a STEP. It used to ask for the bare route, which is the
+   * decision point it was pressed on, so the surface re-rendered and the button
+   * was dead - it looked like nothing happened because nothing did.
+   */
   await p.evaluate(() => document.querySelectorAll('#cat-body .cat-btn')[1].click());
   await p.waitForTimeout(250);
-  ok((await hash()) === '#tutorial/B05', 'Start over goes to step 1');
+  ok((await hash()) === '#tutorial/B05/step/1', 'Start over goes to step 1 as a step');
+  ok(!(await p.evaluate(() => document.getElementById('view-lesson').hidden)),
+    'Start over lands in the lesson, not back on the choice it was pressed on');
 
   /* --- Home offers the Continue banner --- */
   await goto('#tutorial/B06/step/5');
@@ -305,6 +322,180 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   /* --- an empty collection is not routable --- */
   await goto('#topic/vocoder');
   ok((await hash()) === '#home', 'the empty Vocoder collection degrades to #home');
+
+  /* =====================================================================
+     Lesson navigation: the footer controls, the keyboard, and who owns a key.
+
+     These are checked on state that has been deliberately dirtied, because
+     the defect they guard only appears once the learner has a stored place in
+     the tutorial: Back from step 2 asked for the bare route, and the bare
+     route of a part-finished tutorial is the Continue / Start over choice. So
+     pressing Back inside a lesson threw the learner out of it and onto a
+     question about the lesson they were standing in.
+     ===================================================================== */
+
+  const inLesson = () => p.evaluate(() => !document.getElementById('view-lesson').hidden);
+  const backState = () => p.evaluate(() => {
+    const b = document.getElementById('lsn-back');
+    return { text: b.textContent.trim(), disabled: b.disabled };
+  });
+
+  /* B07 is used by nothing above, so its stored state is only what is set here. */
+  await goto('#tutorial/B07/step/3');   // records a resume point at step 3
+  await goto('#tutorial/B07/step/2');
+  ok(await inLesson(), 'step 2 of a part-finished tutorial is the lesson');
+  await p.click('#lsn-back'); await p.waitForTimeout(280);
+  ok((await hash()) === '#tutorial/B07/step/1',
+    'Back from step 2 goes to step 1 as an explicit step');
+  ok(await inLesson(), 'Back from step 2 stays in the lesson');
+  ok(await p.evaluate(() => document.getElementById('view-catalog').hidden),
+    'Back from step 2 raises no resume choice for the lesson being read');
+
+  /* --- step 1 Back is genuinely unavailable, and is not a second Home --- */
+  const b1 = await backState();
+  ok(b1.disabled === true, 'Back is disabled on step 1');
+  ok(b1.text === '\u2039 Back', `Back never relabels itself Home on step 1 (was "${b1.text}")`);
+  await p.evaluate(() => document.getElementById('lsn-back').click());
+  await p.waitForTimeout(250);
+  ok((await hash()) === '#tutorial/B07/step/1', 'a disabled Back navigates nowhere');
+  ok(await inLesson(), 'a disabled Back does not fall through to Home');
+  await goto('#tutorial/B07/step/2');
+  ok((await backState()).disabled === false, 'Back is available again from step 2');
+
+  /* --- the bare route is still the decision point it is meant to be --- */
+  await goto('#tutorial/B07');
+  ok(!(await inLesson()) && (await p.textContent('#cat-eyebrow')).includes('part-way through'),
+    'direct entry on the bare route still offers Continue / Start over');
+
+  /* --- ArrowRight and ArrowLeft --- */
+  await goto('#tutorial/B07/step/2');
+  await p.keyboard.press('ArrowRight'); await p.waitForTimeout(280);
+  ok((await hash()) === '#tutorial/B07/step/3', 'ArrowRight moves forward a step');
+  await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(280);
+  ok((await hash()) === '#tutorial/B07/step/2', 'ArrowLeft moves back a step');
+  await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(280);
+  await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(280);
+  ok((await hash()) === '#tutorial/B07/step/1', 'ArrowLeft on step 1 does nothing');
+  ok(await inLesson(), 'ArrowLeft on step 1 does not leave the lesson either');
+
+  /* Arrows are a LESSON key. Off the lesson they belong to the page. */
+  await goto('#level/beginner');
+  await p.keyboard.press('ArrowRight'); await p.waitForTimeout(200);
+  ok((await hash()) === '#level/beginner', 'arrow keys do nothing outside a lesson');
+
+  /* --- a text-entry context keeps its own arrows --- */
+  await goto('#tutorial/B07/step/2');
+  await p.click('#searchbtn'); await p.waitForTimeout(220);
+  await p.fill('#searchinput', 'tempo'); await p.waitForTimeout(200);
+  await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(220);
+  await p.keyboard.press('ArrowRight'); await p.waitForTimeout(220);
+  ok((await hash()) === '#tutorial/B07/step/2', 'arrows typed into search never move the lesson');
+  ok((await p.inputValue('#searchinput')) === 'tempo', 'the search query survives its own arrow keys');
+  ok(!(await p.evaluate(() => document.getElementById('searchpanel').hidden)),
+    'search stays open while its arrows are used');
+
+  /* --- Escape: search owns it while search is open --- */
+  await p.keyboard.press('Escape'); await p.waitForTimeout(280);
+  ok(await p.evaluate(() => document.getElementById('searchpanel').hidden),
+    'Escape closes search first');
+  ok((await hash()) === '#tutorial/B07/step/2' && await inLesson(),
+    'closing search with Escape does not also exit the lesson');
+
+  /* --- Escape: the Explorer popup owns it while the popup is open --- */
+  await goto('#explorer/control/filterSection');
+  ok(!(await p.evaluate(() => document.getElementById('exp-modal').hidden)),
+    'the Explorer popup is open on a control route');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(320);
+  ok(await p.evaluate(() => document.getElementById('exp-modal').hidden),
+    'Escape closes the Explorer popup');
+  ok((await hash()) === '#explorer/view/top',
+    'Escape in the Explorer leaves the learner on the overview, not somewhere else');
+
+  /* --- Escape from a lesson exits to where that lesson is found --- */
+  await goto('#tutorial/B07/step/2');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok((await hash()) === '#level/beginner', 'Escape leaves a guided tutorial for its level path');
+  await goto('#specialty/vocoder/step/2');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok((await hash()) === '#specialty', 'Escape leaves a Specialty lesson for Specialty');
+  await goto('#dev/lesson-renderer/step/2');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok((await hash()) === '#home', 'Escape leaves a development fixture for Home');
+
+  /* --- an open disclosure panel keeps its own arrows --- */
+  const whyStep = await p.evaluate(() => {
+    const T = window.JDXI_TUTORIALS;
+    for (const id of Object.keys(T).sort()) {
+      const st = T[id].steps;
+      for (let i = 1; i < st.length - 1; i++) {
+        if (st[i].whyItMatters) return '#tutorial/' + id + '/step/' + (i + 1);
+      }
+    }
+    return null;
+  });
+  ok(!!whyStep, 'the catalog has a mid-lesson step with a Why? panel to test against');
+  if (whyStep) {
+    await goto(whyStep);
+    await p.click('#lsn-why-btn'); await p.waitForTimeout(220);
+    /* Focused as a scroll container would be: the panel can be taller than its
+       box, and arrows there belong to whatever is being read. */
+    await p.evaluate(() => {
+      const el = document.getElementById('lsn-why-panel');
+      el.setAttribute('tabindex', '-1');
+      el.focus();
+    });
+    await p.keyboard.press('ArrowRight'); await p.waitForTimeout(260);
+    ok((await hash()) === whyStep, 'arrows inside an open disclosure panel do not move the lesson');
+  }
+
+  /* =====================================================================
+     Last-step semantics. The completion styling is the caller's decision and
+     only the caller's: a duplicate unconditional toggle used to override it,
+     which dressed a development fixture's "Return home" as a finished course.
+     ===================================================================== */
+
+  const footState = () => p.evaluate(() => {
+    const n = document.getElementById('lsn-next');
+    return { text: n.textContent.trim(), finish: n.classList.contains('finish') };
+  });
+
+  await goto(await lastStepHash('B07'));
+  const canonicalFoot = await footState();
+  ok(canonicalFoot.text === 'Finish Tutorial ✓',
+    `a canonical tutorial finishes a Tutorial (was "${canonicalFoot.text}")`);
+  ok(canonicalFoot.finish === true, 'a canonical last step is styled as the completion action');
+
+  const vocLast = await p.evaluate(() => window.JDXI_SPECIALTY.lessons.vocoder.steps.length);
+  await goto('#specialty/vocoder/step/' + vocLast);
+  const spFoot = await footState();
+  ok(spFoot.text === 'Finish lesson ✓',
+    `a Specialty lesson finishes a lesson, not a Tutorial (was "${spFoot.text}")`);
+  ok(spFoot.finish === true, 'a Specialty last step is styled as the completion action');
+
+  /* A fixture completes nothing, so its last step is not an achievement. */
+  const devLast = await p.evaluate(() =>
+    window.JDXI_TUTORIAL_FIXTURES['renderer-demo'].steps.length);
+  await goto('#dev/lesson-renderer/step/' + devLast);
+  const devFoot = await footState();
+  ok(devFoot.text === 'Return home', `a fixture's last action returns home (was "${devFoot.text}")`);
+  ok(devFoot.finish === false, 'a fixture that completes nothing is not styled as a completion');
+
+  /* Not one step earlier, either. */
+  await goto('#tutorial/B07/step/2');
+  ok((await footState()).finish === false, 'an ordinary Next is never a completion action');
+
+  /* --- browser history stays sane across in-lesson navigation --- */
+  await goto('#tutorial/B08/step/1');
+  await p.click('#lsn-next'); await p.waitForTimeout(280);
+  await p.click('#lsn-next'); await p.waitForTimeout(280);
+  ok((await hash()) === '#tutorial/B08/step/3', 'Next builds a step trail');
+  await p.goBack(); await p.waitForTimeout(300);
+  ok((await hash()) === '#tutorial/B08/step/2', 'browser Back retraces one step');
+  await p.goBack(); await p.waitForTimeout(300);
+  ok((await hash()) === '#tutorial/B08/step/1' && await inLesson(),
+    'browser Back reaches step 1 as a step, not the resume choice');
+  await p.goForward(); await p.waitForTimeout(300);
+  ok((await hash()) === '#tutorial/B08/step/2', 'browser Forward still works');
 
   await b.close();
   console.log(`${browserName}: behaviour checks ${pass} passed, ${fails.length} failed`);

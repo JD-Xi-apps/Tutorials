@@ -13,6 +13,8 @@
  *   - decorative glyphs and images are hidden from assistive technology, so a
  *     control's name is not polluted by the symbol next to it;
  *   - the favourite toggle exposes its state with aria-pressed;
+ *   - a lesson lands focus on its heading and announces its step changes;
+ *   - the lesson Back control is honestly unavailable on step 1;
  *   - the destructive reset states its consequence before it acts;
  *   - keyboard focus is visible on every control;
  *   - each surface has exactly one h1.
@@ -250,6 +252,69 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
   ok(!!favName && /B01/.test(favName), 'favourite toggle names what it acts on');
   await p.click('#lsn-fav');
   await p.waitForTimeout(100);
+
+  /* ---- the lesson lands focus and announces its steps ----
+     A lesson replaces its instruction in place. Nothing is navigated to as far
+     as the page is concerned, so without these two a screen-reader user is
+     moved to a new step and told nothing at all. The heading landing mirrors
+     what the catalog surfaces already do rather than inventing a pattern. */
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(180);
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/2'; });
+  await p.waitForTimeout(260);
+  const landing = await p.evaluate(() => {
+    const live = document.getElementById('lsn-live');
+    return {
+      focused: document.activeElement && document.activeElement.id,
+      tabindex: document.getElementById('lsn-title').getAttribute('tabindex'),
+      exists: !!live,
+      liveAttr: live && live.getAttribute('aria-live'),
+      liveRole: live && live.getAttribute('role'),
+      liveText: live ? live.textContent : null,
+      /* Hidden from sight but NOT from assistive technology: display:none or
+         the hidden attribute would drop it out of the accessibility tree and
+         it would announce nothing at all. */
+      shown: !!live && getComputedStyle(live).display !== 'none' && !live.hidden,
+    };
+  });
+  ok(landing.exists, 'the lesson has a live region to announce into');
+  ok(landing.focused === 'lsn-title', `arriving at a lesson focuses its heading (focus was on ${landing.focused})`);
+  ok(landing.tabindex === '-1', 'the lesson heading is a focus target, not a tab stop');
+  ok(landing.liveRole === 'status' && landing.liveAttr === 'polite',
+    'the lesson carries one polite live region');
+  ok(landing.shown, 'the live region stays in the accessibility tree');
+  ok(landing.liveText === '',
+    'arriving at a lesson does not also announce the step, which would say it twice');
+
+  /* A step change announces what changed; it must NOT drag focus back to the
+     heading, or pressing Next would move the keyboard user off the button. */
+  await p.click('#lsn-next');
+  await p.waitForTimeout(280);
+  const stepped = await p.evaluate(() => ({
+    focused: document.activeElement && document.activeElement.id,
+    liveText: document.getElementById('lsn-live').textContent,
+    instruction: document.getElementById('lsn-instruction').textContent,
+    n: document.getElementById('lsn-progress').textContent,
+  }));
+  ok(/^Step 3 of /.test(stepped.liveText), `a step change announces which step (announced "${stepped.liveText.slice(0, 40)}")`);
+  ok(stepped.liveText.indexOf(stepped.instruction) >= 0,
+    'the announcement carries the instruction that actually changed');
+  ok(stepped.focused !== 'lsn-title', 'a step change does not yank focus back to the heading');
+
+  /* ---- Back is honestly unavailable on step 1, not a second Home ---- */
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/1'; });
+  await p.waitForTimeout(240);
+  const back1 = await p.evaluate(() => {
+    const b = document.getElementById('lsn-back');
+    return { disabled: b.disabled, text: b.textContent.trim(), present: !b.hidden };
+  });
+  ok(back1.present, 'the Back control stays in the footer on step 1');
+  ok(back1.disabled === true, 'the Back control exposes a disabled state on step 1');
+  ok(back1.text === '\u2039 Back', `the Back control does not misrepresent itself as Home (was "${back1.text}")`);
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/2'; });
+  await p.waitForTimeout(240);
+  ok((await p.evaluate(() => document.getElementById('lsn-back').disabled)) === false,
+    'the Back control is available again once there is a step behind it');
 
   /* ---- destructive reset states its consequence ---- */
   await p.evaluate(() => { window.location.hash = '#settings'; });

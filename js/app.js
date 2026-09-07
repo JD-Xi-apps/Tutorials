@@ -201,6 +201,26 @@
   }
 
   /*
+   * The same step, addressed as a step and nothing else.
+   *
+   * stepHash() collapses step 1 to the bare route on purpose, because that is
+   * the address a learner shares, bookmarks and arrives at - and the bare route
+   * is a DECISION point: for a part-finished tutorial it offers Continue or
+   * Start over, and for a completed one it offers the review overview. That is
+   * right for arriving, and wrong for every control that means "step 1" after
+   * the learner has already decided. Back from step 2 sent them to the choice
+   * for the lesson they were standing in; Start over and Start from step 1
+   * re-rendered the very surface they were pressed on, so both were dead.
+   *
+   * So this is deliberately NOT a change to stepHash(): the bare route keeps
+   * its meaning for direct entry, and the controls that mean a step ask for one.
+   */
+  function explicitStepHash(lsn, n) {
+    if (lsn.kind === 'dev') return '#dev/' + lsn.key + '/step/' + n;
+    return (lsn.kind === 'specialty' ? '#specialty/' : '#tutorial/') + lsn.key + '/step/' + n;
+  }
+
+  /*
    * Every unresolvable route degrades to a defined destination rather than
    * failing: an out-of-range step falls back to step 1 of the same lesson, and
    * an unknown tutorial, level or collection - or any malformed route - falls
@@ -1430,7 +1450,7 @@
     cat.title.textContent = t.title;
     cat.desc.textContent =
       'You have finished this one. Jump straight to any step, or run it again from the beginning.';
-    cat.actions.appendChild(actionButton('Start from step 1', stepHash(lsn, 1)));
+    cat.actions.appendChild(actionButton('Start from step 1', explicitStepHash(lsn, 1)));
 
     const grid = el('div', 'step-grid');
     t.steps.forEach((st, i) => {
@@ -1469,7 +1489,7 @@
       'Continuing picks up where you were. Starting over goes back to step 1 — which changes nothing on the JD-Xi, and nothing about what you have already completed.'));
     const row = el('div', 'row');
     row.appendChild(actionButton('Continue at step ' + (at + 1), stepHash(lsn, at + 1)));
-    row.appendChild(actionButton('Start over', stepHash(lsn, 1), 'quiet'));
+    row.appendChild(actionButton('Start over', explicitStepHash(lsn, 1), 'quiet'));
     panel.appendChild(row);
     cat.body.appendChild(panel);
     cat.hint.textContent = 'Your place is kept in this browser only.';
@@ -1888,6 +1908,38 @@
     continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, n));
   }
 
+  /* ------------------------------------------------- lesson focus and speech */
+
+  const lessonTitle = document.getElementById('lsn-title');
+  const lessonLive = document.getElementById('lsn-live');
+
+  /*
+   * Moving between steps rewrites the instruction in place. Sighted learners
+   * see that; nobody else is told anything, because no navigation happened as
+   * far as the page is concerned. So a step change writes one polite sentence
+   * carrying what actually changed - which step, and what it now asks for.
+   *
+   * Only a step change inside a lesson writes it. Arriving at a lesson moves
+   * focus to the heading instead, and doing both would announce the same
+   * lesson twice; re-rendering the step already on screen changes nothing and
+   * so says nothing.
+   */
+  function announceStep(route, stepChanged) {
+    if (!lessonLive) return;
+    if (!stepChanged) {
+      /* Cleared rather than left standing, so a later return to this step is
+         a change to the region and gets announced. Emptying it announces
+         nothing itself. */
+      lessonLive.textContent = '';
+      return;
+    }
+    const steps = route.lesson.tutorial.steps;
+    const step = steps[route.stepIndex] || {};
+    lessonLive.textContent =
+      'Step ' + (route.stepIndex + 1) + ' of ' + steps.length + '. ' +
+      (step.title ? step.title + '. ' : '') + (step.instruction || '');
+  }
+
   function applyRoute() {
     const route = parse(window.location.hash);
 
@@ -1898,6 +1950,19 @@
     }
 
     if (route.view === 'lesson') {
+      /*
+       * Arriving at a lesson and moving inside one are different events and
+       * need different treatment, so both are decided BEFORE currentLesson is
+       * overwritten. Arriving moves focus; moving a step must not, or every
+       * press of Next would throw the keyboard user back to the top of the
+       * screen and the button under their finger would stop responding.
+       */
+      const arrived =
+        !currentLesson ||
+        currentLesson.kind !== route.lesson.kind ||
+        currentLesson.key !== route.lesson.key;
+      const stepChanged = !arrived && current !== route.stepIndex;
+
       showView('lesson');
       const onLast = route.stepIndex === route.lesson.tutorial.steps.length - 1;
       window.JDXI_LESSON_RENDERER.render({
@@ -1907,9 +1972,17 @@
         kind: route.lesson.kind === 'dev' ? 'fixture' : route.lesson.kind,
         nextTutorial: nextInLevel(route.lesson),
         /* Reaching the last step is not finishing it. The label makes the
-           final action a deliberate one the learner takes. */
-        finishLabel:
-          onLast && route.lesson.kind !== 'dev' ? 'Finish Tutorial ✓' : null,
+           final action a deliberate one the learner takes - and it names what
+           is actually being finished. A Specialty lesson is optional content
+           outside the guided thirty, so calling it a Tutorial overstates it.
+           A development fixture finishes nothing and so is given no label,
+           which is also what keeps its "Return home" out of the completion
+           styling. */
+        finishLabel: !onLast || route.lesson.kind === 'dev'
+          ? null
+          : route.lesson.kind === 'specialty'
+          ? 'Finish lesson ✓'
+          : 'Finish Tutorial ✓',
         /* Resolve the step's Quick Reference ids into titles here, so the
            renderer stays ignorant of both the catalogue and the router. */
         quickReference: (route.lesson.tutorial.steps[route.stepIndex].quickReference || [])
@@ -1930,6 +2003,14 @@
         paintBookmarkButton(route.lesson.key);
       } else {
         paintBookmarkButton(null);
+      }
+      announceStep(route, stepChanged);
+      if (arrived) {
+        /* The same landing the catalog surfaces make: focus the heading so a
+           keyboard or screen-reader user lands on the lesson they asked for
+           rather than staying wherever the previous surface left them. */
+        lessonTitle.setAttribute('tabindex', '-1');
+        lessonTitle.focus({ preventScroll: true });
       }
     } else if (route.view === 'catalog') {
       showView('catalog');
@@ -1963,16 +2044,26 @@
   const backBtn = document.getElementById('lsn-back');
   const nextBtn = document.getElementById('lsn-next');
 
-  backBtn.addEventListener('click', () => {
-    if (current === null) return;
-    go(current === 0 ? '#home' : stepHash(currentLesson, current));
-  });
+  /*
+   * Back and forward are one path each, shared by the button and by the
+   * keyboard, so the two can never drift into meaning different things.
+   */
 
-  nextBtn.addEventListener('click', () => {
+  /* Step 1 has nothing behind it: the control is disabled and this is inert,
+     which is also the state the keyboard path honours. */
+  function lessonBack() {
+    if (current === null || current === 0) return;
+    /* An explicit step, never the bare route - the bare route is the
+       Continue / Start over decision point for the lesson the learner is
+       already standing in, which is not what Back means. */
+    go(explicitStepHash(currentLesson, current));
+  }
+
+  function lessonNext() {
     if (current === null) return;
     const last = current === currentLesson.tutorial.steps.length - 1;
     if (!last) {
-      go(stepHash(currentLesson, current + 2));
+      go(explicitStepHash(currentLesson, current + 2));
       return;
     }
     /*
@@ -1992,6 +2083,70 @@
     }
     /* A development fixture completes nothing and celebrates nothing. */
     go('#home');
+  }
+
+  /*
+   * Leaving a lesson goes to the discovery surface that lesson belongs to,
+   * which is where the learner would look for something else to do: a guided
+   * tutorial to its level path, a Specialty lesson to Specialty. A development
+   * fixture belongs to no course, so it leaves to Home.
+   */
+  function lessonExitHash() {
+    if (!currentLesson) return '#home';
+    if (currentLesson.kind === 'specialty') return '#specialty';
+    const level = currentLesson.kind === 'tutorial' && currentLesson.tutorial.level;
+    return level ? '#level/' + level : '#home';
+  }
+
+  backBtn.addEventListener('click', lessonBack);
+  nextBtn.addEventListener('click', lessonNext);
+
+  /*
+   * Keyboard navigation for the lesson, as ONE guarded listener rather than a
+   * handler per surface - a second listener is how two features end up both
+   * answering the same Escape.
+   *
+   * Precedence, in order, and every one of these owns the key before the
+   * lesson does:
+   *   - the Explorer popup is a modal dialog with its own Escape and Tab trap;
+   *   - the search overlay owns Escape, and its input owns every arrow key,
+   *     because moving the caret in a text field is what arrows are FOR;
+   *   - any text-entry target, wherever it is;
+   *   - an open disclosure panel, which may scroll and must stay scrollable.
+   */
+  function isTextEntry(node) {
+    if (!node || !node.tagName) return false;
+    if (node.isContentEditable) return true;
+    const tag = node.tagName.toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select';
+  }
+
+  function inDisclosurePanel(node) {
+    for (let n = node; n && n !== document.body; n = n.parentElement) {
+      if (n.classList && n.classList.contains('disc-panel')) return true;
+    }
+    return false;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (!modal.root.hidden) return;          // Explorer popup first
+    if (!search.panel.hidden) return;        // then search
+    if (isTextEntry(e.target)) return;
+    if (views.lesson.hidden || current === null) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      go(lessonExitHash());
+      return;
+    }
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    /* "Why?" and "I'm lost" open a panel that can be taller than its box.
+       Arrows belong to whatever the learner is reading inside it. */
+    if (inDisclosurePanel(e.target)) return;
+    e.preventDefault();
+    if (e.key === 'ArrowRight') lessonNext();
+    else lessonBack();
   });
 
   const R = window.JDXI_LESSON_RENDERER;
