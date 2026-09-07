@@ -239,30 +239,26 @@ window.JDXI_LESSON_RENDERER = (function () {
     hl.setAttribute("aria-hidden", "true"); // decorative; the label carries the text
     /*
      * The step-transition cue, when this render decided this target is the new
-     * one. Purely additive: the animation carries no fill mode, so when it ends
-     * the element's computed box-shadow is the .hl's own resting value again
-     * and there is nothing to unset. It cannot outlive its node either -
-     * #lsn-visual is emptied and rebuilt on every render, so no .hl survives a
-     * step at all, cued or not.
+     * one. All this side does is name the highlight: .hl-enter is a hook, and
+     * the cue itself is drawn by CSS on .hl::after - a transient ring that
+     * expands a fixed absolute distance outwards while it fades. The .hl
+     * element is untouched by it: its geometry and its resting paint, glow
+     * included, are exactly what an uncued highlight has. The ring takes its
+     * colour from currentColor as a static border, so nothing colour-valued is
+     * ever interpolated and both Chromium and Firefox run the animation
+     * smoothly.
+     *
+     * Purely additive, and it cleans up after itself: one iteration, 620ms, no
+     * fill mode, so the pseudo-element is back at its resting opacity 0 the
+     * moment it ends, with no raster residue - a settled screenshot of a step
+     * that cued is identical to one that did not. It cannot outlive its node
+     * either - #lsn-visual is emptied and rebuilt on every render, so no .hl
+     * survives a step at all, cued or not. Under prefers-reduced-motion the
+     * CSS drops the animation and the cue simply never appears.
      *
      * data-cue is identity for the QA pass, not a style hook and not part of
      * any tutorial's data: it names WHICH target was cued, so a test can assert
      * that without reading a label off the screen.
-     *
-     * Two browser facts worth knowing before changing the keyframes, both
-     * measured rather than assumed:
-     *
-     *   - Chromium cannot interpolate a color-mix() built on currentColor, so
-     *     it runs this animation DISCRETELY - the ring is the "from" frame for
-     *     the first half and the "to" frame for the second, rather than
-     *     expanding. Firefox interpolates it as written. Nothing here can fix
-     *     that; the keyframes are owner-approved and are not this pass's to
-     *     redesign.
-     *   - in Chromium an element that has run the animation does not re-raster
-     *     bit-identically afterwards. The residue is a handful of pixels on
-     *     antialiased edges, invisible in use, but it does mean a frozen
-     *     screenshot of a step that cued is not byte-equal to one that did not.
-     *     Removing the class on animationend does not undo it.
      */
     if (cueing(res.id)) {
       hl.classList.add("hl-enter");
