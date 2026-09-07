@@ -91,6 +91,134 @@ window.JDXI_LESSON_RENDERER = (function () {
     return (ids || []).map(resolveTarget);
   }
 
+  /* -------------------------------------------------- step-transition cue
+   *
+   * A learner who presses Next looks back at the instrument and has to find
+   * the highlight again. The one-shot ring that answers "which one is it now"
+   * is already in the stylesheet (css/app.css, section H); what lives here is
+   * the only question this file is allowed to answer - WHEN a highlight is new.
+   *
+   * The state is deliberately renderer-local and deliberately tiny: the last
+   * thing this renderer actually drew. Nothing else in the application needs
+   * to know about it, and a cue decided from application state would fire on
+   * events that are not step changes.
+   *
+   * Identity is by id, never by label or geometry: two steps that highlight
+   * the same control must compare equal even if the registry relabels it.
+   */
+
+  /*
+   * The last render's identity, or null when there is no previous render to
+   * compare against - at startup, and after the learner has left the lesson
+   * view. Null means "arriving", and arriving never cues: the static highlight
+   * is the orientation, and a lesson that flashed on entry would be announcing
+   * itself rather than answering a question the learner asked.
+   */
+  var lastRender = null;
+
+  /*
+   * Ids the CURRENT build is cueing. Set immediately before buildVisual and
+   * cleared in its finally, so it is null for every other caller of
+   * addHighlight - buildPanel (the Hardware Explorer) can never see it set,
+   * because buildVisual is wholly synchronous and nothing re-enters the
+   * renderer during it.
+   */
+  var cueIds = null;
+
+  function cueing(id) {
+    return !!cueIds && cueIds.indexOf(id) >= 0;
+  }
+
+  function lessonIdentity(ctx) {
+    var tut = ctx.tutorial || {};
+    var kind = ctx.kind || (ctx.canonical ? "tutorial" : "fixture");
+    /* kind is part of the identity because ids are only unique within a
+       family: a fixture and a specialty lesson may legitimately share one. */
+    return kind + "/" + (tut.id != null ? tut.id : "");
+  }
+
+  function stepIdentity(ctx, step) {
+    /* Step.id where the data carries one (every canonical tutorial, every
+       specialty lesson and every fixture does); the index is the fallback so
+       a hand-built step object still compares sanely. */
+    return step && step.id != null ? "id:" + step.id : "ix:" + ctx.stepIndex;
+  }
+
+  /* The step's hardware targets, deduplicated, order preserved. Order matters
+     for one reason only (hardwareTargets[0] is the primary target); duplicates
+     matter for none. */
+  function targetIds(step) {
+    var out = [];
+    ((step && step.hardwareTargets) || []).forEach(function (id) {
+      if (typeof id === "string" && id && out.indexOf(id) < 0) out.push(id);
+    });
+    return out;
+  }
+
+  /*
+   * Which ids - if any - this render should cue. Every "no" here is a rule,
+   * not an optimisation:
+   *
+   *   no previous render        arriving, or returning after leaving the
+   *                             lesson view: static orientation is enough
+   *   a different lesson        also an arrival, however the learner got here
+   *   the same step again       re-rendering what is already on screen changed
+   *                             nothing, so it announces nothing. The id
+   *                             comparison below would reach the same answer
+   *                             on its own - the same step has the same
+   *                             targets - but the rule is stated rather than
+   *                             inferred, so it survives a step's targets
+   *                             being rebuilt rather than reused
+   *   no targets at all         nothing to point at
+   *   the same set of ids       the learner is already looking at the right
+   *                             control; moving the ring would be noise
+   *
+   * What is left is a genuine step-to-step move inside one lesson - which is
+   * what Back and Forward are too, so browser history behaves like the footer
+   * buttons without either path knowing about the other.
+   */
+  function cueForRender(prev, next) {
+    if (!prev) return [];
+    if (prev.lesson !== next.lesson) return [];
+    if (prev.step === next.step) return [];
+    if (!next.ids.length) return [];
+
+    var fresh = next.ids.filter(function (id) {
+      return prev.ids.indexOf(id) < 0;
+    });
+    if (fresh.length) return fresh; // cue what is new, never what was retained
+
+    /*
+     * Nothing is new, so the only remaining reason to cue is a reordering:
+     * the SAME ids with a different first one. hardwareTargets[0] is the
+     * primary target - the one a crop frames and the one the instruction is
+     * about - so swapping it moves the learner's attention even though nothing
+     * entered or left. Ordering is the ONLY semantic being read out of the
+     * array here; no tone, colour or geometry decision is taken from it.
+     *
+     * "Same ids" is checked, not assumed. With nothing fresh, next is a subset
+     * of prev, so equal lengths means equal sets - and a step that merely drops
+     * a secondary target (N01 step 1 -> 2 drops the display's companion) is
+     * left alone, because cueing a target that was already on screen and
+     * already highlighted is exactly what "cue only what is new" forbids.
+     */
+    if (next.ids.length === prev.ids.length && next.ids[0] !== prev.ids[0]) {
+      return [next.ids[0]];
+    }
+    return [];
+  }
+
+  /*
+   * The learner has left the lesson view. Called by the application from its
+   * one view switch, because that is the only place that knows; the policy
+   * that follows from it stays here. Returning to a lesson afterwards is an
+   * arrival, even when it lands on a different step of the lesson just left -
+   * Home, then Start over, is not a step transition.
+   */
+  function noteLessonLeft() {
+    lastRender = null;
+  }
+
   /* ------------------------------------------------------------- highlights */
 
   /*
@@ -109,6 +237,37 @@ window.JDXI_LESSON_RENDERER = (function () {
 
     var hl = el("div", "hl hl-" + tone);
     hl.setAttribute("aria-hidden", "true"); // decorative; the label carries the text
+    /*
+     * The step-transition cue, when this render decided this target is the new
+     * one. Purely additive: the animation carries no fill mode, so when it ends
+     * the element's computed box-shadow is the .hl's own resting value again
+     * and there is nothing to unset. It cannot outlive its node either -
+     * #lsn-visual is emptied and rebuilt on every render, so no .hl survives a
+     * step at all, cued or not.
+     *
+     * data-cue is identity for the QA pass, not a style hook and not part of
+     * any tutorial's data: it names WHICH target was cued, so a test can assert
+     * that without reading a label off the screen.
+     *
+     * Two browser facts worth knowing before changing the keyframes, both
+     * measured rather than assumed:
+     *
+     *   - Chromium cannot interpolate a color-mix() built on currentColor, so
+     *     it runs this animation DISCRETELY - the ring is the "from" frame for
+     *     the first half and the "to" frame for the second, rather than
+     *     expanding. Firefox interpolates it as written. Nothing here can fix
+     *     that; the keyframes are owner-approved and are not this pass's to
+     *     redesign.
+     *   - in Chromium an element that has run the animation does not re-raster
+     *     bit-identically afterwards. The residue is a handful of pixels on
+     *     antialiased edges, invisible in use, but it does mean a frozen
+     *     screenshot of a step that cued is not byte-equal to one that did not.
+     *     Removing the class on animationend does not undo it.
+     */
+    if (cueing(res.id)) {
+      hl.classList.add("hl-enter");
+      hl.setAttribute("data-cue", res.id);
+    }
     hl.style.left = pct(box.x);
     hl.style.top = pct(box.y);
     hl.style.width = pct(box.width);
@@ -633,7 +792,25 @@ window.JDXI_LESSON_RENDERER = (function () {
     // visual
     var vhost = document.getElementById("lsn-visual");
     vhost.innerHTML = "";
-    vhost.appendChild(buildVisual(step));
+    /*
+     * Decide the cue against the previous render, draw with it, then record
+     * this render as the new previous - in that order, and with the build
+     * scoped by try/finally so a throw inside buildVisual cannot leave a stale
+     * cue set for the next caller. A degraded target draws no .hl at all, so a
+     * cue for it simply never appears: quietly, and without a guard of its own.
+     */
+    var thisRender = {
+      lesson: lessonIdentity(ctx),
+      step: stepIdentity(ctx, step),
+      ids: targetIds(step),
+    };
+    cueIds = cueForRender(lastRender, thisRender);
+    try {
+      vhost.appendChild(buildVisual(step));
+    } finally {
+      cueIds = null;
+      lastRender = thisRender;
+    }
     // must run after insertion: label geometry is only measurable once laid out
     [].slice.call(vhost.querySelectorAll(".jdxi-canvas")).forEach(function (c) {
       if (c._resolveLabels) resolveLabelCollisions(c);
@@ -845,6 +1022,6 @@ window.JDXI_LESSON_RENDERER = (function () {
     resolveImage: imageMeta,
     buildPanel: buildPanel,
     settlePanels: settlePanels,
-    _pct: pct,
+    noteLessonLeft: noteLessonLeft,
   };
 })();
