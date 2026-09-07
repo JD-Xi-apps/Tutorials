@@ -290,6 +290,82 @@ port* (step 3) grazes the corner of the MIDI group box — both fully readable.
 Labels are placed outside a dominant close-up crop as a caption, because a label
 positioned inside the crop is clipped by the frame's `overflow: hidden`.
 
+## Step-transition cue
+
+When the learner moves between steps, the control the instruction is now about may not
+be the one they were just looking at. The renderer gives a **newly relevant** highlight
+one short ring — `.hl-enter`, `@keyframes jdxi-hl-enter`, `css/app.css` section H — so
+the eye can reacquire it on the instrument. It is a reacquisition cue, not a pulse: one
+iteration, no fill mode, ending on the highlight's own resting `box-shadow`, so a
+finished cue leaves the element exactly the `.hl` it already was.
+
+The decision is renderer-local. `lastRender` holds the previous render's lesson
+identity (`kind` + tutorial id), step identity (`Step.id`, index as fallback) and its
+deduplicated `hardwareTargets` ids. A cue is emitted **only** for a step-to-step move
+inside one lesson:
+
+| Situation | Cue |
+|---|---|
+| First render of the session — deep link, reload, initial arrival | none |
+| A different lesson, specialty lesson or fixture | none |
+| The same step rendered again | none |
+| Returning after leaving the lesson view (Home, catalog, Explorer) | none |
+| Step has no hardware targets | none |
+| Same set of target ids | none |
+| A target is dropped and nothing is new | none — what remains was already on screen |
+| One or more ids newly introduced | the new ids only — retained ones are left alone |
+| Exactly the same ids, `hardwareTargets[0]` changed | the new primary |
+
+Browser Back and Forward are step transitions like any other and need no special case:
+both paths arrive as a render, and only the renders are compared.
+
+`hardwareTargets[0]` is read as the **primary target** for this purpose and this
+purpose alone. It authorises no lesson-data field and no change to tone assignment,
+which stays positional (`tone(i)`).
+
+Identity is by target id, never by label or geometry, so relabelling a control cannot
+make two steps look different to the cue.
+
+Two mechanics keep it from leaving anything behind. `#lsn-visual` is emptied and
+rebuilt on every render, so no `.hl` — cued or not — survives a step. And the ids being
+cued live in a build-scoped variable that `render()` clears in a `finally`, so
+`buildPanel()` (the Hardware Explorer) can never see one set.
+
+Leaving the lesson view is the one input the renderer cannot observe: two renders either
+side of a trip to Home look like two consecutive steps. `showView()` reports it through
+`JDXI_LESSON_RENDERER.noteLessonLeft()`, which clears `lastRender`; the policy that
+follows from it stays in the renderer. Home, then *Start over*, is therefore an arrival,
+not a step transition.
+
+Under `prefers-reduced-motion: reduce` the class is still applied and the animation is
+switched off in CSS — structure unchanged, motion gone.
+
+### Two measured browser facts
+
+Both were found by wiring the cue up, and both are about the approved Phase 1 keyframes
+rather than about the wiring.
+
+**Chromium does not interpolate the ring.** `color-mix()` whose first colour is
+`currentColor` cannot be resolved at computed-value time, so the whole `box-shadow` is
+non-interpolable and the animation runs *discretely*: the `from` frame for the first
+310 ms, the `to` frame for the second. The learner sees the highlight's halo darken and
+then snap back, not a ring expanding. Firefox animates it exactly as written. Isolated
+by animating the same keyframes with a literal colour instead of `currentColor`, which
+interpolates correctly in both. Fixing it means changing owner-approved visual design
+and is deliberately not done here.
+
+**A Chromium element that has run the animation does not re-raster bit-identically.**
+The residue is a few pixels on antialiased highlight and label edges — 2–12 px per
+1.3 Mpx surface above `tools/frozen-surfaces.js`'s own tolerance, invisible in use, and
+deterministic run to run. It is caused by the animation alone: suppressing only the
+`.hl-enter` class, with the cue decision and `data-cue` still in place, restores
+byte-identical captures. Removing the class on `animationend` does not undo it. Firefox
+is byte-identical either way.
+
+`tools/frozen-surfaces.js` therefore settles for 900 ms per route rather than 260 ms:
+the frozen set is walked in step order, so every capture after the first follows a real
+step change, and 260 ms photographed whatever frame the ring happened to be on.
+
 ## Off-image, unknown and bad-image targets
 
 The renderer **never invents a region**. A registry entry with `region: null` resolves

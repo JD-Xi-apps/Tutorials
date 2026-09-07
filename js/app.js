@@ -91,6 +91,14 @@
   function showView(name) {
     Object.keys(views).forEach((k) => { views[k].hidden = k !== name; });
     document.body.classList.toggle('in-lesson', name === 'lesson');
+    /*
+     * Leaving the lesson view is the one fact the renderer's step-transition
+     * cue needs and cannot observe for itself: it only ever sees renders, and
+     * two renders either side of a trip to Home look exactly like two steps in
+     * a row. Reported here because this is the only place that knows a view
+     * changed; what to do about it is the renderer's business, not this file's.
+     */
+    if (name !== 'lesson' && renderer() && renderer().noteLessonLeft) renderer().noteLessonLeft();
     /* The Explorer popup belongs to its overview; leaving the catalog view
        leaves both behind. */
     if (name !== 'catalog') {

@@ -722,6 +722,351 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   /* Leave storage as we found it rather than as the last fixture left it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
 
+  /* ==================================================================== *
+   * Hardware-target re-entry cue                                         *
+   * ==================================================================== *
+   *
+   * Moving between steps can change which control the instruction is about,
+   * and the learner has to find it again on the instrument. A newly relevant
+   * highlight therefore gets one short ring (.hl-enter, css/app.css section H;
+   * the decision lives in js/lesson-renderer.js).
+   *
+   * What is tested here is WHEN it fires, because everything that could make
+   * it wrong is a "when": firing on arrival, firing on a re-render, firing on
+   * a target that was already on screen, or firing on every render because
+   * render() ran again.
+   *
+   * Every expectation is computed from the catalog rather than written down.
+   * Which ids a step highlights is content and content moves; a test that
+   * hard-codes "step 4 cues categoryDial" stops testing the rule the day the
+   * step gains a target, and passes while doing it.
+   */
+
+  /* The ids actually cued, deduplicated - one target can be drawn twice in a
+     step (full view plus inset), and both instances carry the cue. */
+  const cued = () => p.evaluate(() => {
+    const out = [];
+    document.querySelectorAll('#lsn-visual .hl[data-cue]').forEach((n) => {
+      const id = n.getAttribute('data-cue');
+      if (out.indexOf(id) < 0) out.push(id);
+    });
+    return out.sort();
+  });
+  const hlCounts = () => p.evaluate(() => ({
+    all: document.querySelectorAll('#lsn-visual .hl').length,
+    enter: document.querySelectorAll('#lsn-visual .hl.hl-enter').length,
+    tagged: document.querySelectorAll('#lsn-visual .hl[data-cue]').length,
+  }));
+  const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+
+  /* The rule, stated once: what a move from `prev` ids to `next` ids should
+     cue. Mirrors docs/LESSON-RENDERER.md, "Step-transition cue". */
+  const expectCue = (prev, next) => {
+    if (!next.length) return [];
+    const fresh = next.filter((x) => prev.indexOf(x) < 0);
+    if (fresh.length) return fresh.slice().sort();
+    if (next.length === prev.length && next[0] !== prev[0]) return [next[0]];
+    return [];
+  };
+
+  /* Every lesson the router can reach, with each step's deduplicated targets.
+     Specialty lessons included: they are real learner content on their own
+     route family, and a cue that only worked on #tutorial/ would be a bug. */
+  const lessons = await p.evaluate(() => {
+    const dedupe = (a) => {
+      const o = [];
+      (a || []).forEach((x) => { if (typeof x === 'string' && x && o.indexOf(x) < 0) o.push(x); });
+      return o;
+    };
+    const out = [];
+    const T = window.JDXI_TUTORIALS || {};
+    Object.keys(T).forEach((k) => out.push({
+      kind: 'tutorial', base: '#tutorial/' + k, id: k,
+      level: T[k].level || '', order: T[k].order || 0,
+      steps: T[k].steps.map((st) => dedupe(st.hardwareTargets)),
+    }));
+    const S = (window.JDXI_SPECIALTY || {}).lessons || {};
+    Object.keys(S).forEach((k) => out.push({
+      kind: 'specialty', base: '#specialty/' + k, id: k,
+      level: 'specialty', order: 0,
+      steps: S[k].steps.map((st) => dedupe(st.hardwareTargets)),
+    }));
+    return out;
+  });
+  const stepHash = (l, n) => l.base + '/step/' + n;
+  ok(lessons.length > 0, 'the cue tests found lessons to drive');
+
+  /* --- 1 + 15: arriving never cues, however the learner arrives --- *
+     A deep link and a reload are the same event as far as the app is
+     concerned, and neither is a step transition: the static highlight already
+     says where to look, and a lesson that flashed on entry would be announcing
+     itself rather than answering a question. The first step that carries a
+     target is found from the catalog, so this keeps testing arrival even if
+     step 1 of every tutorial stops highlighting anything. */
+  const withTarget = lessons
+    .map((l) => ({ l, n: l.steps.findIndex((ids) => ids.length) + 1 }))
+    .filter((x) => x.n > 0);
+  ok(withTarget.length > 3, 'several lessons have a step with hardware targets');
+  const arrival = withTarget[0];
+  await p.goto(APP + stepHash(arrival.l, arrival.n));
+  await p.waitForTimeout(320);
+  let c = await hlCounts();
+  ok(c.all > 0, 'arriving by deep link draws the step\'s static highlights');
+  ok(c.enter === 0 && c.tagged === 0, 'arriving by deep link cues nothing');
+  await p.reload();
+  await p.waitForTimeout(320);
+  c = await hlCounts();
+  ok(c.all > 0 && c.enter === 0, 'reloading on a step redraws it without a cue');
+
+  /* --- 11: re-rendering the step already on screen changes nothing --- *
+     go() re-runs the router when the hash it is given is the one already set,
+     so this is a real render, not a no-op. */
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(200);
+  await goto(stepHash(arrival.l, arrival.n));
+  const beforeRe = await cued();
+  await p.evaluate(() => {
+    const h = window.location.hash;
+    window.location.hash = '#home';
+    window.location.hash = h;
+  });
+  await p.waitForTimeout(280);
+  ok(beforeRe.length === 0, 'the step under the re-render test starts uncued');
+  ok(same(await cued(), []), 'rendering the same step again cues nothing');
+
+  /* --- 2, 3, 4, 7: the transition classes the catalog actually contains --- *
+     One example of each class, found by scanning every lesson rather than
+     named here. The unchanged-set case is the one that matters most: a cue
+     there would fire on almost every Next and become a tic. */
+  const classify = (prev, next) => {
+    const fresh = next.filter((x) => prev.indexOf(x) < 0);
+    if (!prev.length && next.length) return 'from-empty';
+    if (!next.length) return 'to-empty';
+    if (fresh.length > 1) return 'many-new';
+    if (fresh.length === 1) return 'one-new';
+    return 'nothing-new';
+  };
+  const transitions = {};
+  lessons.forEach((l) => {
+    for (let i = 1; i < l.steps.length; i++) {
+      const k = classify(l.steps[i - 1], l.steps[i]);
+      if (!transitions[k]) transitions[k] = { l, n: i + 1, prev: l.steps[i - 1], next: l.steps[i] };
+    }
+  });
+  for (const kind of ['nothing-new', 'one-new', 'many-new', 'from-empty']) {
+    const t = transitions[kind];
+    if (!t) continue; // a class the current catalog has no example of
+    await goto(stepHash(t.l, t.n - 1));
+    await goto(stepHash(t.l, t.n));
+    const want = expectCue(t.prev, t.next);
+    const got = await cued();
+    ok(same(got, want),
+      `${kind}: ${t.l.id} step ${t.n - 1} -> ${t.n} cues [${want}] (got [${got}])`);
+    const counts = await hlCounts();
+    ok(counts.enter === counts.tagged,
+      `${kind}: every cued highlight carries both the class and its target id`);
+    if (kind === 'many-new') {
+      ok(want.length > 1, 'the multi-target case really introduces more than one target');
+      const retained = t.next.filter((x) => t.prev.indexOf(x) >= 0);
+      ok(retained.every((x) => got.indexOf(x) < 0),
+        'a target carried over from the previous step is not cued');
+    }
+  }
+  ok(!!transitions['nothing-new'] && !!transitions['one-new'] && !!transitions['many-new'],
+    'the catalog supplies an unchanged, a single-new and a multi-new transition');
+
+  /* --- the generic sweep: one lesson per level, plus a Specialty lesson --- *
+     Every step of each, walked in order, checked against the rule. Chosen by
+     level and order from the catalog, so this follows the curriculum rather
+     than pinning four convenient ids. */
+  const pick = (want) => lessons
+    .filter((l) => l.level === want)
+    .sort((a, b) => a.order - b.order || (a.id < b.id ? -1 : 1))[0];
+  const sweep = ['beginner', 'novice', 'intermediate', 'specialty']
+    .map(pick).filter(Boolean);
+  ok(sweep.length === 4, 'the sweep covers Beginner, Novice, Intermediate and Specialty');
+  for (const l of sweep) {
+    /* Enter from Home each time, so the first step of the walk is an arrival
+       and every later one is a genuine step transition. */
+    await p.evaluate(() => { window.location.hash = '#home'; });
+    await p.waitForTimeout(180);
+    await goto(stepHash(l, 1));
+    let bad = (await cued()).length ? ['step 1 cued on arrival'] : [];
+    for (let i = 1; i < l.steps.length; i++) {
+      await goto(stepHash(l, i + 1));
+      const want = expectCue(l.steps[i - 1], l.steps[i]);
+      const got = await cued();
+      if (!same(got, want)) bad.push(`step ${i} -> ${i + 1}: want [${want}] got [${got}]`);
+    }
+    ok(bad.length === 0,
+      `${l.id} (${l.level}): every step transition cues exactly the rule's targets` +
+      (bad.length ? ' — ' + bad.join('; ') : ''));
+  }
+
+  /* --- 8: a different lesson is an arrival, not a step change --- */
+  const a = sweep[0], bTut = sweep[1];
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(180);
+  await goto(stepHash(a, 1));
+  await goto(stepHash(a, 2));
+  await goto(stepHash(bTut, bTut.steps.findIndex((ids) => ids.length) + 1 || 1));
+  ok(same(await cued(), []), 'crossing from one tutorial into another cues nothing');
+
+  /* --- 9: Home and back is an arrival too, even at a different step --- *
+     The renderer only ever sees renders, so without the view switch being
+     reported to it, "step 2, Home, step 5" would look exactly like "step 2
+     then step 5" and would cue. It must not: the learner has just re-oriented
+     on a fresh screen. A real step move afterwards still cues. */
+  const walk = withTarget.map((x) => x.l).filter((l) => l.steps.length >= 3)[0];
+  ok(!!walk, 'a lesson of at least three steps is available for the Home round trip');
+  await goto(stepHash(walk, 1));
+  await goto(stepHash(walk, 2));
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(220);
+  await goto(stepHash(walk, 3));
+  ok(same(await cued(), []), 'returning from Home to a different step of the same lesson cues nothing');
+  await goto(stepHash(walk, 2));
+  ok(same(await cued(), expectCue(walk.steps[2], walk.steps[1])),
+    'the step move after that return cues normally again');
+
+  /* --- 8b: the catalog and the Explorer are view switches as well --- */
+  await goto(stepHash(walk, 1));
+  await goto(stepHash(walk, 2));
+  await p.evaluate(() => { window.location.hash = '#explorer'; });
+  await p.waitForTimeout(240);
+  await goto(stepHash(walk, 3));
+  ok(same(await cued(), []), 'returning from the Hardware Explorer cues nothing');
+
+  /* --- 10: Back and Forward are step transitions like any other --- *
+     Nothing in the renderer knows about history; both paths arrive as a
+     render, which is the point. */
+  const pair = lessons
+    .map((l) => {
+      for (let i = 1; i < l.steps.length; i++) {
+        if (expectCue(l.steps[i], l.steps[i - 1]).length &&
+            expectCue(l.steps[i - 1], l.steps[i]).length) return { l, n: i + 1 };
+      }
+      return null;
+    })
+    .filter(Boolean)[0];
+  ok(!!pair, 'a lesson has two adjacent steps that cue in both directions');
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(180);
+  await goto(stepHash(pair.l, pair.n - 1));
+  await goto(stepHash(pair.l, pair.n));
+  await p.goBack();
+  await p.waitForTimeout(280);
+  ok(same(await cued(), expectCue(pair.l.steps[pair.n - 1], pair.l.steps[pair.n - 2])),
+    'browser Back cues the target that becomes relevant again');
+  await p.goForward();
+  await p.waitForTimeout(280);
+  ok(same(await cued(), expectCue(pair.l.steps[pair.n - 2], pair.l.steps[pair.n - 1])),
+    'browser Forward cues like a press of Next');
+
+  /* --- 5 + 6: two cases the curriculum has no example of --- *
+     Reordering the same targets, and a step that highlights nothing after one
+     that did. No canonical tutorial does either today, so they are driven
+     through the renderer's own entry point with real registry ids - inventing
+     a lesson to test a renderer rule, never geometry. */
+  const synth = await p.evaluate(() => {
+    const R = window.JDXI_LESSON_RENDERER;
+    const reg = window.JDXI_HARDWARE_TARGETS;
+    const img = reg.defaultImageId;
+    /* Two measurable controls on the default image, taken from the registry
+       in its own order - no id is written into this test. */
+    const ids = Object.keys(reg.targets).filter((id) => {
+      const t = reg.targets[id];
+      return t && t.region && (t.imageId || img) === img;
+    }).slice(0, 2);
+    const mk = (stepId, targets) => ({
+      tutorial: { id: 'cue-probe', title: 'Cue probe', steps: [
+        { id: stepId, title: 'probe', instruction: 'probe', hardwareTargets: targets, visualMode: 'full' },
+      ] },
+      stepIndex: 0, kind: 'fixture',
+    });
+    const read = () => {
+      const out = [];
+      document.querySelectorAll('#lsn-visual .hl[data-cue]').forEach((n) => {
+        const id = n.getAttribute('data-cue');
+        if (out.indexOf(id) < 0) out.push(id);
+      });
+      return out.sort();
+    };
+    const result = { ids: ids, threw: null };
+    try {
+      R.noteLessonLeft();
+      R.render(mk('p1', [ids[0], ids[1]]));
+      result.arrive = read();
+      R.render(mk('p2', [ids[1], ids[0]]));   // same set, new primary
+      result.reorder = read();
+      R.render(mk('p3', []));                 // targets -> none
+      result.emptied = read();
+      result.emptiedHl = document.querySelectorAll('#lsn-visual .hl').length;
+      R.render(mk('p4', [ids[0]]));           // none -> a target
+      result.refilled = read();
+      R.noteLessonLeft();
+    } catch (e) {
+      result.threw = String(e && e.message || e);
+    }
+    return result;
+  });
+  ok(synth.threw === null, 'the reorder / empty-step probe raised nothing');
+  ok(synth.ids && synth.ids.length === 2, 'the probe found two measurable registry targets');
+  ok(same(synth.arrive || [], []), 'the probe lesson does not cue on its first step');
+  ok(same(synth.reorder || [], [synth.ids[1]]),
+    'the same targets in a new order cue the new primary, and only it');
+  ok(same(synth.emptied || [], []) && synth.emptiedHl === 0,
+    'a step with no hardware targets draws no highlight and leaves no stale cue');
+  ok(same(synth.refilled || [], [synth.ids[0]]),
+    'moving from a step with no targets to one with a target cues it');
+
+  /* --- 12: reduced motion keeps the structure and drops the movement --- *
+     The class is still applied - the cue is a fact about the render, not about
+     the viewer - and the stylesheet is what refuses to animate it. Asserted as
+     a computed style, because that is the only place the media query is real. */
+  const motionCtx = await b.newContext({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: 'reduce',
+  });
+  const rm = await motionCtx.newPage();
+  const rmErrs = [];
+  rm.on('pageerror', (e) => rmErrs.push('pageerror ' + e.message));
+  await rm.goto(APP + stepHash(pair.l, pair.n - 1));
+  await rm.waitForTimeout(320);
+  await rm.evaluate((h) => { window.location.hash = h; }, stepHash(pair.l, pair.n));
+  await rm.waitForTimeout(320);
+  const rmState = await rm.evaluate(() => {
+    const n = document.querySelector('#lsn-visual .hl.hl-enter');
+    if (!n) return { present: false };
+    const cs = getComputedStyle(n);
+    return { present: true, name: cs.animationName, duration: cs.animationDuration };
+  });
+  ok(rmState.present, 'under reduced motion the cue is still applied structurally');
+  ok(rmState.name === 'none' || rmState.duration === '0s',
+    'under reduced motion the cue animation does not run (animation-name: ' +
+      rmState.name + ')');
+  const normal = await p.evaluate(() => {
+    const n = document.querySelector('#lsn-visual .hl.hl-enter');
+    return n ? getComputedStyle(n).animationName : '(none present)';
+  });
+  ok(normal === 'jdxi-hl-enter',
+    'with motion allowed the same class does animate (control for the check above)');
+  ok(rmErrs.length === 0, 'the reduced-motion pass raised no page error');
+  await motionCtx.close();
+
+  /* --- the cue cannot outlive its node --- *
+     #lsn-visual is emptied on every render, so this is really a check that it
+     still is: a cue that survived would sit on the instrument permanently. */
+  await goto(stepHash(pair.l, pair.n - 1));
+  await goto(stepHash(pair.l, pair.n));
+  const cuedNow = (await hlCounts()).enter;
+  await goto(stepHash(pair.l, pair.n));
+  ok(cuedNow > 0 && (await hlCounts()).enter === 0,
+    'a cue does not survive into the next render of the same step');
+
+  /* Walking the lessons above wrote ordinary progress; leave none of it. */
+  await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
+
   await b.close();
   console.log(`${browserName}: behaviour checks ${pass} passed, ${fails.length} failed`);
   fails.forEach(f => console.log('  FAIL ' + f));

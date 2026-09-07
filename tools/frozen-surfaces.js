@@ -170,10 +170,24 @@ const pw = require('playwright');
     return out;
   }, FROZEN_TUTORIALS);
 
+  /*
+   * Long enough to outlast the step-transition cue (.hl-enter, 620ms - see
+   * css/app.css section H). A frozen surface is the screen at rest, and the
+   * routes below are walked in step order, so every capture after the first is
+   * taken moments after a real step change. Capturing at 260ms photographed
+   * whatever frame the ring happened to be on: Firefox interpolates it and
+   * every mid-lesson capture drifted, while Chromium (which cannot interpolate
+   * a color-mix() built on currentColor, so the ring is on for the first half
+   * of the animation and gone for the second) landed either side of the flip
+   * depending on machine speed. Neither was a change to the resting screen -
+   * both were the harness racing an animation it did not know about.
+   */
+  const SETTLE_MS = 900;
+
   const names = [];
   for (const r of routes) {
     await page.evaluate((h) => { window.location.hash = h; }, r);
-    await page.waitForTimeout(260);
+    await page.waitForTimeout(SETTLE_MS);
     const name = r.replace(/^#/, '').replace(/\//g, '_') + '.png';
     await page.screenshot({ path: path.join(outDir, name) });
     names.push(name);
