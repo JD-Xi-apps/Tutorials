@@ -401,6 +401,52 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok((await hash()) === '#tutorial/B07/step/2' && await inLesson(),
     'closing search with Escape does not also exit the lesson');
 
+  /*
+   * Search owns Escape from ANY focus inside the panel, not just the input.
+   * The input case passes for the wrong reason - a text-entry target is
+   * skipped by the lesson handler regardless - so the close button and a
+   * result are the cases that actually test ownership. Both once closed the
+   * search AND exited the lesson underneath.
+   */
+  const searchHidden = () => p.evaluate(() => document.getElementById('searchpanel').hidden);
+  const openHits = async () => {
+    await p.click('#searchbtn'); await p.waitForTimeout(220);
+    await p.fill('#searchinput', 'tempo'); await p.waitForTimeout(220);
+  };
+
+  await goto('#tutorial/B02/step/2');
+  await openHits();
+  await p.focus('#searchinput'); await p.waitForTimeout(120);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok(await searchHidden(), 'Escape from the search input closes search');
+  ok((await hash()) === '#tutorial/B02/step/2' && await inLesson(),
+    'Escape from the search input leaves the lesson open');
+
+  await openHits();
+  await p.focus('#searchclose'); await p.waitForTimeout(120);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok(await searchHidden(), 'Escape from the search Close button closes search');
+  ok((await hash()) === '#tutorial/B02/step/2' && await inLesson(),
+    'Escape from the search Close button does not also exit the lesson');
+
+  await openHits();
+  const focusedHit = await p.evaluate(() => {
+    const hit = document.querySelector('#searchresults .search-hit');
+    if (!hit) return false;
+    hit.focus();
+    return document.activeElement === hit;
+  });
+  ok(focusedHit, 'a search result can take focus');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok(await searchHidden(), 'Escape from a search result closes search');
+  ok((await hash()) === '#tutorial/B02/step/2' && await inLesson(),
+    'Escape from a search result does not also exit the lesson');
+
+  /* Search having eaten one Escape must not eat the next one too. */
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  ok((await hash()) === '#level/beginner',
+    'the Escape after search has closed exits the lesson as usual');
+
   /* --- Escape: the Explorer popup owns it while the popup is open --- */
   await goto('#explorer/control/filterSection');
   ok(!(await p.evaluate(() => document.getElementById('exp-modal').hidden)),
@@ -625,7 +671,12 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
     'My Progress tells the learner a newer version wrote what is stored');
   ok(/won.t be saved|will not be saved/i.test(fProgBody),
     'the notice says this session will not be remembered');
-  ok(/reset progress/i.test(fProgBody), 'the notice names the way out');
+  /* The way out must be the control that actually IS the way out. Reset
+     Progress goes through `persist` and so cannot clear a locked record;
+     only Reset Everything deletes the key and releases the lock. */
+  ok(/reset everything/i.test(fProgBody), 'the notice names Reset Everything as the way out');
+  ok(!/reset progress/i.test(fProgBody),
+    'the notice does not point at Reset Progress, which cannot release the lock');
 
   /* The three things it must not say. Each of these would send a learner to
      clear site data and destroy the record we just protected. */

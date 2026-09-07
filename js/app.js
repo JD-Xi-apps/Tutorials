@@ -496,7 +496,7 @@
       p.appendChild(el('p', null,
         'Progress from a newer version of JD-Xi Tutorial Hub is stored in this browser. ' +
         'This version won’t overwrite it, so changes you make here won’t be saved ' +
-        'unless you reset progress.'));
+        'unless you use Reset Everything.'));
       p.appendChild(el('p', null,
         'Everything here still works, and you can use every tutorial as normal. Opening ' +
         'the newer version again will find that progress exactly as it was.'));
@@ -1865,8 +1865,12 @@
     search.btn.focus();
   });
   search.input.addEventListener('input', paintSearch);
+  /* Search owns Escape, so it marks the event handled on the way out. Without
+     this the lesson's document handler sees an already-hidden panel and an
+     unclaimed Escape, and exits the lesson underneath the closing search. */
   search.panel.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      e.preventDefault();
       closeSearch();
       search.btn.focus();
     }
@@ -2179,13 +2183,15 @@
    * handler per surface - a second listener is how two features end up both
    * answering the same Escape.
    *
-   * Precedence, in order, and every one of these owns the key before the
-   * lesson does:
-   *   - the Explorer popup is a modal dialog with its own Escape and Tab trap;
-   *   - the search overlay owns Escape, and its input owns every arrow key,
-   *     because moving the caret in a text field is what arrows are FOR;
-   *   - any text-entry target, wherever it is;
-   *   - an open disclosure panel, which may scroll and must stay scrollable.
+   * Precedence, by key rather than by surface - not every one of these owns
+   * every key:
+   *   - the Explorer popup is a modal dialog and owns Escape and Tab;
+   *   - the search overlay owns Escape, from any focus inside it;
+   *   - a text-entry target owns the arrow keys, because moving the caret in
+   *     a text field is what arrows are FOR, and never navigates the lesson;
+   *   - an open disclosure panel owns the ARROWS, since it may scroll and must
+   *     stay scrollable - but NOT Escape, which still exits the lesson once
+   *     search and the Explorer have had their turn.
    */
   function isTextEntry(node) {
     if (!node || !node.tagName) return false;
