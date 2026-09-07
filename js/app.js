@@ -416,7 +416,17 @@
     card.type = 'button';
 
     const top = el('div', 'tc-top');
-    top.appendChild(el('span', 'tc-id', spec.badge));
+    const ident = el('span', 'tc-ident');
+    ident.appendChild(el('span', 'tc-id', spec.badge));
+    /*
+     * The current tutorial used to be a one-pixel border change and nothing
+     * else, which is invisible next to ten cards that all have a border. It
+     * says so now, in the header the id already lives in. One word, no
+     * number: the progress model stores a single current tutorial and no
+     * per-tutorial history, so "Current" is the whole of what is known.
+     */
+    if (spec.current) ident.appendChild(el('span', 'tc-now', 'Current'));
+    top.appendChild(ident);
     const marks = el('span', 'tc-top');
     if (spec.bookmarked) {
       const star = el('span', 'tc-star', '★');
@@ -465,6 +475,7 @@
       advice: advice,
       ariaLabel:
         `${t.title}. ${id}, ${t.estimatedMinutes} minutes, ${t.steps.length} steps.` +
+        (id === currentId ? ' Current.' : '') +
         (done ? ' Completed.' : '') + (marked ? ' Bookmarked.' : '') +
         (advice ? ' ' + advice + '.' : ''),
       hash: '#tutorial/' + id,
@@ -526,9 +537,11 @@
     row.type = 'button';
     row.appendChild(el('span', 'tr-id', id));
     row.appendChild(el('span', 'tr-name', rowName(t)));
+    if (id === currentId) row.appendChild(el('span', 'tr-now', 'Current'));
     row.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
     row.title = t.title;
-    row.setAttribute('aria-label', `${t.title}. ${id}.` + (done ? ' Completed.' : ''));
+    row.setAttribute('aria-label', `${t.title}. ${id}.` +
+      (id === currentId ? ' Current.' : '') + (done ? ' Completed.' : ''));
     row.addEventListener('click', () => go('#tutorial/' + id));
     return row;
   }
@@ -637,7 +650,16 @@
     const ids = tutorialsInLevel(level);
     const P = progress();
     const counts = P.levelCounts(level);
-    const resume = P.resume();
+    /*
+     * unfinishedResume, not resume. `finish` deliberately does not clear the
+     * resume point, so a learner who completes B04 and comes back here had
+     * B04 marked BOTH done and current - a card claiming two states that
+     * contradict each other, and the one place the three states most need to
+     * be told apart. My Progress already asked the honest question; the level
+     * and topic pages now ask it too, and the action beside the heading stops
+     * offering to continue something that is finished.
+     */
+    const resume = P.unfinishedResume();
     const currentId = resume && resume.tutorial.level === level ? resume.id : null;
 
     cat.eyebrow.textContent = 'Guided path';
@@ -665,7 +687,7 @@
   function renderTopic(route) {
     const c = route.collection;
     const P = progress();
-    const resume = P.resume();
+    const resume = P.unfinishedResume();
     const currentId = resume ? resume.id : null;
     const done = c.tutorialIds.filter((id) => P.isComplete(id)).length;
 
@@ -728,7 +750,7 @@
     const notice = storageNotice();
     if (notice) cat.body.appendChild(notice);
 
-    const resume = P.resume();
+    const resume = P.unfinishedResume();
     const currentId = resume ? resume.id : null;
     /* Compact rows: a learner may bookmark all thirty and the three specialty
        lessons, and the stage never scrolls, so this list stays inside a fixed
