@@ -182,7 +182,21 @@
           <div class="lesson-ident">
             <span class="fixture-badge" id="lsn-badge">DEVELOPMENT FIXTURE — NOT A TUTORIAL</span>
             <div class="lesson-titlerow">
-              <h1 class="lesson-title" id="lsn-title"></h1>
+              <!--
+                Focused on arrival at a lesson, the way .cat-title is focused
+                on arrival at a catalog surface, so keyboard and screen-reader
+                users land on the lesson they asked for. It carries no outline
+                for the reason css/app.css already gives for .cat-title: it is
+                an announcement target, not an actionable control, and a ring
+                here would show for everyone who arrived by clicking while
+                communicating nothing they can act on.
+
+                Inline because css/app.css is owned elsewhere in this pass.
+                The stylesheet rule that replaces it, beside its .cat-title
+                twin, is:
+                  .lesson-title:focus, .lesson-title:focus-visible { outline:none; }
+              -->
+              <h1 class="lesson-title" id="lsn-title" style="outline:none"></h1>
               <button class="favstar" id="lsn-fav" type="button" aria-pressed="false" hidden>
                 <span class="favstar-ico" aria-hidden="true">☆</span><span class="favstar-txt">Bookmark</span>
               </button>
@@ -230,6 +244,22 @@
 
           <section class="lesson-visual" id="lsn-visual" aria-label="JD-Xi hardware view"></section>
         </div>
+
+        <!--
+          Moving between steps replaces the instruction in place: nothing is
+          navigated to, so assistive technology is told nothing unless it is
+          told here. One polite region, written only when the step changes
+          INSIDE a lesson - arriving at a lesson moves focus to its heading
+          instead, and announcing both would say the same thing twice.
+
+          Hidden from sight, not from assistive technology: display:none and
+          the hidden attribute would both remove it from the accessibility
+          tree and it would announce nothing at all. The rule is inline
+          because css/app.css is owned elsewhere in this pass; it belongs in
+          the stylesheet as a shared utility class later.
+        -->
+        <p id="lsn-live" role="status" aria-live="polite" aria-atomic="true"
+           style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;"></p>
 
         <div class="lesson-foot">
           <button class="lsn-nav back" id="lsn-back" type="button">&lsaquo; Back</button>
