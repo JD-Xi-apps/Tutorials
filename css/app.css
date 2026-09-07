@@ -453,8 +453,21 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .tc-ident { display:flex; align-items:center; gap:7px; min-width:0; }
 .tut-card .tc-id { font-size:10.5px; font-weight:850; letter-spacing:.5px; color:var(--muted); }
 .tut-card .tc-name { font-size:13px; font-weight:750; line-height:1.25; }
+/* Six lines, not four.
+ *
+ * The clamp is what keeps every card in a row the same height, so it stays.
+ * Four lines was cutting eight of the ten Intermediate summaries off
+ * mid-sentence while 322px of the body under the grid went unused - the
+ * catalog was not short of room, it was just not spending any of it. Six is
+ * the point at which nothing in the catalog is clipped on any level or topic
+ * page; seven changes nothing, because no summary is longer than that.
+ *
+ * It costs 15px of card height and leaves 291px of the free space still free,
+ * so the body stays centred and the grid keeps its shape. The narrower grids
+ * (a small topic, Specialty) are unaffected: their cards are wider and were
+ * never clipping. */
 .tut-card .tc-sum { font-size:11px; line-height:1.4; color:var(--muted); overflow:hidden;
-  display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+  display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; }
 .tut-card .tc-meta { margin-top:auto; padding-top:4px; font-size:10.5px; color:var(--muted); display:flex; gap:8px; align-items:center; }
 /* Advisory prerequisites. Deliberately the same size and colour as the minutes
    and steps beside them: this is metadata about the tutorial, not a warning

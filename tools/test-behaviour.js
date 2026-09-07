@@ -1115,6 +1115,16 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
     });
     ok(!over.dense && over.clip <= 0,
       `${surface} still fits the stage without clipping (overflow ${over.clip}px)`);
+
+    /* And no card cuts its own summary off mid-sentence. The line clamp is
+       what keeps a row of cards one height, so it stays - but it was set
+       four lines short of the longest summary in the catalog while the body
+       under the grid went unused. */
+    const cut = await p.evaluate(() =>
+      [...document.querySelectorAll('#cat-body .tc-sum')]
+        .filter((e) => e.scrollHeight > e.clientHeight + 1)
+        .map((e) => e.textContent.slice(0, 40)));
+    ok(cut.length === 0, `${surface} clips no card summary (${cut.length} clipped)`);
   }
 
   /* ================================================================
