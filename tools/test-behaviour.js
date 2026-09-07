@@ -76,6 +76,69 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
      about an empty record passes on a full one. */
   const doneCount = () => p.evaluate(() => window.JDXI_PROGRESS.completed().length);
 
+  /*
+   * Settings has to be measured on its own, because the clipping sweep further
+   * down cannot see it. Settings is a DENSE surface - its body scrolls rather
+   * than clipping - and that sweep asserts `!dense`, so it excludes exactly
+   * the one surface that did not fit. Four stacked panels came to 792px
+   * against 682px of body, and the About panel, which is where a learner is
+   * told which version they are running, was cut through by the footer.
+   * Nothing failed, because scrolling is what dense is for.
+   *
+   * Scrolling was not a way to reach it either. Every focusable control on
+   * this surface sits ABOVE the fold, so Tab never scrolled the body, and
+   * Chromium does not make a scroll container focusable - a keyboard user had
+   * no way to bring About into view at all.
+   *
+   * So the assertion is fit, not scrollability, and it is made twice: the
+   * overflow the body reports, and the geometry of each panel against the
+   * body's own box. The second is not redundant. `scrollHeight` is measured
+   * from the scrolling box, and a panel pushed sideways or lifted above the
+   * top would leave it unchanged while still being off screen.
+   */
+  const settingsFit = async (what) => {
+    const g = await p.evaluate(() => {
+      const b = document.getElementById('cat-body');
+      const box = b.getBoundingClientRect();
+      const panels = [...b.querySelectorAll('.cat-panel')];
+      const last = panels[panels.length - 1];
+      /* Half a pixel of slack, because a fractional layout lands these
+         boundaries a ten-thousandth apart and a bare <= reads that as
+         clipped. */
+      const inside = (e) => {
+        const r = e.getBoundingClientRect();
+        return r.top >= box.top - 0.5 && r.bottom <= box.bottom + 0.5 &&
+               r.left >= box.left - 0.5 && r.right <= box.right + 0.5;
+      };
+      return {
+        overY: b.scrollHeight - b.clientHeight,
+        overX: b.scrollWidth - b.clientWidth,
+        panels: panels.length,
+        lastTitle: (last.querySelector('h2') || {}).textContent || '',
+        lastInside: inside(last),
+        allInside: panels.every(inside),
+        /* Rendered controls only. Each reset keeps a Cancel that is `hidden`
+           until the control is armed, and a hidden element reports a rect at
+           the origin - which is outside the body, so measuring it would fail
+           on a surface that is laid out correctly. The count comes back with
+           the verdict so a caller can say how many it expected, and a Cancel
+           that stopped being hidden cannot pass as nothing. */
+        controls: [...b.querySelectorAll('button')].filter((e) => e.getClientRects().length)
+          .map((e) => ({ name: e.textContent.trim().slice(0, 24), in: inside(e) })),
+      };
+    });
+    ok(g.overY <= 0, `${what}: Settings fits its body (overflow ${g.overY}px)`);
+    ok(g.overX <= 0, `${what}: Settings fits it sideways too (overflow ${g.overX}px)`);
+    ok(g.lastInside,
+      `${what}: the last Settings panel ("${g.lastTitle}") is inside the visible body`);
+    ok(g.allInside, `${what}: every one of the ${g.panels} Settings panels is inside it`);
+    const outside = g.controls.filter((c) => !c.in).map((c) => c.name);
+    ok(outside.length === 0,
+      `${what}: and so is each of its ${g.controls.length} controls (outside: ${
+        outside.join(', ') || 'none'})`);
+    return g;
+  };
+
   const lastStepHash = async (id) => {
     const n = await p.evaluate((t) => window.JDXI_TUTORIALS[t].steps.length, id);
     return `#tutorial/${id}/step/${n}`;
@@ -714,6 +777,19 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await p.waitForTimeout(260);
   ok(/newer version of JD-Xi Tutorial Hub/i.test(await p.textContent('#cat-body')),
     'Settings carries the notice too, beside the reset it points at');
+  /*
+   * And it fits WITH the notice, which is the case that matters most and the
+   * tallest the surface ever gets: five panels rather than four. This is the
+   * one state where a learner is told their work is not being saved and
+   * pointed at a control to fix it, so a notice that pushed that control, or
+   * the About panel, past the bottom of the body would fail them in exactly
+   * the state they most need the surface to work. Measured here rather than
+   * in a second seeded session because the record is already in place.
+   */
+  const setFuture = await settingsFit('a newer record is stored');
+  ok(setFuture.panels === 5, 'the notice is a fifth panel, not a replacement for one');
+  ok(setFuture.controls.length === 3,
+    'and the three resets are still the only controls showing on it');
 
   /* --- and the record itself is still there, byte for byte --- *
      Read once at the end, after a session that has rendered several surfaces
@@ -1137,6 +1213,73 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
         .map((e) => e.textContent.slice(0, 40)));
     ok(cut.length === 0, `${surface} clips no card summary (${cut.length} clipped)`);
   }
+
+  await goto('#settings');
+  const setPlain = await settingsFit('saving normally');
+  ok(setPlain.panels === 4, 'a saving session shows the four Settings panels');
+  ok(/About/.test(setPlain.lastTitle),
+    'About is the last of them, and it is the one that used to be cut off');
+  ok(setPlain.controls.length === 3,
+    'three controls show on it, the Cancels being hidden until something is armed');
+
+  /*
+   * Armed as well, which is the tallest the Reset panel ever gets: each armed
+   * control reveals a Cancel beside it and writes its warning into the row, and
+   * the three together add 46px. Fitting while idle and overflowing the moment
+   * a learner presses something would be the same defect with a delay on it -
+   * and the panel is in a column now, so it has less width to absorb a
+   * warning that wraps.
+   */
+  await p.evaluate(() =>
+    document.querySelectorAll('#cat-body .cat-btn.danger').forEach((b) => b.click()));
+  await p.waitForTimeout(200);
+  const setArmed = await settingsFit('every reset armed');
+  ok(setArmed.controls.length === 6, 'arming all three reveals their three Cancels');
+  await goto('#settings');
+
+  /*
+   * The ring, separately, because a control whose box fits can still have its
+   * ring cut: `button:focus-visible` draws 3px of outline 2px clear of the
+   * box, so the painted ring is 5px larger on every side than anything
+   * measured above. Tabbed rather than focused, because `:focus-visible` is
+   * the distinction between a keyboard user and a mouse one, and `.focus()`
+   * puts the element in the wrong state to draw a ring at all.
+   *
+   * What the three stops ARE is asserted too, not assumed. A scrollable
+   * container is a tab stop in Firefox and not in Chromium, so while the body
+   * overflowed, the first press of Tab landed on the body itself rather than
+   * on a control - the same defect wearing a third set of clothes, and the
+   * reason this reads the class rather than trusting the count.
+   */
+  const stops = [];
+  for (let i = 0; i < 3; i++) {
+    await p.keyboard.press('Tab');
+    stops.push(await p.evaluate(() => {
+      const b = document.getElementById('cat-body');
+      const a = document.activeElement;
+      const name = (a.id || a.className || a.tagName).toString().slice(0, 40);
+      if (!b.contains(a)) return { name, isReset: false, drawn: false, clear: false };
+      const cs = getComputedStyle(a);
+      const ring = parseFloat(cs.outlineWidth || '0') + parseFloat(cs.outlineOffset || '0');
+      const r = a.getBoundingClientRect(); const box = b.getBoundingClientRect();
+      return {
+        name,
+        isReset: a.tagName === 'BUTTON' && a.classList.contains('cat-btn') &&
+                 a.classList.contains('danger'),
+        drawn: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0,
+        clear: r.top - ring >= box.top - 0.5 && r.bottom + ring <= box.bottom + 0.5 &&
+               r.left - ring >= box.left - 0.5 && r.right + ring <= box.right + 0.5,
+      };
+    }));
+  }
+  const notReset = stops.filter((r) => !r.isReset).map((r) => r.name);
+  ok(notReset.length === 0,
+    `the first three tab stops in Settings are its three resets (stopped on ${
+      notReset.join(', ') || 'nothing else'})`);
+  ok(stops.every((r) => r.drawn), 'each of them draws a focus ring when tabbed to');
+  const cut = stops.filter((r) => !r.clear).map((r) => r.name);
+  ok(cut.length === 0,
+    `and no ring is cut by the edge of the body (cut: ${cut.join(', ') || 'none'})`);
 
   /* ================================================================
      Bookmarks terminology, and the version the learner is told they have.

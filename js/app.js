@@ -911,6 +911,18 @@
     cat.title.textContent = 'Settings';
     cat.desc.textContent = 'The few things there are to set. There is nothing else here.';
 
+    /*
+     * Two columns, because stacked these panels are taller than the body and
+     * the About panel fell off the bottom - see `.cat-body.set-split`. The
+     * division is what the surface tells you (`told`) against what it lets you
+     * do (`does`), which is a property of each panel rather than of how tall
+     * it happened to render, so the storage notice appearing or not cannot
+     * push anything out of view. Both columns are appended in the order the
+     * panels are built, so the DOM order is the one this surface always had.
+     */
+    const told = el('div', 'set-col');
+    const does = el('div', 'set-col');
+
     /* Which instrument this course is written for. */
     const target = el('div', 'cat-panel');
     target.appendChild(el('h2', null, 'Tutorial target'));
@@ -920,7 +932,7 @@
     target.appendChild(el('p', null,
       'Every procedure in this course is written for a JD-Xi running system program 1.51. ' +
       'Features added in versions 1.10 and 1.50 are simply present, so no tutorial asks you to check your version first.'));
-    cat.body.appendChild(target);
+    told.appendChild(target);
 
     const where = el('div', 'cat-panel');
     where.appendChild(el('h2', null, 'Where your progress is kept'));
@@ -931,13 +943,13 @@
     where.appendChild(el('p', null,
       'Opening the app in a different browser, or clearing this browser’s site data, ' +
       'means starting from an empty state.'));
-    cat.body.appendChild(where);
+    told.appendChild(where);
 
     /* Unconditional: storageNotice() returns null when this session can save,
        and gating on isAvailable() here would have hidden the future-schema
        branch on the one surface that offers the reset it points at. */
     const warn = storageNotice();
-    if (warn) cat.body.appendChild(warn);
+    if (warn) told.appendChild(warn);
 
     /*
      * Three separate resets. They destroy different things, and a learner may
@@ -978,7 +990,7 @@
       'Everything cleared.',
       () => P.resetEverything()
     ));
-    cat.body.appendChild(reset);
+    does.appendChild(reset);
 
     const about = el('div', 'cat-panel');
     about.appendChild(el('h2', null, 'About'));
@@ -991,8 +1003,10 @@
       'Runs from a file on this computer with no installation and no internet connection.'));
     about.appendChild(el('p', null,
       'Technical procedure follows Roland\u2019s official JD-Xi documentation. This is a learning tool and is not affiliated with Roland.'));
-    cat.body.appendChild(about);
+    does.appendChild(about);
 
+    cat.body.appendChild(told);
+    cat.body.appendChild(does);
     cat.hint.textContent = '';
   }
 
@@ -1682,9 +1696,16 @@
 
   /*
    * The catalog body centres its content and clips overflow, which suits a
-   * grid of ten tutorial cards. The reference surfaces are denser and can
-   * legitimately be taller than the stage, so they top-align and scroll
-   * INSIDE the body - the page itself still never scrolls.
+   * grid of ten tutorial cards. These four read as documents rather than as
+   * lists, so they top-align instead, and may scroll INSIDE the body - the
+   * page itself still never scrolls.
+   *
+   * Being allowed to scroll is not the same as needing to. Settings was the
+   * one surface that actually overflowed, and being dense is what kept that
+   * quiet: it scrolled instead of clipping, so nothing failed, while the
+   * panel at the bottom sat below the fold with nothing on screen saying so.
+   * It is laid out in two columns now and fits; the scroll is the floor under
+   * these surfaces, not the way any of them is meant to work.
    */
   const DENSE_SURFACES = [
     'reference', 'reference-entry',
@@ -1712,6 +1733,9 @@
     cat.desc.textContent = '';
     cat.hint.textContent = '';
     cat.body.classList.toggle('dense', DENSE_SURFACES.indexOf(route.surface) >= 0);
+    /* Settings lays its panels out in two columns rather than one; every
+       other surface fills the body itself. */
+    cat.body.classList.toggle('set-split', route.surface === 'settings');
     SURFACES[route.surface](route);
     /* Highlight labels can only be measured once the nodes are in the
        document, so the Explorer's panels settle after insertion. */

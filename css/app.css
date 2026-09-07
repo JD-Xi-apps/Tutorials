@@ -762,7 +762,13 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .search-empty p { font-size:12px; line-height:1.5; color:var(--muted); margin:0; }
 .navbtn.search { padding-left:9px; padding-right:9px; }
 
-/* Dense reference surfaces: top-aligned, scrolling inside the body only. */
+/* The dense surfaces stack from the top instead of centring, and may scroll
+   inside the body rather than clipping. Quick Reference is where that started
+   and is no longer all of it - a reset panel and a review overview are dense
+   too - so the class is named for the layout and not for the surface.
+   Scrolling is a floor under a surface that outgrows the body, not a licence
+   to: it hides an overflow from every check that looks at the page, which is
+   how Settings came to be cut off in silence. */
 .cat-body.dense { justify-content:flex-start; overflow:auto; padding-right:4px; }
 
 /* ------------------------------------------ learner state and completion ---
@@ -825,6 +831,32 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .ts-chip.done { border-color:#bcdcc7; background:#f4fbf6; }
 
 /* Settings */
+/*
+ * Settings is the one catalog surface whose content does not fit the body's
+ * band. Four stacked panels come to 792px against 682px of room, and the
+ * storage notice - the panel a learner has most need of, because it is the one
+ * that tells them their work is not being saved - takes it past 940. `dense`
+ * turned the excess into an internal scroll, which is why nothing ever failed;
+ * but the surface holds no focusable element below the reset controls, so a
+ * Chromium keyboard user had no way to scroll the body at all and the About
+ * panel was simply unreachable, while every user saw it sliced through by the
+ * footer with nothing on screen saying there was more.
+ *
+ * Height was never the constraint the surface actually had. Every panel is
+ * 1372px wide carrying prose that `.cat-panel p` caps at 820px, so better than
+ * a third of each row is empty. Two columns spend that width instead of the
+ * height there is none of; nothing is resized, reworded, moved or removed.
+ *
+ * The split is by kind, not by measurement, so it holds however many panels
+ * the state produces: what the surface TELLS you on the left - the target, the
+ * storage explanation and the storage notice when there is one - and what it
+ * LETS YOU DO on the right. Because the informational panels are exactly the
+ * leading ones, filling the columns in order leaves the DOM order untouched,
+ * and reading down the left column and then the right is the same sequence a
+ * screen reader is given.
+ */
+.cat-body.set-split { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+.set-col { display:flex; flex-direction:column; gap:12px; min-width:0; }
 .reset-head { margin:14px 0 4px; font-size:12.5px; }
 .reset-status { font-size:12px; color:var(--muted); }
 /* Same story as .ref-source above: outrank .cat-panel p instead of flagging. */
