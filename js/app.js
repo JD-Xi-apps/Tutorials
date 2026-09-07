@@ -1993,7 +1993,6 @@
   function openSearch() {
     search.panel.hidden = false;
     search.btn.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('searching');
     search.input.focus();
     search.input.select();
     paintSearch();
@@ -2002,7 +2001,6 @@
   function closeSearch() {
     search.panel.hidden = true;
     search.btn.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('searching');
   }
 
   search.btn.addEventListener('click', () => {
