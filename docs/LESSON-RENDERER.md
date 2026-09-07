@@ -313,8 +313,9 @@ When the learner moves between steps, the control the instruction is now about m
 be the one they were just looking at. The renderer gives a **newly relevant** highlight
 one short ring — `.hl-enter`, `@keyframes jdxi-hl-enter`, `css/app.css` section H — so
 the eye can reacquire it on the instrument. It is a reacquisition cue, not a pulse: one
-iteration, no fill mode, ending on the highlight's own resting `box-shadow`, so a
-finished cue leaves the element exactly the `.hl` it already was.
+iteration, no fill mode, and drawn entirely on the highlight's `::after`, whose resting
+state is transparent. The `.hl` itself is never animated, so a finished cue leaves the
+element exactly the `.hl` it already was — and so does a cue halfway through.
 
 The decision is renderer-local. `lastRender` holds the previous render's lesson
 identity (`kind` + tutorial id), step identity (`Step.id`, index as fallback) and its
@@ -354,34 +355,51 @@ side of a trip to Home look like two consecutive steps. `showView()` reports it 
 follows from it stays in the renderer. Home, then *Start over*, is therefore an arrival,
 not a step transition.
 
-Under `prefers-reduced-motion: reduce` the class is still applied and the animation is
-switched off in CSS — structure unchanged, motion gone.
+Under `prefers-reduced-motion: reduce` the class is still applied — the cue is a fact
+about the render, not about the viewer — and the `::after` animation is switched off in
+CSS. Structure unchanged, motion gone, and with the ring's resting opacity at 0 nothing
+is drawn in its place.
 
-### Two measured browser facts
+### Why the ring is a pseudo-element
 
-Both were found by wiring the cue up, and both are about the approved Phase 1 keyframes
-rather than about the wiring.
+The cue was first written as an animation of the highlight's own `box-shadow`, through a
+`color-mix()` built on `currentColor`. That form was measured as **non-interpolable in
+Chromium**: a `color-mix()` whose first colour is `currentColor` cannot be resolved at
+computed-value time, so the whole property animated *discretely* — the `from` frame for
+the first 310 ms, the `to` frame for the second. Scrubbing it with the Web Animations
+API returned the opening value at both 0% and 25% and the closing value at both 50% and
+75%, with nothing in between. The learner saw the halo darken and snap rather than a
+ring expanding. Firefox interpolated the same declaration exactly as written.
 
-**Chromium does not interpolate the ring.** `color-mix()` whose first colour is
-`currentColor` cannot be resolved at computed-value time, so the whole `box-shadow` is
-non-interpolable and the animation runs *discretely*: the `from` frame for the first
-310 ms, the `to` frame for the second. The learner sees the highlight's halo darken and
-then snap back, not a ring expanding. Firefox animates it exactly as written. Isolated
-by animating the same keyframes with a literal colour instead of `currentColor`, which
-interpolates correctly in both. Fixing it means changing owner-approved visual design
-and is deliberately not done here.
+It also left raster residue: a Chromium element that had run the animation did not
+re-raster bit-identically afterwards, and 11 of the 38 frozen surfaces differed by 2–12
+px on antialiased edges.
 
-**A Chromium element that has run the animation does not re-raster bit-identically.**
-The residue is a few pixels on antialiased highlight and label edges — 2–12 px per
-1.3 Mpx surface above `tools/frozen-surfaces.js`'s own tolerance, invisible in use, and
-deterministic run to run. It is caused by the animation alone: suppressing only the
-`.hl-enter` class, with the cue decision and `data-cue` still in place, restores
-byte-identical captures. Removing the class on `animationend` does not undo it. Firefox
-is byte-identical either way.
+Both are fixed by animating a different set of properties on a different box, which is
+what section H now does:
 
-`tools/frozen-surfaces.js` therefore settles for 900 ms per route rather than 260 ms:
-the frozen set is walked in step order, so every capture after the first follows a real
-step change, and 260 ms photographed whatever frame the ring happened to be on.
+- the ring is the highlight's `::after`, so `.hl` is never the animated element;
+- what animates is **opacity and four inset lengths** — a number and four lengths, none
+  of which any engine treats as discrete;
+- the ring's colour is `currentColor` and never moves, so no engine is asked to
+  interpolate a colour at all, and `.hl-a` / `.hl-b` / `.hl-c` keep owning the palette;
+- the expansion is in absolute pixels rather than `transform: scale()`, because
+  registered targets run from a 27 px switch to the 2420 px keyboard and a proportional
+  scale would be invisible on the first and overwhelming on the last.
+
+Measured after the change, at 0 / 25 / 50 / 75 / 100 % of the run: Chromium and Firefox
+return **identical** values at every sample (opacity 0.55 → 0.342 → 0.173 → 0.051 → 0,
+inset −3 → −8.29 → −12.59 → −15.69 px), the painted ring's bounding box grows
+monotonically and its mean delta against the settled frame falls monotonically to zero,
+and the settled frame differs from a cue-suppressed capture by **0 pixels** on all 38
+frozen surfaces in both engines. `tools/test-behaviour.js` asserts the interpolation as
+strict betweenness at every mid-run sample, so an engine that stops interpolating fails
+the suite without the test naming a browser.
+
+`tools/frozen-surfaces.js` settles for 900 ms per route rather than 260 ms: the frozen
+set is walked in step order, so every capture after the first follows a real step
+change, and 260 ms photographed whatever frame the ring happened to be on. The cue is
+finished at 620 ms; the remaining 280 ms is margin for a slow raster.
 
 ## Off-image, unknown and bad-image targets
 

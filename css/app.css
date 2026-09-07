@@ -921,26 +921,54 @@ body.in-lesson .navbtn[aria-expanded="true"] { opacity:1; }
    find the highlight again. This is the one-shot answer to "which one is it
    now": a ring that expands out of the existing highlight and fades, once.
 
-   It is a reacquisition cue, so it is not a pulse. It runs a single iteration,
-   it carries no fill mode, and it ends on the highlight's own resting
-   box-shadow, so when it finishes the element is byte-for-byte the .hl it
-   already was - nothing to unset, and no state left behind if the class is
-   never removed. Colour is currentColor throughout, so .hl-a / .hl-b / .hl-c
-   keep owning the palette and no hardware colour is redefined here.
+   It is a reacquisition cue, so it is not a pulse. One iteration, no fill
+   mode, and it is drawn entirely on a pseudo-element whose resting state is
+   invisible - so when it finishes there is nothing to unset, nothing left
+   behind if the class is never removed, and the .hl underneath is untouched
+   from start to end. No geometry, border or colour of a registered target is
+   redefined here.
 
-   Three hooks, because the JS that decides WHEN this fires is not on this
-   branch: the class on the highlight itself, the class on any ancestor, or a
-   data attribute on any ancestor. Whichever the other worker chooses, this is
-   already listening; until one of them is set, none of it applies. */
-@keyframes jdxi-hl-enter {
-  from { box-shadow:0 0 0 3px color-mix(in srgb,currentColor 16%,transparent),
-                    0 0 0 3px color-mix(in srgb,currentColor 52%,transparent); }
-  to   { box-shadow:0 0 0 3px color-mix(in srgb,currentColor 16%,transparent),
-                    0 0 0 17px color-mix(in srgb,currentColor 0%,transparent); }
+   Why a pseudo-element rather than animating the highlight's own box-shadow,
+   which is what this section did first: that form was measured as
+   NON-INTERPOLABLE in Chromium. A color-mix() built on currentColor cannot be
+   interpolated there, so the whole property ran discretely - the ring held its
+   3px/52% opening frame for the first half of the duration and snapped
+   straight to its 17px/0% closing frame for the second, reading as a dark
+   flash rather than an expanding halo. Firefox interpolated the same
+   declaration as written. No change of timing, easing or colour fixes that;
+   the choice of animated property is what fixes it.
+
+   So what animates here is opacity and four inset lengths - a number and four
+   lengths, none of which any engine treats as discrete. The ring's colour is
+   currentColor and never moves, so no engine is asked to interpolate a colour
+   at all, and .hl-a / .hl-b / .hl-c keep owning the palette exactly as before.
+
+   The expansion is in absolute pixels rather than transform: scale(), and
+   deliberately: registered targets run from a 27px switch to the 2420px
+   keyboard, so a proportional scale would be invisible on the first and would
+   sweep half the panel on the last. -3px out to -17px reproduces the spread
+   the approved Phase 1 keyframes described, at every target size.
+
+   Three hooks, as before, because the JS that decides WHEN this fires names
+   only one of them: the class on the highlight itself, the class on any
+   ancestor, or a data attribute on any ancestor. Until one is set, none of
+   this applies. */
+.hl.hl-enter::after,
+.hl-enter .hl::after,
+[data-hl-enter] .hl::after {
+  content:""; position:absolute; pointer-events:none;
+  top:-3px; right:-3px; bottom:-3px; left:-3px;
+  border:2.5px solid currentColor; border-radius:10px;
+  /* The resting state, and the state the cue returns to: invisible. The
+     animation carries no fill mode, so this is what the pseudo-element is
+     again the moment it finishes. */
+  opacity:0;
+  animation:jdxi-hl-enter 620ms ease-out 1;
 }
-.hl.hl-enter,
-.hl-enter .hl,
-[data-hl-enter] .hl { animation:jdxi-hl-enter 620ms ease-out 1; }
+@keyframes jdxi-hl-enter {
+  from { top:-3px;  right:-3px;  bottom:-3px;  left:-3px;  border-radius:10px; opacity:.55; }
+  to   { top:-17px; right:-17px; bottom:-17px; left:-17px; border-radius:24px; opacity:0; }
+}
 
 /* ---------------------------------------------------------- I: reduced motion
    Scoped to the motion this pass introduced, and to nothing else. The app's
@@ -948,9 +976,9 @@ body.in-lesson .navbtn[aria-expanded="true"] { opacity:1; }
    quietly switching them off here would be an unrelated change hiding inside
    an accessibility query. */
 @media (prefers-reduced-motion: reduce) {
-  .hl.hl-enter,
-  .hl-enter .hl,
-  [data-hl-enter] .hl { animation:none; }
+  .hl.hl-enter::after,
+  .hl-enter .hl::after,
+  [data-hl-enter] .hl::after { animation:none; }
   .topbar .brand-logo,
   .topbar .homebtn,
   .topbar .navbtn { transition:none; }

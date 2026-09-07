@@ -172,15 +172,18 @@ const pw = require('playwright');
 
   /*
    * Long enough to outlast the step-transition cue (.hl-enter, 620ms - see
-   * css/app.css section H). A frozen surface is the screen at rest, and the
-   * routes below are walked in step order, so every capture after the first is
-   * taken moments after a real step change. Capturing at 260ms photographed
-   * whatever frame the ring happened to be on: Firefox interpolates it and
-   * every mid-lesson capture drifted, while Chromium (which cannot interpolate
-   * a color-mix() built on currentColor, so the ring is on for the first half
-   * of the animation and gone for the second) landed either side of the flip
-   * depending on machine speed. Neither was a change to the resting screen -
-   * both were the harness racing an animation it did not know about.
+   * css/app.css section H) plus a rasterization margin. A frozen surface is
+   * the screen at rest, and the routes below are walked in step order, so
+   * every capture after the first is taken moments after a real step change.
+   * At the previous 260ms the harness was photographing whatever frame the
+   * ring happened to be on and calling the difference drift; it was racing an
+   * animation it did not know about, in both engines.
+   *
+   * 900ms is measured, not guessed. The cue is fully finished at 620ms and
+   * carries no fill mode, and a capture taken at the end of the run diffs to
+   * zero pixels against one taken with the cue suppressed entirely - in
+   * Chromium and in Firefox, on all 38 surfaces. The remaining 280ms is margin
+   * for a slow raster, not for the animation.
    */
   const SETTLE_MS = 900;
 

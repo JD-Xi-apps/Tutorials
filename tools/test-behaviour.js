@@ -5,16 +5,17 @@
  *   node tools/test-behaviour.js [chromium|firefox]
  *
  * Needs Playwright. Drives the real app from a real file:// URL and asserts
- * what the learner actually experiences: favouriting from a lesson and seeing
- * it on the Favorites surface, persistence across a reload, the resume point,
- * completion counting, the two-press Settings reset and its cancel path,
- * browser Back and Forward across the new surfaces, and the two things that
- * must NOT happen - a development fixture touching learner state, and an empty
- * collection rendering a placeholder page.
+ * what the learner actually experiences: bookmarking from a lesson and finding
+ * it on Bookmarked, persistence across a reload, the resume point, completion
+ * counting, the two-press Settings resets and their cancel path, browser Back
+ * and Forward across the new surfaces, and the two things that must NOT happen
+ * - a development fixture touching learner state, and an empty collection
+ * rendering a placeholder page.
  *
  * It also covers moving around inside a lesson: the footer Back and Next, the
  * keyboard path they share, which surface owns Escape when more than one could
- * answer it, and what the last step's action is allowed to look like.
+ * answer it, what the last step's action is allowed to look like, and the
+ * one-shot cue that marks a hardware target the step change made relevant.
  *
  * tools/test-progress.js covers the storage layer's failure modes directly and
  * without a browser; this covers the wiring on top of it.
@@ -22,11 +23,21 @@
 'use strict';
 
 const path = require('path');
+const { pathToFileURL } = require('url');
 const pw = require('playwright');
 
 const repo = path.resolve(__dirname, '..');
 const browserName = process.argv[2] || 'chromium';
-const APP = 'file://' + repo + '/index.html';
+/*
+ * Built with pathToFileURL, not concatenated, because this constant is
+ * COMPARED against page.url() below and the browser hands that back
+ * percent-encoded. The repository's own path contains spaces, so a
+ * hand-built 'file://' + repo never matched what the page reported: the
+ * same-URL guard silently stopped firing, p.goto() re-navigated to the hash
+ * it was already on, no hashchange was raised, and the assertion that a
+ * re-render clears the previous cue was reading a stale screen.
+ */
+const APP = pathToFileURL(path.join(repo, 'index.html')).href;
 let pass = 0; const fails = [];
 const ok = (c, n) => c ? pass++ : fails.push(n);
 
@@ -1417,7 +1428,7 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   /* --- 10: Back and Forward are step transitions like any other --- *
      Nothing in the renderer knows about history; both paths arrive as a
      render, which is the point. */
-  const pair = lessons
+  const bidir = lessons
     .map((l) => {
       for (let i = 1; i < l.steps.length; i++) {
         if (expectCue(l.steps[i], l.steps[i - 1]).length &&
@@ -1426,18 +1437,18 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
       return null;
     })
     .filter(Boolean)[0];
-  ok(!!pair, 'a lesson has two adjacent steps that cue in both directions');
+  ok(!!bidir, 'a lesson has two adjacent steps that cue in both directions');
   await p.evaluate(() => { window.location.hash = '#home'; });
   await p.waitForTimeout(180);
-  await goto(stepHash(pair.l, pair.n - 1));
-  await goto(stepHash(pair.l, pair.n));
+  await goto(stepHash(bidir.l, bidir.n - 1));
+  await goto(stepHash(bidir.l, bidir.n));
   await p.goBack();
   await p.waitForTimeout(280);
-  ok(same(await cued(), expectCue(pair.l.steps[pair.n - 1], pair.l.steps[pair.n - 2])),
+  ok(same(await cued(), expectCue(bidir.l.steps[bidir.n - 1], bidir.l.steps[bidir.n - 2])),
     'browser Back cues the target that becomes relevant again');
   await p.goForward();
   await p.waitForTimeout(280);
-  ok(same(await cued(), expectCue(pair.l.steps[pair.n - 2], pair.l.steps[pair.n - 1])),
+  ok(same(await cued(), expectCue(bidir.l.steps[bidir.n - 2], bidir.l.steps[bidir.n - 1])),
     'browser Forward cues like a press of Next');
 
   /* --- 5 + 6: two cases the curriculum has no example of --- *
@@ -1508,14 +1519,16 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   const rm = await motionCtx.newPage();
   const rmErrs = [];
   rm.on('pageerror', (e) => rmErrs.push('pageerror ' + e.message));
-  await rm.goto(APP + stepHash(pair.l, pair.n - 1));
+  await rm.goto(APP + stepHash(bidir.l, bidir.n - 1));
   await rm.waitForTimeout(320);
-  await rm.evaluate((h) => { window.location.hash = h; }, stepHash(pair.l, pair.n));
+  await rm.evaluate((h) => { window.location.hash = h; }, stepHash(bidir.l, bidir.n));
   await rm.waitForTimeout(320);
+  /* The cue is drawn on the highlight's ::after, not on the highlight, so the
+     animation is read there - see css/app.css section H for why it moved. */
   const rmState = await rm.evaluate(() => {
     const n = document.querySelector('#lsn-visual .hl.hl-enter');
     if (!n) return { present: false };
-    const cs = getComputedStyle(n);
+    const cs = getComputedStyle(n, '::after');
     return { present: true, name: cs.animationName, duration: cs.animationDuration };
   });
   ok(rmState.present, 'under reduced motion the cue is still applied structurally');
@@ -1524,22 +1537,248 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
       rmState.name + ')');
   const normal = await p.evaluate(() => {
     const n = document.querySelector('#lsn-visual .hl.hl-enter');
-    return n ? getComputedStyle(n).animationName : '(none present)';
+    return n ? getComputedStyle(n, '::after').animationName : '(none present)';
   });
   ok(normal === 'jdxi-hl-enter',
     'with motion allowed the same class does animate (control for the check above)');
+  /* And the highlight itself is not the thing animating, in either mode: the
+     resting .hl has to be exactly what it was before this pass. */
+  const restingHl = await p.evaluate(() => {
+    const n = document.querySelector('#lsn-visual .hl.hl-enter');
+    return n ? getComputedStyle(n).animationName : '(none present)';
+  });
+  ok(restingHl === 'none',
+    'the highlight element itself carries no animation (it is the ::after that runs)');
   ok(rmErrs.length === 0, 'the reduced-motion pass raised no page error');
   await motionCtx.close();
+
+  /* --- 13: the cue interpolates, in whichever engine is running --- *
+     The first form of this cue animated the highlight's box-shadow through a
+     color-mix() built on currentColor. Firefox interpolated it; Chromium
+     treats that property as non-interpolable and ran it DISCRETELY - the
+     opening frame for the first half of the duration, the closing frame for
+     the second, which is a flash rather than an expanding ring. The fix was to
+     animate a number and four lengths on a pseudo-element instead, so this
+     asserts the property of the fix rather than the shape of the old bug: the
+     mid-run samples must lie strictly BETWEEN the endpoints. A discrete
+     animation cannot satisfy that - every one of its samples is an endpoint -
+     so this fails on any engine that stops interpolating, without naming one. */
+  await goto(stepHash(bidir.l, bidir.n - 1));
+  await goto(stepHash(bidir.l, bidir.n));
+  const scrub = await p.evaluate(() => {
+    const el = document.querySelector('#lsn-visual .hl.hl-enter');
+    if (!el) return { error: 'no cue element on screen' };
+    /* subtree:true is what reaches an animation running on a pseudo-element. */
+    const anims = el.getAnimations({ subtree: true });
+    if (anims.length !== 1) return { error: 'expected 1 animation, saw ' + anims.length };
+    const a = anims[0];
+    const ct = a.effect.getComputedTiming();
+    a.pause();
+    const read = (f) => {
+      a.currentTime = ct.duration * f;
+      const cs = getComputedStyle(el, '::after');
+      return { f, opacity: parseFloat(cs.opacity), inset: parseFloat(cs.top), color: cs.borderTopColor };
+    };
+    const samples = [0, 0.25, 0.5, 0.75].map(read);
+    a.cancel();
+    const rest = getComputedStyle(el, '::after');
+    return {
+      pseudo: a.effect.pseudoElement,
+      duration: ct.duration,
+      iterations: ct.iterations,
+      fill: a.effect.getTiming().fill,
+      elementAnimation: getComputedStyle(el).animationName,
+      pseudoAnimation: getComputedStyle(el, '::after').animationName,
+      samples,
+      restOpacity: parseFloat(rest.opacity),
+      restInset: parseFloat(rest.top),
+    };
+  });
+  ok(!scrub.error, 'the cue exposes exactly one running animation to scrub (' + (scrub.error || 'ok') + ')');
+  if (!scrub.error) {
+    const sm = scrub.samples;
+    ok(scrub.pseudo === '::after', 'the cue animates a pseudo-element, not the highlight box itself');
+    ok(scrub.elementAnimation === 'none',
+      'the highlight element carries no animation of its own');
+    ok(scrub.pseudoAnimation === 'jdxi-hl-enter', 'the pseudo-element runs the named cue');
+    ok(scrub.iterations === 1, 'the cue runs exactly one iteration');
+    ok(scrub.fill === 'none' || scrub.fill === 'auto',
+      'the cue carries no fill mode, so it leaves nothing behind');
+    ok(scrub.duration > 0 && scrub.duration < 1000,
+      'the cue stays inside the restrained sub-second range (' + scrub.duration + 'ms)');
+
+    /* Interpolation, stated as strict betweenness at every mid sample. */
+    const mid = sm.slice(1);
+    ok(mid.every((x) => x.opacity < sm[0].opacity && x.opacity > 0),
+      'every mid-run opacity lies strictly between the endpoints (not a discrete flip)');
+    ok(mid.every((x) => x.inset < sm[0].inset),
+      'every mid-run inset has expanded past the opening frame');
+    ok(sm[1].opacity > sm[2].opacity && sm[2].opacity > sm[3].opacity,
+      'the cue fades monotonically across the run');
+    ok(sm[1].inset > sm[2].inset && sm[2].inset > sm[3].inset,
+      'the cue expands monotonically across the run');
+    ok(new Set(sm.map((x) => x.color)).size === 1,
+      'the ring colour never interpolates - it is the target highlight colour throughout');
+
+    /* And the resting state the cue returns to is the invisible one. */
+    ok(scrub.restOpacity === 0, 'at rest the cue ring is fully transparent');
+    ok(scrub.restInset === -3, 'at rest the cue ring is back at its opening geometry');
+  }
 
   /* --- the cue cannot outlive its node --- *
      #lsn-visual is emptied on every render, so this is really a check that it
      still is: a cue that survived would sit on the instrument permanently. */
-  await goto(stepHash(pair.l, pair.n - 1));
-  await goto(stepHash(pair.l, pair.n));
+  await goto(stepHash(bidir.l, bidir.n - 1));
+  await goto(stepHash(bidir.l, bidir.n));
   const cuedNow = (await hlCounts()).enter;
-  await goto(stepHash(pair.l, pair.n));
+  await goto(stepHash(bidir.l, bidir.n));
   ok(cuedNow > 0 && (await hlCounts()).enter === 0,
     'a cue does not survive into the next render of the same step');
+
+  /* ==================================================================== *
+   *  INTEGRATION: the discovery surfaces and the step cue, together
+   * ==================================================================== *
+   *
+   * The advisory prerequisites, the compact rows and the completed / current /
+   * not-started states were built on one branch; the step-transition cue was
+   * built on another, from the same release. Each holds on its own above.
+   * What is checked here is the seam: the cue is decided by comparing renders,
+   * and the discovery work added ways to arrive at and leave a lesson that did
+   * not exist when the cue's rules were written. A surface that renders a
+   * lesson without going through a step change must not look like one.
+   */
+
+  /* A lesson with a mid-lesson step change that genuinely cues, so that the
+     "cues nothing" assertions below are refusals and not the absence of
+     anything to refuse. */
+  const trip = lessons
+    .map((l) => {
+      for (let i = 2; i < l.steps.length; i++) {
+        if (expectCue(l.steps[i - 1], l.steps[i]).length) return { l, n: i + 1 };
+      }
+      return null;
+    })
+    .filter(Boolean)[0];
+  ok(!!trip, 'a lesson has a mid-lesson step change that cues, to leave and return to');
+
+  /* --- A + B: every way out of a lesson, and back in --- *
+     Each of these renders a lesson on return. None of them is a step change,
+     so none may cue - including the two the cue's own tests never saw, a level
+     page and a topic page, and the search panel, which reaches a lesson
+     without any discovery surface being involved at all. */
+  const topicId = await p.evaluate(() => Object.keys(window.JDXI_COLLECTIONS || {})[0]);
+  ok(!!topicId, 'a topic route exists to leave a lesson for');
+  const exits = [
+    ['#home', 'Home'],
+    ['#level/' + (trip.l.level || 'beginner'), 'a level page'],
+    ['#topic/' + topicId, 'a topic page'],
+    ['#progress', 'My Progress'],
+    ['#bookmarks', 'Bookmarked'],
+    ['#specialty', 'Specialty'],
+    ['#settings', 'Settings'],
+  ];
+  for (const [route, label] of exits) {
+    await goto(stepHash(trip.l, trip.n - 1));
+    await goto(stepHash(trip.l, trip.n));       // a real transition first
+    await p.evaluate((h) => { window.location.hash = h; }, route);
+    await p.waitForTimeout(240);
+    await goto(stepHash(trip.l, trip.n));       // return to the SAME step
+    ok(same(await cued(), []), 'returning from ' + label + ' cues nothing on arrival');
+  }
+  /* And the control: after all that leaving and returning the cue still works,
+     so the assertions above are not passing because it quietly stopped. */
+  await goto(stepHash(trip.l, trip.n - 1));
+  await goto(stepHash(trip.l, trip.n));
+  ok(same(await cued(), expectCue(trip.l.steps[trip.n - 2], trip.l.steps[trip.n - 1])),
+    'and a step change after all of those returns still cues normally');
+
+  /* --- B: a search-driven arrival is an arrival --- *
+     Search can land the learner on a lesson step from anywhere, including from
+     inside another lesson. That is a route change, not a press of Next. */
+  await goto(stepHash(trip.l, trip.n - 1));
+  await p.click('#searchbtn'); await p.waitForTimeout(220);
+  await p.fill('#searchinput', 'tempo'); await p.waitForTimeout(240);
+  const searched = await p.evaluate(() => {
+    const hit = document.querySelector('#searchresults .search-hit');
+    if (!hit) return null;
+    hit.click();
+    return true;
+  });
+  await p.waitForTimeout(360);
+  ok(searched, 'search offered a result to follow');
+  ok(same(await cued(), []), 'arriving on a lesson from a search result cues nothing');
+
+  /* --- C + D: entering from a card that carries prerequisite advice --- *
+     The advisory is the discovery branch's; the arrival rule is the cue
+     branch's. A learner who takes the advisory's own advice and opens the
+     tutorial anyway must not be flashed at on the way in - and must still be
+     cued once they are actually moving through it. */
+  const advised = await p.evaluate(() => {
+    const T = window.JDXI_TUTORIALS;
+    const k = Object.keys(T).find((x) => (T[x].prerequisites || []).length && T[x].level === 'beginner');
+    return k || null;
+  });
+  ok(!!advised, 'a beginner tutorial carries a prerequisite to be advised about');
+  await seedAt(blank(), '#level/beginner');
+  const advisedCard = await readCards();
+  ok(advisedCard[advised] && advisedCard[advised].advice,
+    'that card is showing its advisory before the lesson is opened');
+  await p.evaluate((id) => {
+    const c = [].slice.call(document.querySelectorAll('#cat-body .tut-card'))
+      .find((n) => n.querySelector('.tc-id').textContent === id);
+    c.click();
+  }, advised);
+  await p.waitForTimeout(360);
+  ok((await hash()).indexOf('#tutorial/' + advised) === 0,
+    'clicking an advised card opens that tutorial');
+  ok(same(await cued(), []), 'opening a tutorial from an advised card cues nothing on arrival');
+  const advisedSteps = lessons.find((l) => l.id === advised);
+  const nextCue = expectCue(advisedSteps.steps[0], advisedSteps.steps[1]);
+  await p.click('#lsn-next'); await p.waitForTimeout(340);
+  ok(same(await cued(), nextCue),
+    'and the first Next inside it cues exactly what the step change introduced');
+
+  /* --- F: the cue changes no learner state --- *
+     The cue is a fact about a render. It must not be able to move the record
+     the current/completed states are drawn from. */
+  const beforeCue = await p.evaluate((k) => window.localStorage.getItem(k), PKEY);
+  await goto(stepHash(trip.l, trip.n - 1));
+  await goto(stepHash(trip.l, trip.n));
+  ok((await cued()).length > 0, 'a cue fired for the state check to be about anything');
+  await seedAt(blank(), '#level/beginner');
+  const cardsAfterCue = await readCards();
+  ok(Object.keys(cardsAfterCue).every((id) => !cardsAfterCue[id].here),
+    'a blank record still shows no card as current after cues have fired');
+  ok(Object.keys(cardsAfterCue).every((id) => !cardsAfterCue[id].done),
+    'and none as completed');
+  ok(typeof beforeCue === 'string' || beforeCue === null,
+    'the progress record was readable before the cue ran (control)');
+
+  /* --- I: the compact rows name a lesson without renaming it --- *
+     shortTitle is a label. It must not reach the route, and the lesson it
+     opens must still head with the full title. */
+  await seedAt(record({
+    completedTutorialIds: [], currentTutorialId: null, currentStepId: null,
+    bookmarkedIds: [advised], completedSpecialtyIds: [],
+  }), '#bookmarks');
+  const rowInfo = await p.evaluate((id) => {
+    const rows = [].slice.call(document.querySelectorAll('#cat-body .tut-row'));
+    const r = rows.find((n) => (n.getAttribute('aria-label') || '').indexOf(id) >= 0) || rows[0];
+    if (!r) return null;
+    const nm = r.querySelector('.tr-name');
+    r.click();
+    return { shown: nm ? nm.textContent : '', label: r.getAttribute('aria-label') || '' };
+  }, advised);
+  await p.waitForTimeout(360);
+  ok(!!rowInfo, 'the Bookmarked surface drew a compact row');
+  const full = await p.evaluate((id) => window.JDXI_TUTORIALS[id].title, advised);
+  const short = await p.evaluate((id) => window.JDXI_TUTORIALS[id].shortTitle, advised);
+  ok(rowInfo.shown === short, 'the row shows the authored shortTitle');
+  ok(rowInfo.label.indexOf(full) >= 0, 'the full title is still in the row accessible name');
+  ok((await hash()).indexOf('#tutorial/' + advised) === 0,
+    'the row routes by tutorial id, not by the name it printed');
+  ok((await p.evaluate(() => (document.querySelector('#lsn-title') || {}).textContent || '')) === full,
+    'and the lesson it opens is headed with the full title');
 
   /* Walking the lessons above wrote ordinary progress; leave none of it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);

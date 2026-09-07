@@ -256,7 +256,7 @@ Tutorial
   level             "beginner" | "novice" | "intermediate"
   order             position within its level (drives the guided path)
   title             full student-facing title
-  shortTitle        compact form intended for tiles, breadcrumbs and progress lists
+  shortTitle        compact form, rendered in the one-line progress and bookmark rows
   summary           one or two plain sentences: what you will be able to do afterwards
   estimatedMinutes  honest expectation, used for planning and for challenge framing
   prerequisites[]   tutorial IDs assumed already done
@@ -288,11 +288,14 @@ Field notes:
   like"), not for a curriculum document.
 - **`shortTitle`** is authored on every tutorial, every Specialty lesson and both
   fixtures, and `tools/validate-data.js` fails a tutorial that lacks one — so it can be
-  relied on to exist. **No surface renders it yet.** It is held ready for the compact
-  rows and other space-constrained places where the full `title` does not fit, and
-  keeping it authored and validated means adopting it there is a rendering change alone,
-  with no content pass. Until a surface uses it, treat its wording as reviewed but
-  unproven in layout.
+  relied on to exist. It is rendered in the **compact rows**: the My Progress and
+  Bookmarked lists, where a row has one line and the full phrase does not fit. It is
+  **not** used everywhere — rich cards, the Specialty grid and the lesson heading all
+  render the full `title`, because those have the room and the longer phrase is the more
+  useful one there. Where the short form is shown, the full `title` still reaches the
+  accessible name and the tooltip, so nothing is lost to a screen reader or to a hover.
+  Choosing per context rather than globally is the point: `shortTitle` answers a space
+  problem, and a surface without a space problem does not have that question to answer.
 
 ## 7. Step model
 

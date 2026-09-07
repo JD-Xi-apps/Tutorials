@@ -30,11 +30,14 @@
 'use strict';
 
 const path = require('path');
+const { pathToFileURL } = require('url');
 const pw = require('playwright');
 
 const repo = path.resolve(__dirname, '..');
 const browserName = process.argv[2] || 'chromium';
-const APP = 'file://' + repo + '/index.html';
+/* Encoded rather than concatenated: this is compared against page.url(), and
+   the repository path contains spaces. See tools/test-behaviour.js. */
+const APP = pathToFileURL(path.join(repo, 'index.html')).href;
 let pass = 0; const fails = [];
 const ok = (c, n) => c ? pass++ : fails.push(n);
 
