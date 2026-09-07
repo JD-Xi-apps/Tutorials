@@ -31,8 +31,11 @@
 
   /* ------------------------------------------------------------------ data */
 
-  /* Shown in Settings > About. Bumped deliberately, not derived. */
-  const APP_VERSION = 'v1.0 beta';
+  /* Shown in Settings > About. Bumped deliberately, not derived - which is
+     why it went stale: the project shipped as v1.0 and this still said the
+     release candidate's name. It is display copy and nothing reads it, so it
+     names the release and no git tag moves with it. */
+  const APP_VERSION = 'v1.0';
 
   const LEVELS = ['beginner', 'novice', 'intermediate'];
   const LEVEL_LABEL = {
@@ -638,7 +641,7 @@
     p.appendChild(el('p', null,
       'Everything here still works, and you can use every tutorial as normal — but ' +
       'this browser is not letting the page store anything, so completions and ' +
-      'favourites will be forgotten when you close the tab. A private window, or a ' +
+      'bookmarks will be forgotten when you close the tab. A private window, or a ' +
       'browser set to block site data, is the usual reason.'));
     return p;
   }
@@ -1990,7 +1993,7 @@
     }
   });
 
-  /* ------------------------------------------------------------- favourites */
+  /* -------------------------------------------------------------- bookmarks */
 
   const bookmarkBtn = document.getElementById('lsn-fav');
 
@@ -2184,7 +2187,7 @@
       current = route.stepIndex;
       currentLesson = route.lesson;
       /* Only canonical tutorials touch learner state. A development fixture is
-         not a tutorial and must never appear in progress or favourites. */
+         not a tutorial and must never appear in progress or bookmarks. */
       if (route.lesson.kind === 'tutorial') {
         progress().noteVisit(route.lesson.key, route.stepIndex);
         paintBookmarkButton(route.lesson.key);

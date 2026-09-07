@@ -929,20 +929,152 @@ if (explorer) {
  * uses "Favorite" correctly and often, because it is teaching the hardware.
  */
 {
-  const uiFiles = ['index.html', 'js/app.js'];
+  /*
+   * The shipped UI chrome. `js/lesson-renderer.js` joined the list because it
+   * draws a lesson's furniture and nothing stopped a control label appearing
+   * there. Content files stay out: js/tutorials.js and js/specialty.js are
+   * where the hardware feature is TAUGHT, and they must go on saying Favorite.
+   */
+  const uiFiles = ['index.html', 'js/app.js', 'js/lesson-renderer.js'];
+
+  /*
+   * Comments are stripped from the JavaScript before scanning.
+   *
+   * A comment is not something the app says to a learner, and this subject in
+   * particular has to stay discussable: the code that keeps the two words
+   * apart cannot be forbidden from naming the word it is keeping out. Without
+   * this, the only way to satisfy the rule would be to delete the note that
+   * explains it, which is the opposite of what the rule is for.
+   *
+   * Safe to do textually here: no string in these files contains a comment
+   * opener, and every `//` outside a comment is preceded by the colon of a
+   * URL scheme.
+   */
+  const strip = (text, rel) =>
+    /\.js$/.test(rel)
+      ? text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/.*$/gm, '$1')
+      : text;
+
+  /*
+   * One exception, removed before scanning rather than special-cased inside
+   * it: `#favorites` is the pre-rename hash and must keep redirecting, or
+   * every link a learner saved before the rename dead-ends. It is a route
+   * token, not a word the app says. It is asserted separately below, so
+   * removing it here cannot become a way to delete the redirect quietly.
+   */
+  const LEGACY_HASH = '#' + 'favorites';
+
+  /*
+   * Two classes of prohibited wording, and the difference between them is the
+   * whole check.
+   *
+   * The British spellings are prohibited outright, in every form. Roland
+   * spells its feature the American way everywhere, so "favourite" cannot be
+   * a reference to the hardware at all - it can only be the app feature under
+   * the wrong name. That is exactly the defect this was extended to catch: a
+   * learner-facing storage notice promising that their "favourites" would be
+   * forgotten, which the old check, being case-sensitive and American-only,
+   * read straight past.
+   *
+   * The American forms are prohibited only in the shapes the hardware feature
+   * never takes. The JD-Xi has a Favorite, singular, which is registered or
+   * recalled; it is never "Favorites", never "Favorited" and never
+   * "Favoriting". Singular "Favorite" stays legal on purpose - the search
+   * index offers it as a synonym for recalling a program, and the tutorials
+   * that teach the hardware feature have to be able to name it.
+   */
+  const PROHIBITED = [
+    [/favourit\w*/i,
+      'the JD-Xi feature is spelled "Favorite"; a British spelling can only be the app feature under the wrong name'],
+    [/\bfavorites\b/i, 'the hardware feature is a Favorite, singular'],
+    [/\bfavorited\b/i, 'a hardware Favorite is registered or recalled, never "favorited"'],
+    [/\bfavoriting\b/i, 'a hardware Favorite is registered or recalled, never "favoriting"'],
+  ];
+
+  /* One scanner, used by the files and by the fixtures below, so the rule the
+     guard enforces and the rule it claims to enforce cannot drift apart. */
+  const scan = (text) => {
+    const cleaned = text.split(LEGACY_HASH).join('');
+    for (let i = 0; i < PROHIBITED.length; i++) {
+      const hit = cleaned.match(PROHIBITED[i][0]);
+      if (hit) {
+        return {
+          word: hit[0],
+          why: PROHIBITED[i][1],
+          line: cleaned.slice(0, hit.index).split('\n').length,
+        };
+      }
+    }
+    return null;
+  };
+
   uiFiles.forEach((rel) => {
     const abs = path.join(ROOT, rel);
     if (!fs.existsSync(abs)) return;
-    const text = fs.readFileSync(abs, 'utf8');
-    /* "Favorites"/"Favorited" are app-feature wordings and have no hardware
-       reading - Roland's feature is "Favorite", singular, and is registered
-       or recalled rather than "Favorited". */
-    ['Favorites', 'Favorited'].forEach((word) => {
-      const at = text.indexOf(word);
-      check(at < 0,
-        `${rel}: uses the app wording "${word}"; the app feature is Bookmarked ` +
-        `and "Favorite" is reserved for the JD-Xi hardware feature`);
-    });
+    const hit = scan(strip(fs.readFileSync(abs, 'utf8'), rel));
+    check(!hit, hit &&
+      `${rel}:${hit.line}: learner-facing UI says "${hit.word}" - ${hit.why}. ` +
+      `The app feature is Bookmarked; "Favorite" is reserved for the JD-Xi hardware feature`);
+  });
+
+  /*
+   * The guard proves itself on both sides, on every run.
+   *
+   * A terminology rule that is only ever run against a file that already
+   * passes is indistinguishable from a rule that matches nothing: the whole
+   * point of the previous version's failure was that it looked like it was
+   * working. These fixtures go through the same `scan`, so a change that
+   * loosens the rule fails here rather than silently letting wording back in,
+   * and a change that tightens it too far is caught by the second list before
+   * it starts rejecting the tutorials that teach the hardware feature.
+   */
+  const MUST_CATCH = [
+    'completions and favourites will be forgotten',
+    'Favourites',
+    'you favourited this lesson',
+    'favouriting a lesson keeps it here',
+    'Open Favorites',
+    'You favorited this tutorial',
+    'favoriting a tutorial keeps it here',
+  ];
+  MUST_CATCH.forEach((sample) => {
+    check(!!scan(sample),
+      `terminology guard does not catch the app-feature wording "${sample}"`);
+  });
+
+  /*
+   * And the hardware feature, which must go on being sayable. These are the
+   * shapes Roland's own documentation uses, plus the two registry identifiers
+   * the Explorer is built on - a rule that broke either would take the
+   * Hardware Explorer with it.
+   */
+  const MUST_ALLOW = [
+    'Press FAVORITE to register the program',
+    'Recall a Favorite from bank 1',
+    'the Favorite button beside the display',
+    'favoriteButton',
+    'favoritePatternRow',
+    LEGACY_HASH + ' still redirects',
+  ];
+  MUST_ALLOW.forEach((sample) => {
+    const hit = scan(sample);
+    check(!hit, hit &&
+      `terminology guard rejects the legitimate JD-Xi hardware wording "${sample}" ` +
+      `(matched "${hit.word}")`);
+  });
+
+  /* The redirect the exception above depends on. */
+  {
+    const appText = fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8');
+    check(appText.indexOf(LEGACY_HASH) >= 0,
+      `js/app.js: the legacy ${LEGACY_HASH} redirect is gone; links saved before the rename would dead-end`);
+  }
+
+  /* And the positive control, so the negative one cannot be satisfied by an
+     app that has stopped naming the feature at all. */
+  ['index.html', 'js/app.js'].forEach((rel) => {
+    check(/Bookmark/.test(fs.readFileSync(path.join(ROOT, rel), 'utf8')),
+      `${rel}: the app feature is never named; Bookmarked is what it is called`);
   });
 
   /* And the reverse, so the hardware feature is not renamed by accident: the
