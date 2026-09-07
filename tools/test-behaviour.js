@@ -981,6 +981,142 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok((await p.textContent('#lsn-title')) === (await p.evaluate(() => window.JDXI_TUTORIALS.B06.title)),
     'the lesson heading is the full title, never the short one');
 
+  /* ================================================================
+     Completed / current / not started, told apart at a glance.
+     ================================================================ */
+
+  await seedAt(record({
+    completedTutorialIds: ['B01', 'B02'], currentTutorialId: 'B04', currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#level/beginner');
+
+  const states = () => p.evaluate(() => {
+    const out = {};
+    document.querySelectorAll('#cat-body .tut-card').forEach((c) => {
+      const tick = c.querySelector('.tc-tick');
+      const now = c.querySelector('.tc-now');
+      const ts = tick ? getComputedStyle(tick) : null;
+      out[c.querySelector('.tc-id').textContent] = {
+        done: c.classList.contains('done'),
+        here: c.classList.contains('here'),
+        badge: now ? now.textContent : null,
+        label: c.getAttribute('aria-label') || '',
+        tickText: tick ? tick.textContent : '',
+        tickBg: ts ? ts.backgroundColor : '',
+        tickBorder: ts ? ts.borderTopWidth : '',
+        tickW: tick ? tick.getBoundingClientRect().width : 0,
+        topH: c.querySelector('.tc-top').getBoundingClientRect().height,
+        cardH: c.getBoundingClientRect().height,
+      };
+    });
+    return out;
+  });
+
+  const three = await states();
+  ok(three.B01.done && three.B01.tickText === '✓', 'a completed card still carries its tick');
+  ok(/Completed\./.test(three.B01.label), 'and still says so in its accessible name');
+  ok(three.B04.here && three.B04.badge === 'Current',
+    'the current unfinished tutorial says Current, not only a border');
+  ok(/ Current\./.test(three.B04.label), 'and says it in the accessible name too');
+  ok(three.B05.badge === null && !three.B05.here, 'no other card claims to be current');
+  ok(Object.keys(three).filter((k) => three[k].badge).length === 1,
+    'exactly one card is current, because the model stores exactly one');
+
+  /* --- the not-started mark no longer reads as a control --- */
+  const transparent = (c) => /rgba\(0, 0, 0, 0\)|transparent/.test(c);
+  ok(transparent(three.B05.tickBg),
+    'a not-started card draws no filled disc that could be read as a radio control');
+  ok(three.B05.tickBorder === '0px', 'and no ring around the empty space either');
+  ok(three.B05.tickText === '', 'and no glyph in it');
+  ok(three.B01.tickBg !== three.B05.tickBg && !transparent(three.B01.tickBg),
+    'while the completed mark is still drawn');
+
+  /* Alignment survives the suppression: the box is kept, only the fill is
+     dropped, so completing a tutorial must not move anything. */
+  ok(three.B05.tickW === three.B01.tickW && three.B05.tickW > 0,
+    'the mark keeps its footprint whether or not it is filled');
+  const heights = Object.keys(three).map((k) => Math.round(three[k].topH));
+  ok(Math.max(...heights) === Math.min(...heights),
+    'every card header is the same height, Current badge or not');
+
+  /* Card sizing stays deterministic across the three states within a row. */
+  const rowOne = ['B01', 'B02', 'B03', 'B04', 'B05'].map((k) => Math.round(three[k].cardH));
+  ok(Math.max(...rowOne) === Math.min(...rowOne),
+    'the cards in a row are the same height across done, current and not started');
+
+  /* --- no per-card progress fraction crept in --- */
+  const cardText = await p.evaluate(() =>
+    [...document.querySelectorAll('#cat-body .tut-card')].map((c) => c.textContent).join(' | '));
+  ok(!/\d+\s*(of|\/)\s*\d+/.test(cardText.replace(/\d+ min|\d+ steps/g, '')),
+    'no card carries a per-tutorial progress fraction');
+  ok(!/%/.test(cardText), 'and no card carries a percentage');
+
+  /* --- finishing the current tutorial retires the Current cue --- */
+  await seedAt(record({
+    completedTutorialIds: ['B01', 'B02', 'B04'], currentTutorialId: 'B04', currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#level/beginner');
+  const settledStates = await states();
+  ok(settledStates.B04.done, 'a finished tutorial is marked complete');
+  ok(settledStates.B04.badge === null && !settledStates.B04.here,
+    'and stops calling itself current: finishing it is not continuing it');
+  ok(!/ Current\./.test(settledStates.B04.label),
+    'the accessible name drops it as well');
+  ok(!/Continue B04/.test(await p.textContent('#cat-actions')),
+    'and the action beside the heading stops offering to continue something finished');
+
+  /* --- the same three states on the compact rows --- */
+  await seedAt(record({
+    completedTutorialIds: ['B01', 'B02'], currentTutorialId: 'B04', currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#progress');
+  const rowStates = await p.evaluate(() => {
+    const out = {};
+    document.querySelectorAll('#cat-body .tut-row').forEach((r) => {
+      const tick = r.querySelector('.tc-tick');
+      const now = r.querySelector('.tr-now');
+      out[r.querySelector('.tr-id').textContent] = {
+        done: r.classList.contains('done'),
+        here: r.classList.contains('here'),
+        badge: now ? now.textContent : null,
+        tickBg: getComputedStyle(tick).backgroundColor,
+        h: Math.round(r.getBoundingClientRect().height),
+      };
+    });
+    return out;
+  });
+  ok(rowStates.B04.badge === 'Current', 'the current row says Current as well');
+  ok(rowStates.B01.done && rowStates.B05.badge === null, 'and the other two states read as before');
+  ok(transparent(rowStates.B05.tickBg), 'a not-started row draws no empty disc either');
+  const rowH = Object.keys(rowStates).map((k) => rowStates[k].h);
+  ok(Math.max(...rowH) === Math.min(...rowH), 'every row is the same height whatever its state');
+
+  /*
+   * And none of it is clipped. `.cat-body` hides its overflow rather than
+   * scrolling, so a surface that outgrew the stage would quietly lose its
+   * bottom row instead of reporting anything - which is what an extra line on
+   * every card is capable of causing. Measured on the body, not on `.catalog`:
+   * the catalog is a fixed-height grid, so it can never report the overflow.
+   * The dense surfaces are excluded because scrolling INSIDE the body is what
+   * they are for.
+   */
+  await seedAt(record({
+    completedTutorialIds: ['B01', 'B02'], currentTutorialId: 'B04', currentStepId: null,
+    bookmarkedIds: everything, completedSpecialtyIds: [],
+  }), '#level/beginner');
+  for (const surface of ['#level/beginner', '#level/novice', '#level/intermediate',
+                         '#topic/getting-started', '#topic/sound-design',
+                         '#topic/troubleshooting', '#bookmarks', '#progress', '#specialty']) {
+    await p.evaluate((h) => { window.location.hash = h; }, surface);
+    await p.waitForTimeout(240);
+    const over = await p.evaluate(() => {
+      const b = document.getElementById('cat-body');
+      return { clip: b.scrollHeight - b.clientHeight, dense: b.classList.contains('dense') };
+    });
+    ok(!over.dense && over.clip <= 0,
+      `${surface} still fits the stage without clipping (overflow ${over.clip}px)`);
+  }
+
   /* Leave storage as we found it rather than as the last fixture left it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
 
