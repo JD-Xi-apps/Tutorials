@@ -504,10 +504,22 @@ function resumeSeed(stepId) {
   ok(P.isAvailable() === false, 'read throws: reported unavailable');
   eq(P.completed(), [], 'read throws: degrades to an empty state');
   ok(P.toggleBookmark('B01') === true, 'read throws: still usable in memory');
+  /* The reason string, not just the boolean: the UI now picks its wording from
+     it, and a browser that gives us nothing must never be described with the
+     future-record wording - or the learner is told to reset progress that does
+     not exist, for a problem that is not theirs. */
+  ok(P.persistence().reason === 'unavailable',
+    'read throws: the reason is the browser, not a newer record');
+  ok(P.persistence().storedSchemaVersion === null,
+    'read throws: no schema version is reported for a browser problem');
+  ok(P.isReadOnly() === false,
+    'read throws: unavailable storage is not the read-only future-record lock');
 }
 {
   const { P, catalog } = load({ throwOnWrite: true });
   ok(P.isAvailable() === false, 'write throws: reported unavailable');
+  ok(P.persistence().reason === 'unavailable',
+    'write throws: the reason is the browser, not a newer record');
   ok(P.toggleBookmark('B01') === true, 'write throws: bookmarking still works in memory');
   eq(P.bookmarks(), ['B01'], 'write throws: in-memory state kept');
   P.finish('B04');

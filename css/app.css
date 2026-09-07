@@ -200,6 +200,13 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
    the instruction, which changes every step and is the thing to do next. It
    stays legible and stays first; it stops competing. */
 .lesson-title { margin:0; font-size:16px; font-weight:700; color:#3d3d3d; letter-spacing:-.25px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* Focused on arrival at a lesson, the way .cat-title is focused on arrival at
+   a catalog surface, so keyboard and screen-reader users land on the lesson
+   they asked for. It carries no outline for the reason given at .cat-title: it
+   is an announcement target, not an actionable control, and a ring here would
+   show for everyone who arrived by clicking while communicating nothing they
+   can act on. Every real control keeps its own :focus-visible ring. */
+.lesson-title:focus, .lesson-title:focus-visible { outline:none; }
 .lesson-prog { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:none; }
 /* QoL A - progress feedback.
    The track used to be as wide as its tutorial was long: 305px at ten steps,
@@ -905,3 +912,17 @@ body.in-lesson .navbtn[aria-expanded="true"] { opacity:1; }
   .topbar .homebtn,
   .topbar .navbtn { transition:none; }
 }
+
+/* ------------------------------------------------------- J: visually hidden
+   Present to assistive technology, absent from the page. display:none and the
+   hidden attribute would both take the element out of the accessibility tree,
+   so a live region written this way would announce nothing at all; this keeps
+   it in the tree while giving it no visible box.
+
+   The declarations are exactly those #lsn-live carried inline while css/app.css
+   was owned elsewhere in this pass - moved, not rewritten, so computed
+   behaviour is unchanged. */
+.vis-hidden {
+  position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+  white-space:nowrap; border:0; }

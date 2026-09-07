@@ -316,6 +316,115 @@ function ok(cond, msg) { if (cond) pass++; else problems.push(msg); }
   ok((await p.evaluate(() => document.getElementById('lsn-back').disabled)) === false,
     'the Back control is available again once there is a step behind it');
 
+  /* ---- integration: the route's programmatic focus paints no ring ----
+     The heading is focused on arrival so a screen-reader user lands on the
+     lesson they asked for. That focus is given to EVERY arrival, including the
+     mouse user who clicked to get here, so a ring on it would show a keyboard
+     affordance to someone who used no keyboard and points at something they
+     cannot act on. The treatment moved out of an inline style and into
+     css/app.css during integration; asserted on computed style so it holds
+     wherever the rule lives. */
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(180);
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/2'; });
+  await p.waitForTimeout(260);
+  const headRing = await p.evaluate(() => {
+    const h = document.getElementById('lsn-title');
+    const cs = getComputedStyle(h);
+    return {
+      focused: document.activeElement === h,
+      style: cs.outlineStyle,
+      width: parseFloat(cs.outlineWidth) || 0,
+      inline: h.getAttribute('style'),
+    };
+  });
+  ok(headRing.focused, 'the lesson heading still holds route focus');
+  ok(headRing.style === 'none' || headRing.width === 0,
+    `route focus paints no outline on the lesson heading (${headRing.style} ${headRing.width}px)`);
+  ok(!headRing.inline || headRing.inline.indexOf('outline') < 0,
+    'the lesson heading carries no inline outline override');
+
+  /* The same for the catalog heading it was modelled on, so the pair cannot
+     drift apart unnoticed. */
+  await p.evaluate(() => { window.location.hash = '#level/beginner'; });
+  await p.waitForTimeout(240);
+  const catRing = await p.evaluate(() => {
+    const h = document.getElementById('cat-title');
+    const cs = getComputedStyle(h);
+    return { focused: document.activeElement === h, style: cs.outlineStyle, width: parseFloat(cs.outlineWidth) || 0 };
+  });
+  ok(catRing.style === 'none' || catRing.width === 0,
+    'route focus paints no outline on the catalog heading either');
+
+  /* ---- integration: the disabled Back reads as unavailable ----
+     Two branches wrote these: one made the control natively disabled, the
+     other styled whatever said it was unavailable. Neither could see the
+     other, so this asserts the pair actually met - on computed style, which is
+     the only place that is true or false. */
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/2'; });
+  await p.waitForTimeout(240);
+  const liveBack = await p.evaluate(() => {
+    const b = document.getElementById('lsn-back');
+    const cs = getComputedStyle(b);
+    const r = b.getBoundingClientRect();
+    return { color: cs.color, cursor: cs.cursor, box: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)] };
+  });
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/1'; });
+  await p.waitForTimeout(240);
+  const deadBack = await p.evaluate(() => {
+    const b = document.getElementById('lsn-back');
+    const cs = getComputedStyle(b);
+    const r = b.getBoundingClientRect();
+    return {
+      disabled: b.disabled,
+      color: cs.color, cursor: cs.cursor,
+      box: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)],
+    };
+  });
+  ok(deadBack.disabled === true, 'Back is natively disabled on step 1');
+  ok(deadBack.cursor !== 'pointer',
+    `a disabled Back offers no pointer cursor (was ${deadBack.cursor})`);
+  ok(deadBack.color !== liveBack.color,
+    'a disabled Back is muted rather than looking exactly like an available control');
+  ok(deadBack.box.join() === liveBack.box.join(),
+    `a disabled Back holds the same box, so Next does not move between steps (${deadBack.box} vs ${liveBack.box})`);
+
+  /* Hovering it must not lift it: a control that answers the pointer is a
+     control that says it can be pressed. */
+  await p.hover('#lsn-back');
+  await p.waitForTimeout(160);
+  const hovered = await p.evaluate(() => {
+    const b = document.getElementById('lsn-back');
+    const r = b.getBoundingClientRect();
+    return { transform: getComputedStyle(b).transform, box: [Math.round(r.x), Math.round(r.y)] };
+  });
+  ok(hovered.transform === 'none' || hovered.transform === 'matrix(1, 0, 0, 1, 0, 0)',
+    `a disabled Back does not lift on hover (transform ${hovered.transform})`);
+  ok(hovered.box.join() === deadBack.box.slice(0, 2).join(),
+    'a disabled Back does not move on hover');
+
+  /* ---- integration: real controls keep their ring ----
+     The heading rule above removes an outline. This is the assertion that it
+     removed only that one: the button beside it, tabbed to, still shows a
+     keyboard user where they are. */
+  await p.evaluate(() => { window.location.hash = '#tutorial/B02/step/2'; });
+  await p.waitForTimeout(260);
+  await p.evaluate(() => { document.getElementById('lsn-next').blur(); document.body.focus(); });
+  let lsnRing = null;
+  for (let i = 0; i < 40 && !lsnRing; i++) {
+    await p.keyboard.press('Tab');
+    lsnRing = await p.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || !el.classList || !el.classList.contains('lsn-nav')) return null;
+      const cs = getComputedStyle(el);
+      return { id: el.id, style: cs.outlineStyle, width: parseFloat(cs.outlineWidth) || 0, vis: el.matches(':focus-visible') };
+    });
+  }
+  ok(lsnRing !== null, 'a lesson footer control is reachable by Tab');
+  ok(lsnRing && lsnRing.vis, 'a tabbed-to lesson footer control matches :focus-visible');
+  ok(lsnRing && lsnRing.style !== 'none' && lsnRing.width > 0,
+    `a tabbed-to lesson footer control still shows its ring (${lsnRing ? lsnRing.style + ' ' + lsnRing.width : 'none'})`);
+
   /* ---- destructive reset states its consequence ---- */
   await p.evaluate(() => { window.location.hash = '#settings'; });
   await p.waitForTimeout(200);

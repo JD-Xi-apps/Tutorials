@@ -466,9 +466,43 @@
     return wrap;
   }
 
+  /*
+   * Why this asks `persistence()` and not `isAvailable()`: there are two
+   * different reasons this session cannot save, and only one of them is the
+   * browser's doing.
+   *
+   *   "unavailable"   - the browser gives us no storage. Its wording is
+   *                     unchanged, because that case has not changed.
+   *   "future-schema" - storage works perfectly; it already holds a record
+   *                     written by a NEWER build of this app. progress.js
+   *                     deliberately refuses to read or overwrite it, so this
+   *                     session runs in memory. Telling the learner their
+   *                     browser is at fault, or that their data is corrupt,
+   *                     would both be false, and either invites them to clear
+   *                     site data and destroy the very record we protected.
+   *
+   * The honest statement is that something newer is being kept safe and that
+   * this session will not be remembered. Reset Everything still deletes it -
+   * that is the progress module's one sanctioned exception - so the way out is
+   * named rather than performed for them.
+   */
   function storageNotice() {
-    if (progress().isAvailable()) return null;
+    const state = progress().persistence();
+    if (state.writable) return null;
     const p = el('div', 'cat-panel warn');
+
+    if (state.reason === 'future-schema') {
+      p.appendChild(el('h2', null, 'Newer progress is stored in this browser'));
+      p.appendChild(el('p', null,
+        'Progress from a newer version of JD-Xi Tutorial Hub is stored in this browser. ' +
+        'This version won’t overwrite it, so changes you make here won’t be saved ' +
+        'unless you reset progress.'));
+      p.appendChild(el('p', null,
+        'Everything here still works, and you can use every tutorial as normal. Opening ' +
+        'the newer version again will find that progress exactly as it was.'));
+      return p;
+    }
+
     p.appendChild(el('h2', null, 'Progress cannot be saved in this browser'));
     p.appendChild(el('p', null,
       'Everything here still works, and you can use every tutorial as normal — but ' +
@@ -604,11 +638,20 @@
     cat.desc.textContent =
       'Every tutorial, in the order the guided path takes them. Kept in this browser only.';
 
-    if (resume) {
+    /* Same rule as the Home card: a step number is only claimed when resume()
+       says the stored step actually resolved. */
+    if (resume && resume.stepResolved) {
       cat.actions.appendChild(
         actionButton(
           'Continue ' + resume.id + ' · step ' + (resume.stepIndex + 1),
           '#tutorial/' + resume.id + (resume.stepIndex ? '/step/' + (resume.stepIndex + 1) : '')
+        )
+      );
+    } else if (resume) {
+      cat.actions.appendChild(
+        actionButton(
+          'Resume ' + resume.id + ' from beginning',
+          explicitStepHash({ kind: 'tutorial', key: resume.id }, 1)
         )
       );
     }
@@ -738,10 +781,11 @@
       'means starting from an empty state.'));
     cat.body.appendChild(where);
 
-    if (!P.isAvailable()) {
-      const warn = storageNotice();
-      if (warn) cat.body.appendChild(warn);
-    }
+    /* Unconditional: storageNotice() returns null when this session can save,
+       and gating on isAvailable() here would have hidden the future-schema
+       branch on the one surface that offers the reset it points at. */
+    const warn = storageNotice();
+    if (warn) cat.body.appendChild(warn);
 
     /*
      * Three separate resets. They destroy different things, and a learner may
@@ -1894,18 +1938,47 @@
     const step = r.tutorial.steps[r.stepIndex];
     continueCard.root.hidden = false;
     continueCard.title.textContent = r.id + ' · ' + r.tutorial.title;
-    continueCard.step.textContent = 'Step ' + n + ' of ' + total;
-    continueCard.stepTitle.textContent = (step && step.title) || '';
-    /* The bar draws the fraction the line beside it already states - reached,
-       not scored, which is why the step they are on counts. It is decoration
-       for that sentence and carries no number of its own. */
-    continueCard.bar.style.width = (n / total) * 100 + '%';
+
+    /*
+     * resume() hands back a usable stepIndex either way, but says whether it
+     * is the learner's recorded position or a fallback. Only the recorded one
+     * may be worded as a position: a stored step id the curriculum no longer
+     * contains falls back to index 0, and calling that "Step 1 of 12" tells a
+     * learner we remember a place we in fact invented.
+     */
+    if (r.stepResolved) {
+      continueCard.step.textContent = 'Step ' + n + ' of ' + total;
+      continueCard.stepTitle.textContent = (step && step.title) || '';
+      /* The bar draws the fraction the line beside it already states - reached,
+         not scored, which is why the step they are on counts. It is decoration
+         for that sentence and carries no number of its own. */
+      continueCard.bar.style.width = (n / total) * 100 + '%';
+      continueCard.root.setAttribute(
+        'aria-label',
+        'Continue ' + r.tutorial.title + ', step ' + n + ' of ' + total +
+          (step && step.title ? ': ' + step.title : '')
+      );
+      continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, n));
+      return;
+    }
+
+    continueCard.step.textContent = 'Resume from the beginning';
+    /* No step is named, so no step title is named either - the fallback step's
+       own title would read as the remembered one. */
+    continueCard.stepTitle.textContent = '';
+    /* And no fraction: the bar is decoration for a sentence that no longer
+       states one, and 1/12 of a rail is a position claim of its own. */
+    continueCard.bar.style.width = '0%';
     continueCard.root.setAttribute(
       'aria-label',
-      'Continue ' + r.tutorial.title + ', step ' + n + ' of ' + total +
-        (step && step.title ? ': ' + step.title : '')
+      'Resume ' + r.id + ' · ' + r.tutorial.title + ' from the beginning'
     );
-    continueCard.root.onclick = () => go(stepHash({ kind: 'tutorial', key: r.id }, n));
+    /* The control says the beginning, so it goes to the beginning. That is
+       explicitStepHash's case exactly - a control meaning step 1 after the
+       learner has decided - and it leaves the bare route's direct-entry
+       meaning untouched. */
+    continueCard.root.onclick = () =>
+      go(explicitStepHash({ kind: 'tutorial', key: r.id }, 1));
   }
 
   /* ------------------------------------------------- lesson focus and speech */

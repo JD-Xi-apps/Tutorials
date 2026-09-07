@@ -573,7 +573,15 @@ ProgressState
 
 - **`schemaVersion`** exists so a future version can migrate stored state safely instead
   of misreading an older shape as a current one. A record whose version is *newer* than
-  the running app understands must be treated as unreadable rather than guessed at.
+  the running app understands must be treated as unreadable rather than guessed at —
+  **and as unwritable**. Refusing to read it is only half the guarantee: the next write
+  would put a current-schema record straight over the top of it, which destroys the data
+  the refusal existed to protect. So a future record puts the session into **read-only**
+  for its whole life. The learner keeps a fully working app running in memory, nothing is
+  migrated and nothing is deleted, and the affected surfaces say so — without blaming the
+  browser, which is working, or calling the record corrupt, which it is not. Explicit
+  **Reset Everything** is the one sanctioned exception, because it *deletes* rather than
+  rewrites and the learner asked for it.
 - **`completedTutorialIds`** records canonical tutorial IDs (§4). Because those IDs are
   permanent and never renumbered, a completion record stays meaningful even as titles,
   ordering, and step lists evolve. This is a large part of why the IDs are permanent.
@@ -590,7 +598,12 @@ Content evolves; stored state does not. Every stored reference is therefore a hi
 a guarantee:
 
 - a `currentStepId` that no longer exists resolves to the **first valid step** of that
-  tutorial;
+  tutorial — but that fallback is **reported as a fallback**. `resume()` returns
+  `stepResolved` / `stepStatus` (`exact`, `stale`, `missing`) alongside the index, and no
+  surface may word an unresolved step as a remembered position. "Step 1 of 12" for a step
+  the curriculum no longer contains is the app claiming to remember a place it invented;
+  the honest offer is to resume from the beginning, which is what Home and My Progress
+  now say. Navigation is unaffected — the index is still usable either way;
 - a `currentTutorialId` that no longer exists yields **no resume point**, and the
   learner is returned to `#home`;
 - unknown IDs in `completedTutorialIds` or `favoriteTutorialIds` are **ignored on read**

@@ -352,8 +352,18 @@ state entirely: a fixture is not a tutorial, so it never becomes a resume point,
 appears in Progress, and shows no favourite control.
 
 Fallbacks use `location.replace`, so a bad URL does not become a history entry. Next
-and Back write the hash, so browser history follows step navigation naturally. Back
-from a tutorial's step 1 goes to `#home`; Back from step 2 goes to `#tutorial/<id>`.
+and Back write the hash, so browser history follows step navigation naturally.
+
+**Back on step 1 is disabled** — a real `disabled` attribute, keeping its box in the
+footer so Next does not move when step 1 becomes step 2. It previously read *‹ Home*
+and left the lesson, which is not what a Back control in a step footer says it does.
+Leaving is the topbar's job and Escape's.
+
+**Back from step 2 asks for a step**: `#tutorial/<id>/step/1`, not the bare
+`#tutorial/<id>`. The bare route is a *decision point* — for a part-finished tutorial it
+offers Continue or Start over — so sending Back there put the learner on a choice about
+the lesson they were already reading. The bare route keeps that meaning for direct
+entry; every control that means "step 1" now says so explicitly.
 
 ### Guided next tutorial
 

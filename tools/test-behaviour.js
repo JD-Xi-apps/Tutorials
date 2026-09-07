@@ -497,6 +497,180 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await p.goForward(); await p.waitForTimeout(300);
   ok((await hash()) === '#tutorial/B08/step/2', 'browser Forward still works');
 
+  /* =====================================================================
+     INTEGRATION: what the learner is TOLD about their stored progress.
+
+     The progress layer learned two things during this pass that no surface
+     was yet reading. Both are the same defect in different clothes - the app
+     stating something about the learner's data that is not true - and both
+     are invisible from the outside, because the wrong wording renders exactly
+     as beautifully as the right one.
+     ===================================================================== */
+
+  const PKEY = 'jdxi.tutorial-hub.progress';
+
+  /* The progress module reads storage once and caches it, so seeding has to be
+     followed by a real reload; setting the hash alone would test the record
+     that was already in memory. */
+  const seedAt = async (record, h) => {
+    await p.evaluate((x) => { window.location.hash = x; }, h);
+    await p.waitForTimeout(140);
+    await p.evaluate(
+      (a) => window.localStorage.setItem(a[0], a[1]),
+      [PKEY, JSON.stringify(record)]
+    );
+    await p.reload();
+    await p.waitForTimeout(340);
+  };
+
+  const record = (over) => Object.assign({
+    schemaVersion: 2,
+    completedTutorialIds: [],
+    currentTutorialId: 'B06',
+    currentStepId: null,
+    bookmarkedIds: [],
+    completedSpecialtyIds: [],
+  }, over);
+
+  /* --- a saved step that still resolves keeps the exact wording --- */
+  const realStep = await p.evaluate(() => window.JDXI_TUTORIALS.B06.steps[4].id);
+  const b06len = await p.evaluate(() => window.JDXI_TUTORIALS.B06.steps.length);
+  await seedAt(record({ currentStepId: realStep }), '#home');
+  const exactCard = await p.evaluate(() => ({
+    hidden: document.getElementById('continue-card').hidden,
+    step: document.getElementById('continue-step').textContent,
+    stepTitle: document.getElementById('continue-step-title').textContent,
+    label: document.getElementById('continue-card').getAttribute('aria-label'),
+    bar: document.getElementById('continue-bar').style.width,
+  }));
+  ok(exactCard.hidden === false, 'a resolvable saved step still shows the Continue card');
+  ok(exactCard.step === 'Step 5 of ' + b06len,
+    `an exact saved step keeps its exact wording (was "${exactCard.step}")`);
+  ok(exactCard.stepTitle.length > 0, 'an exact saved step still names the step');
+  ok(/step 5 of /i.test(exactCard.label), 'an exact saved step keeps its accessible label');
+  ok(exactCard.bar !== '0%' && exactCard.bar.length > 0, 'an exact saved step still draws its fraction');
+
+  await p.evaluate(() => { window.location.hash = '#progress'; });
+  await p.waitForTimeout(260);
+  const exactProg = await p.textContent('#cat-actions');
+  ok(exactProg.includes('Continue B06') && exactProg.includes('step 5'),
+    `My Progress keeps the exact resume wording (was "${exactProg.trim()}")`);
+
+  /* --- a saved step the curriculum no longer contains says so --- *
+     resume() falls back to index 0 so navigation still works. The old wording
+     presented that fallback as "Step 1 of 12", which is the app claiming to
+     remember a position it invented. */
+  await seedAt(record({ currentStepId: 'B06-STEP-REMOVED-IN-A-LATER-EDIT' }), '#home');
+  const staleCard = await p.evaluate(() => ({
+    hidden: document.getElementById('continue-card').hidden,
+    step: document.getElementById('continue-step').textContent,
+    stepTitle: document.getElementById('continue-step-title').textContent,
+    label: document.getElementById('continue-card').getAttribute('aria-label'),
+    bar: document.getElementById('continue-bar').style.width,
+  }));
+  ok(staleCard.hidden === false, 'a stale saved step still offers the tutorial');
+  ok(staleCard.step === 'Resume from the beginning',
+    `a stale saved step says so on Home (was "${staleCard.step}")`);
+  ok(!/step \d/i.test(staleCard.step), 'a stale saved step claims no step number');
+  ok(staleCard.stepTitle === '', 'a stale saved step names no step title');
+  ok(staleCard.bar === '0%', 'a stale saved step draws no progress fraction');
+  ok(staleCard.label === 'Resume B06 · ' + (await p.evaluate(() => window.JDXI_TUTORIALS.B06.title)) +
+      ' from the beginning',
+    `the stale accessible label is honest (was "${staleCard.label}")`);
+
+  /* And it goes where it says it goes: the beginning, as a step, not the bare
+     route's Continue / Start over choice. */
+  await p.click('#continue-card'); await p.waitForTimeout(300);
+  ok((await hash()) === '#tutorial/B06/step/1',
+    `Resume from the beginning enters step 1 explicitly (went to ${await hash()})`);
+  ok(await inLesson(), 'Resume from the beginning lands in the lesson, not on the choice');
+
+  await seedAt(record({ currentStepId: 'B06-STEP-REMOVED-IN-A-LATER-EDIT' }), '#progress');
+  const staleProg = await p.textContent('#cat-actions');
+  ok(staleProg.includes('Resume B06 from beginning'),
+    `My Progress states a stale step honestly (was "${staleProg.trim()}")`);
+  ok(!/step \d/i.test(staleProg), 'My Progress claims no step number for a stale step');
+  await p.click('#cat-actions button'); await p.waitForTimeout(300);
+  ok((await hash()) === '#tutorial/B06/step/1', 'the My Progress stale action reaches step 1');
+
+  /* A record that never named a step at all is the same promise, not a crash. */
+  await seedAt(record({ currentStepId: null }), '#home');
+  ok((await p.textContent('#continue-step')) === 'Resume from the beginning',
+    'a record with no saved step also resumes from the beginning');
+
+  /* =====================================================================
+     INTEGRATION: a record written by a NEWER build.
+
+     progress.js refuses to read it and refuses to overwrite it, which is
+     correct and was completely silent - the learner saw an app that simply
+     forgot everything they did. The notice has to say that without blaming the
+     browser (it is working), without calling the data corrupt (it is not), and
+     without deleting or migrating anything.
+     ===================================================================== */
+
+  const future = {
+    schemaVersion: 99,
+    completedTutorialIds: ['B01', 'B02'],
+    currentTutorialId: 'B06',
+    currentStepId: 'B06-S03',
+    bookmarkedIds: ['N04'],
+    completedSpecialtyIds: [],
+    somethingThisBuildCannotKnowAbout: { kept: true },
+  };
+  const futureRaw = JSON.stringify(future);
+
+  await seedAt(future, '#progress');
+  const fProgBody = await p.textContent('#cat-body');
+  ok(/newer version of JD-Xi Tutorial Hub/i.test(fProgBody),
+    'My Progress tells the learner a newer version wrote what is stored');
+  ok(/won.t be saved|will not be saved/i.test(fProgBody),
+    'the notice says this session will not be remembered');
+  ok(/reset progress/i.test(fProgBody), 'the notice names the way out');
+
+  /* The three things it must not say. Each of these would send a learner to
+     clear site data and destroy the record we just protected. */
+  ok(!/cannot be saved in this browser/i.test(fProgBody),
+    'the future-schema notice does not reuse the storage-unavailable wording');
+  ok(!/not letting the page store|private window|block site data/i.test(fProgBody),
+    'the future-schema notice does not blame the browser');
+  ok(!/corrupt|damaged|invalid|unreadable/i.test(fProgBody),
+    'the future-schema notice does not call the learner\'s data corrupt');
+
+  await p.evaluate(() => { window.location.hash = '#settings'; });
+  await p.waitForTimeout(260);
+  ok(/newer version of JD-Xi Tutorial Hub/i.test(await p.textContent('#cat-body')),
+    'Settings carries the notice too, beside the reset it points at');
+
+  /* --- and the record itself is still there, byte for byte --- *
+     Read once at the end, after a session that has rendered several surfaces
+     and pressed a control that ordinarily writes. One unguarded write path is
+     enough to lose it. */
+  await p.evaluate(() => { window.location.hash = '#tutorial/B03'; });
+  await p.waitForTimeout(280);
+  if (await p.isVisible('#lsn-fav')) { await p.click('#lsn-fav'); await p.waitForTimeout(160); }
+  await p.evaluate(() => { window.location.hash = '#tutorial/B03/step/2'; });
+  await p.waitForTimeout(260);
+  await p.evaluate(() => { window.location.hash = '#home'; });
+  await p.waitForTimeout(240);
+  const stillThere = await p.evaluate((k) => window.localStorage.getItem(k), PKEY);
+  ok(stillThere === futureRaw,
+    'the newer record is preserved byte for byte while the notice is shown');
+
+  /* --- the ordinary notice belongs to the ordinary case only --- */
+  await seedAt(record({ currentStepId: realStep }), '#progress');
+  const healthyBody = await p.textContent('#cat-body');
+  ok(!/cannot be saved in this browser/i.test(healthyBody),
+    'a working session shows no storage warning at all');
+  ok(!/newer version of JD-Xi Tutorial Hub/i.test(healthyBody),
+    'a working session shows no future-schema warning either');
+  await p.evaluate(() => { window.location.hash = '#settings'; });
+  await p.waitForTimeout(240);
+  ok(!/cannot be saved|newer version of JD-Xi Tutorial Hub/i.test(await p.textContent('#cat-body')),
+    'Settings shows no warning when this session can save');
+
+  /* Leave storage as we found it rather than as the last fixture left it. */
+  await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
+
   await b.close();
   console.log(`${browserName}: behaviour checks ${pass} passed, ${fails.length} failed`);
   fails.forEach(f => console.log('  FAIL ' + f));

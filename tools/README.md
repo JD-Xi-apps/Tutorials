@@ -122,6 +122,16 @@ learner experiences: favouriting from a lesson and finding it on Favorites, pers
 across a reload, the resume point, completion counting, the two-press Settings reset and
 its cancel path, and browser Back/Forward across the new surfaces.
 
+It also covers what the learner is **told** about their stored progress, which is where
+the same defect keeps reappearing in different clothes — the app stating something about
+their data that is not true. A saved step that still resolves keeps its exact wording; a
+saved step the curriculum no longer contains says "Resume from the beginning" on both
+Home and My Progress, names no step number, draws no progress fraction, and goes where it
+says it goes. A record written by a newer build produces its own notice, which must not
+reuse the storage-unavailable wording, must not blame the browser and must not call the
+record corrupt — and the record is asserted still present **byte for byte** at the end of
+a session that rendered several surfaces and pressed a control that ordinarily writes.
+
 It also asserts two things that must **not** happen: a development fixture touching
 learner state, and an empty collection rendering a placeholder page. The first of those
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
@@ -191,6 +201,14 @@ reset states its consequence before it acts.
 The focus check tabs to a control rather than calling `.focus()`, because `:focus-visible`
 is exactly the distinction between a keyboard user, who must see the ring, and a mouse
 user, who should not — calling `.focus()` tests the wrong state.
+
+Two integration checks live here because neither branch could see the other. The lesson
+heading is focused on every arrival, including the mouse user's, so it must paint **no**
+ring — asserted on computed style, together with its `.cat-title` twin, and paired with
+the assertion that the footer buttons beside it still show theirs, so "remove an outline"
+can never quietly become "remove the outlines". And the natively `disabled` Back from the
+semantics work is checked against the unavailable styling from the CSS work: muted, no
+pointer cursor, no lift on hover, and the same box as when it is available.
 
 ## `frozen-surfaces.js`
 
