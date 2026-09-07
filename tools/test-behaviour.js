@@ -1117,6 +1117,75 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
       `${surface} still fits the stage without clipping (overflow ${over.clip}px)`);
   }
 
+  /* ================================================================
+     Bookmarks terminology, and the version the learner is told they have.
+     ================================================================ */
+
+  /*
+   * The app feature is Bookmarked. "Favorite" belongs to the JD-Xi, and a
+   * learner who reads the app calling its own list of saved lessons
+   * "favourites" has been told the web page did something to their
+   * instrument. This checks the rendered surfaces rather than the source,
+   * because the source is what tools/validate-data.js checks.
+   */
+  const savedSurfaces = ['#bookmarks', '#progress', '#settings', '#level/beginner'];
+  for (const surface of savedSurfaces) {
+    await p.evaluate((h) => { window.location.hash = h; }, surface);
+    await p.waitForTimeout(240);
+    const shown = (await p.textContent('#view-catalog')) + ' ' + (await p.textContent('.topbar'));
+    ok(!/favourit/i.test(shown), `${surface} never says favourite in any spelling`);
+    ok(!/\bfavorites\b|\bfavorited\b|\bfavoriting\b/i.test(shown),
+      `${surface} never uses an app-feature Favorite wording either`);
+  }
+
+  /* The storage notice was the live defect: it promised the learner their
+     "favourites" would be forgotten. It is only reachable with storage
+     denied, so it is read where it renders rather than assumed. */
+  const denied = await ctx.browser().newContext({
+    viewport: { width: 1440, height: 900 }, storageState: undefined,
+  });
+  const dp = await denied.newPage();
+  await dp.addInitScript(() => {
+    const boom = () => { throw new Error('denied'); };
+    try {
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        get: () => ({ getItem: boom, setItem: boom, removeItem: boom, clear: boom }),
+      });
+    } catch (e) { /* a browser that will not let us fake it fails the assert below */ }
+  });
+  await dp.goto(APP + '#settings');
+  await dp.waitForTimeout(360);
+  const noticeText = await dp.textContent('#cat-body');
+  ok(/cannot be saved in this browser/i.test(noticeText),
+    'the storage-denied notice is on screen to be read');
+  ok(!/favourit|\bfavorites\b/i.test(noticeText),
+    'and no longer calls the learner\'s bookmarks favourites');
+  ok(/bookmarks? will be forgotten|and bookmarks will be/i.test(noticeText),
+    'it names them as bookmarks instead');
+
+  await denied.close();
+
+  /*
+   * Settings > About states the released version.
+   *
+   * Read from the element rather than from the surface's text: textContent
+   * runs the version straight into the sentence after it ("v1.030 guided
+   * tutorials"), and a substring assertion on that passes on anything that
+   * merely starts the same way.
+   */
+  await p.evaluate(() => { window.location.hash = '#settings'; });
+  await p.waitForTimeout(280);
+  const versionLine = await p.evaluate(() => {
+    const b = [...document.querySelectorAll('#cat-body .setting-value b')]
+      .find((e) => e.textContent.indexOf('JD-Xi Tutorial Hub') === 0);
+    return b ? b.textContent : null;
+  });
+  ok(versionLine === 'JD-Xi Tutorial Hub · v1.0',
+    `Settings says exactly v1.0 (found "${versionLine}")`);
+  ok(!/beta|alpha|\brc\b|release candidate|preview/i.test(await p.textContent('#cat-body')),
+    'and nothing else on Settings still calls the released version a pre-release');
+
   /* Leave storage as we found it rather than as the last fixture left it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
 

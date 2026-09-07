@@ -118,7 +118,7 @@ node tools/test-behaviour.js [chromium|firefox]
 ```
 
 Needs Playwright. Drives the real app from a real `file://` URL and asserts what the
-learner experiences: favouriting from a lesson and finding it on Favorites, persistence
+learner experiences: bookmarking from a lesson and finding it on Bookmarked, persistence
 across a reload, the resume point, completion counting, the two-press Settings reset and
 its cancel path, and browser Back/Forward across the new surfaces.
 
@@ -135,7 +135,7 @@ a session that rendered several surfaces and pressed a control that ordinarily w
 It also asserts two things that must **not** happen: a development fixture touching
 learner state, and an empty collection rendering a placeholder page. The first of those
 caught a real defect — a class rule silently overriding the `hidden` attribute, leaving
-the favourite control visible on a fixture.
+the bookmark control visible on a fixture.
 
 ## `test-explorer.js`
 
@@ -195,7 +195,7 @@ Needs Playwright. Not a broad audit and not trying to be — it asserts the spec
 properties this app has to hold, on every route the catalog generates: every control is
 a real `<button>` with an accessible name, icon-only controls carry explicit labels,
 decorative glyphs are hidden so they do not pollute a control's spoken name, each surface
-has exactly one `h1`, the favourite toggle exposes `aria-pressed`, and the destructive
+has exactly one `h1`, the bookmark toggle exposes `aria-pressed`, and the destructive
 reset states its consequence before it acts.
 
 The focus check tabs to a control rather than calling `.focus()`, because `:focus-visible`
@@ -275,9 +275,37 @@ name its Roland source including a version supplement; B01, B02 and N01 are
 exempt as calibrated baselines.
 
 **Bookmarked versus Favorite.** The app feature is *Bookmarked*; *Favorite* is
-the JD-Xi's own hardware feature. The check runs on the shipped UI in both
-directions: `index.html` and `js/app.js` may not use the app wordings, and the
-three tutorials that teach the hardware feature must still name it.
+the JD-Xi's own hardware feature. The check runs on the shipped UI chrome —
+`index.html`, `js/app.js` and `js/lesson-renderer.js` — in both directions: the
+chrome may not use the app wordings, and the three tutorials that teach the
+hardware feature must still name it.
+
+The prohibited class is closed and split in two, because the two halves are
+prohibited for different reasons:
+
+- **every British form** (`favourite`, `favourites`, `favourited`,
+  `favouriting`). Roland spells its feature the American way everywhere, so a
+  British spelling cannot be a reference to the hardware at all. This is the
+  half that caught the live defect — a storage notice telling learners their
+  *favourites* would be forgotten, which the earlier case-sensitive,
+  American-only check read straight past.
+- **the American forms the hardware feature never takes** (`Favorites`,
+  `Favorited`, `Favoriting`). Singular `Favorite` stays legal on purpose: the
+  search index offers it as a synonym for recalling a program, and the
+  tutorials that teach the feature have to name it.
+
+Two things make it usable rather than merely strict. Comments are stripped from
+the JavaScript first — a comment is not something the app says, and the code
+that keeps the two words apart cannot be forbidden from naming the word it is
+keeping out. And the legacy `#favorites` hash is removed before scanning, then
+asserted separately, so satisfying the rule can never become a way to delete
+the redirect that keeps pre-rename links alive.
+
+The guard runs against fixtures on every invocation, in both directions: seven
+wordings it must catch and six it must let through, all through the same
+scanner the files go through. A terminology rule only ever run against a file
+that already passes is indistinguishable from one that matches nothing, which
+is exactly how the previous version looked healthy.
 
 ## A navigation trap worth knowing
 
