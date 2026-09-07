@@ -80,6 +80,38 @@
     return c && Array.isArray(c.tutorialIds) && c.tutorialIds.length ? c : null;
   }
 
+  /*
+   * Prerequisites are ADVISORY, and this is the only place they are read.
+   *
+   * Every canonical tutorial and every Specialty lesson carries them, and the
+   * data is validated, but nothing in the runtime has ever shown them - so a
+   * learner opening the Intermediate path had no way to tell that I05 assumes
+   * I04. That is worth saying. It is not worth enforcing: the master plan is
+   * explicit that direct entry stays available, so nothing here locks, dims,
+   * disables or reorders anything. It returns a sentence, and the caller
+   * decides where to put it.
+   *
+   * Two suppressions, both so the advice stays worth reading:
+   *
+   *   - a prerequisite the learner has already completed drops out, and when
+   *     they all have, the card says nothing at all. An advisory that is
+   *     always on screen is not an advisory, it is furniture.
+   *   - a COMPLETED card says nothing either. "Recommended first: B03" beside
+   *     a tutorial that is already finished is not advice, it is a false
+   *     statement about an order that no longer applies.
+   *
+   * An id that no longer resolves is dropped rather than printed. The
+   * validator would catch it, but printing "Recommended first: B99" to a
+   * learner is the worse failure of the two.
+   */
+  function prerequisiteAdvice(ids, done) {
+    if (done) return '';
+    const P = progress();
+    const all = tutorials();
+    const outstanding = (ids || []).filter((pid) => all[pid] && !P.isComplete(pid));
+    return outstanding.length ? 'Recommended first: ' + outstanding.join(', ') : '';
+  }
+
   /* ------------------------------------------------------------------ views */
 
   const views = {
@@ -403,6 +435,11 @@
     meta.appendChild(el('span', null, spec.steps + ' steps'));
     card.appendChild(meta);
 
+    /* Plain text inside the card, never a link: the card is itself the
+       control, and a nested one would put a second tab stop inside a button
+       to say something the button already says. */
+    if (spec.advice) card.appendChild(el('div', 'tc-prereq', spec.advice));
+
     /* One accessible name carrying everything the visual card conveys. */
     card.setAttribute('aria-label', spec.ariaLabel);
     card.addEventListener('click', () => go(spec.hash));
@@ -415,6 +452,7 @@
     const P = progress();
     const done = P.isComplete(id);
     const marked = P.isBookmarked(id);
+    const advice = prerequisiteAdvice(t.prerequisites, done);
     return richCard({
       badge: id,
       title: t.title,
@@ -424,9 +462,11 @@
       done: done,
       bookmarked: marked,
       current: id === currentId,
+      advice: advice,
       ariaLabel:
         `${t.title}. ${id}, ${t.estimatedMinutes} minutes, ${t.steps.length} steps.` +
-        (done ? ' Completed.' : '') + (marked ? ' Bookmarked.' : ''),
+        (done ? ' Completed.' : '') + (marked ? ' Bookmarked.' : '') +
+        (advice ? ' ' + advice + '.' : ''),
       hash: '#tutorial/' + id,
     });
   }
@@ -437,6 +477,10 @@
     const l = specialty().lessons[id];
     const P = progress();
     const done = P.isSpecialtyComplete ? P.isSpecialtyComplete(id) : false;
+    /* Specialty lessons name canonical prerequisites, and read them from the
+       same helper: a lesson that assumes B03 is worth saying so whether or
+       not it counts toward the thirty. */
+    const advice = prerequisiteAdvice(l.prerequisites, done);
     return richCard({
       cls: 'specialty',
       badge: 'Specialty',
@@ -447,9 +491,10 @@
       done: done,
       bookmarked: !!(P.isBookmarked && P.isBookmarked(id)),
       current: false,
+      advice: advice,
       ariaLabel:
         l.title + '. Specialty lesson, ' + l.estimatedMinutes + ' minutes, ' +
-        l.steps.length + ' steps. Optional.',
+        l.steps.length + ' steps. Optional.' + (advice ? ' ' + advice + '.' : ''),
       hash: '#specialty/' + id,
     });
   }

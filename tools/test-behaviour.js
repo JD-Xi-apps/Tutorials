@@ -719,6 +719,172 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   ok(!/cannot be saved|newer version of JD-Xi Tutorial Hub/i.test(await p.textContent('#cat-body')),
     'Settings shows no warning when this session can save');
 
+  /* ================================================================
+     Advisory prerequisites on the discovery surfaces.
+
+     Every canonical tutorial and Specialty lesson has carried validated
+     prerequisite data since the catalog was written, and the runtime never
+     showed any of it. It does now, and the whole point of these checks is
+     that showing it changed nothing else: the advice is a sentence on a
+     card, and a card that is advising is still a card that opens.
+     ================================================================ */
+
+  const blank = () => record({
+    completedTutorialIds: [], currentTutorialId: null, currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  });
+
+  /* Read the cards as a learner meets them, keyed by the id printed on each.
+     Nothing here is hard-coded from the catalog: the expectations come from
+     the same data the card was built from, so a curriculum edit cannot leave
+     this asserting a prerequisite the tutorial no longer has. */
+  const readCards = () => p.evaluate(() => {
+    const out = {};
+    document.querySelectorAll('#cat-body .tut-card').forEach((c) => {
+      const line = c.querySelector('.tc-prereq');
+      out[c.querySelector('.tc-id').textContent] = {
+        advice: line ? line.textContent : null,
+        label: c.getAttribute('aria-label') || '',
+        name: (c.querySelector('.tc-name') || {}).textContent || '',
+        disabled: c.disabled === true,
+        ariaDisabled: c.getAttribute('aria-disabled'),
+        tabindex: c.getAttribute('tabindex'),
+        pointer: getComputedStyle(c).pointerEvents,
+        opacity: parseFloat(getComputedStyle(c).opacity),
+        nested: line ? line.querySelectorAll('a,button,[tabindex]').length : 0,
+        done: c.classList.contains('done'),
+        here: c.classList.contains('here'),
+      };
+    });
+    return out;
+  });
+
+  await seedAt(blank(), '#level/beginner');
+  const fresh = await readCards();
+  const beginnerIds = await p.evaluate(() =>
+    Object.keys(window.JDXI_TUTORIALS).filter((k) => window.JDXI_TUTORIALS[k].level === 'beginner'));
+  const prereqOf = await p.evaluate(() => {
+    const m = {};
+    Object.keys(window.JDXI_TUTORIALS).forEach((k) => { m[k] = window.JDXI_TUTORIALS[k].prerequisites || []; });
+    return m;
+  });
+
+  ok(Object.keys(fresh).length === beginnerIds.length, 'the level page still draws every card');
+  ok(beginnerIds.every((id) => (prereqOf[id].length ? fresh[id].advice === 'Recommended first: ' + prereqOf[id].join(', ') : fresh[id].advice === null)),
+    'each card advises exactly the prerequisites its own data names, and no card without them says anything');
+  ok(beginnerIds.some((id) => fresh[id].advice), 'at least one outstanding prerequisite is actually shown');
+  ok(beginnerIds.some((id) => fresh[id].advice === null), 'a tutorial with no prerequisites renders no advisory line at all');
+  ok(beginnerIds.every((id) => !fresh[id].advice || fresh[id].label.indexOf(fresh[id].advice) >= 0),
+    'the advisory is carried in the accessible name, not only in the pixels');
+  ok(beginnerIds.every((id) => fresh[id].nested === 0),
+    'the advisory is plain text: no nested control inside a card that is itself the control');
+
+  /* --- and none of it gates anything --- */
+  ok(beginnerIds.every((id) => !fresh[id].disabled), 'no card is disabled by an outstanding prerequisite');
+  ok(beginnerIds.every((id) => fresh[id].ariaDisabled === null), 'no card claims aria-disabled either');
+  ok(beginnerIds.every((id) => fresh[id].tabindex === null), 'every card keeps its place in the tab order');
+  ok(beginnerIds.every((id) => fresh[id].pointer !== 'none' && fresh[id].opacity === 1),
+    'no card is dimmed or made unclickable');
+  ok(!/required|must complete|locked|unlock/i.test(await p.textContent('#cat-body')),
+    'nothing on the surface tells the learner a tutorial is required or locked');
+  const order = await p.evaluate(() =>
+    [...document.querySelectorAll('#cat-body .tut-card .tc-id')].map((e) => e.textContent));
+  ok(order.join(',') === beginnerIds.join(','), 'prerequisites do not reorder the guided path');
+
+  /* Direct entry into the LAST tutorial of the path, from an empty record -
+     the case every prerequisite in the level is outstanding for. */
+  const lastOfLevel = beginnerIds[beginnerIds.length - 1];
+  await goto('#tutorial/' + lastOfLevel);
+  ok(!(await p.evaluate(() => document.getElementById('view-lesson').hidden)),
+    'a tutorial with every prerequisite outstanding still opens directly');
+  ok((await hash()) === '#tutorial/' + lastOfLevel,
+    'the bare route keeps its direct-entry meaning, unchanged');
+  ok(/\b1\b/.test(await p.textContent('#lsn-progress')),
+    'and lands on its first step like any other');
+
+  /* --- completing the prerequisite retires the advice --- */
+  const withPrereq = beginnerIds.filter((id) => prereqOf[id].length)[0];
+  await seedAt(record({
+    completedTutorialIds: prereqOf[withPrereq].slice(),
+    currentTutorialId: null, currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#level/beginner');
+  const settled = await readCards();
+  ok(settled[withPrereq].advice === null,
+    `${withPrereq} stops advising once ${prereqOf[withPrereq].join(', ')} is complete`);
+  ok(settled[withPrereq].label.indexOf('Recommended first') < 0,
+    'and the accessible name stops saying it too');
+
+  /* --- a completed tutorial says nothing, even out of order --- */
+  await seedAt(record({
+    completedTutorialIds: [withPrereq], currentTutorialId: null, currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#level/beginner');
+  const outOfOrder = await readCards();
+  ok(outOfOrder[withPrereq].done, 'a tutorial finished out of order is still marked complete');
+  ok(outOfOrder[withPrereq].advice === null,
+    'a completed tutorial does not advise an order that no longer applies');
+
+  /*
+   * More than one outstanding prerequisite. No tutorial in the catalog has
+   * two today, and the presentation must not assume that - a curriculum edit
+   * is a data change, not a code change. The catalog is amended in the page
+   * for this one assertion and the reload afterwards puts it back.
+   */
+  await seedAt(blank(), '#level/beginner');
+  const pair = await p.evaluate((id) => {
+    window.JDXI_TUTORIALS[id].prerequisites = ['B01', 'B03'];
+    window.location.hash = '#home';
+    return id;
+  }, withPrereq);
+  await p.waitForTimeout(160);
+  await p.evaluate(() => { window.location.hash = '#level/beginner'; });
+  await p.waitForTimeout(260);
+  const multi = await readCards();
+  ok(multi[pair].advice === 'Recommended first: B01, B03',
+    'two outstanding prerequisites are listed together, honestly and on one line');
+  ok(multi[pair].label.indexOf('Recommended first: B01, B03') >= 0,
+    'and both reach the accessible name');
+  await p.reload();
+  await p.waitForTimeout(300);
+  ok((await p.evaluate((id) => window.JDXI_TUTORIALS[id].prerequisites.length, pair)) === 1,
+    'the amended catalog was a fixture and did not survive the reload');
+
+  /* --- Specialty carries the same advisory --- */
+  await seedAt(blank(), '#specialty');
+  /* Every Specialty card prints the same badge, so these are read in order
+     rather than keyed by it. */
+  const spPrereq = await p.evaluate(() => {
+    const S = window.JDXI_SPECIALTY;
+    return S.order.map((id) => (S.lessons[id].prerequisites || []).join(', '));
+  });
+  const spNames = await p.evaluate(() =>
+    [...document.querySelectorAll('#cat-body .tut-card')].map((c) => ({
+      advice: (c.querySelector('.tc-prereq') || {}).textContent || null,
+      label: c.getAttribute('aria-label') || '',
+      nested: c.querySelectorAll('.tc-prereq a, .tc-prereq button').length,
+    })));
+  ok(spNames.length === spPrereq.length, 'Specialty still draws a card per lesson');
+  ok(spNames.every((c) => c.nested === 0), 'a Specialty advisory is plain text too');
+  ok(spNames.every((c, i) => (spPrereq[i] ? c.advice === 'Recommended first: ' + spPrereq[i] : c.advice === null)),
+    'a Specialty card advises the canonical tutorial its own data names');
+  ok(spNames.every((c, i) => !spPrereq[i] || c.label.indexOf('Recommended first: ' + spPrereq[i]) >= 0),
+    'and the Specialty accessible name carries it');
+
+  const spAll = await p.evaluate(() => window.JDXI_SPECIALTY.order.reduce((acc, id) => {
+    (window.JDXI_SPECIALTY.lessons[id].prerequisites || []).forEach((x) => { if (acc.indexOf(x) < 0) acc.push(x); });
+    return acc;
+  }, []));
+  await seedAt(record({
+    completedTutorialIds: spAll, currentTutorialId: null, currentStepId: null,
+    bookmarkedIds: [], completedSpecialtyIds: [],
+  }), '#specialty');
+  ok((await p.evaluate(() => document.querySelectorAll('#cat-body .tc-prereq').length)) === 0,
+    'Specialty stops advising once the tutorials it points at are complete');
+  await goto('#specialty/' + (await p.evaluate(() => window.JDXI_SPECIALTY.order[0])));
+  ok(!(await p.evaluate(() => document.getElementById('view-lesson').hidden)),
+    'a Specialty lesson opens directly regardless of its prerequisites');
+
   /* Leave storage as we found it rather than as the last fixture left it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);
 

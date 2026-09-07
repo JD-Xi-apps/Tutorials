@@ -455,6 +455,12 @@ button:focus-visible { outline:3px solid #5f9bea; outline-offset:2px; }
 .tut-card .tc-sum { font-size:11px; line-height:1.4; color:var(--muted); overflow:hidden;
   display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
 .tut-card .tc-meta { margin-top:auto; padding-top:4px; font-size:10.5px; color:var(--muted); display:flex; gap:8px; align-items:center; }
+/* Advisory prerequisites. Deliberately the same size and colour as the minutes
+   and steps beside them: this is metadata about the tutorial, not a warning
+   about the learner, and nothing here is enforced. No red, no icon, no border,
+   and no "required" - a card that looks like it is refusing entry would be
+   lying, because every tutorial can be opened directly. */
+.tut-card .tc-prereq { margin-top:-1px; font-size:10.5px; line-height:1.35; color:var(--muted); }
 .tut-card.done { border-color:#bfe0c9; background:#f7fbf8; }
 .tut-card.here { border-color:var(--ink); box-shadow:0 0 0 2px rgba(0,0,0,.06); }
 
