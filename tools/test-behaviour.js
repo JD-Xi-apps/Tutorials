@@ -86,7 +86,19 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   /* --- it shows up on the Bookmarked surface --- */
   await goto('#bookmarks');
   ok((await p.textContent('#cat-title')) === 'Bookmarked', 'the surface is called Bookmarked');
-  ok((await p.textContent('#cat-body')).includes('Find sounds you like'), 'bookmark listed on #bookmarks');
+  /* The row is read by id rather than by wording. Compact rows show the
+     authored `shortTitle`, so asserting the full title here would have been
+     asserting a layout decision under the guise of asserting presence. */
+  const b03Row = await p.evaluate(() => {
+    const r = [...document.querySelectorAll('#cat-body .tut-row')]
+      .find((x) => x.querySelector('.tr-id').textContent === 'B03');
+    return r ? { name: r.querySelector('.tr-name').textContent, label: r.getAttribute('aria-label') } : null;
+  });
+  ok(!!b03Row, 'bookmark listed on #bookmarks');
+  ok(b03Row && b03Row.name === (await p.evaluate(() => window.JDXI_TUTORIALS.B03.shortTitle)),
+    'and the row carries the authored short title');
+  ok(b03Row && b03Row.label.indexOf(await p.evaluate(() => window.JDXI_TUTORIALS.B03.title)) === 0,
+    'while its accessible name still leads with the full title');
 
   /* --- the old hash still resolves rather than dead-ending --- */
   await goto('#favorites');
@@ -884,6 +896,90 @@ const ok = (c, n) => c ? pass++ : fails.push(n);
   await goto('#specialty/' + (await p.evaluate(() => window.JDXI_SPECIALTY.order[0])));
   ok(!(await p.evaluate(() => document.getElementById('view-lesson').hidden)),
     'a Specialty lesson opens directly regardless of its prerequisites');
+
+  /* ================================================================
+     Compact rows carry the authored shortTitle; rich cards and lesson
+     headings keep the full title.
+     ================================================================ */
+
+  const everything = await p.evaluate(() =>
+    Object.keys(window.JDXI_TUTORIALS).concat(window.JDXI_SPECIALTY.order));
+  await seedAt(record({
+    completedTutorialIds: [], currentTutorialId: 'B04', currentStepId: null,
+    bookmarkedIds: everything, completedSpecialtyIds: [],
+  }), '#progress');
+
+  const readRows = () => p.evaluate(() => {
+    const T = window.JDXI_TUTORIALS, S = window.JDXI_SPECIALTY;
+    return [...document.querySelectorAll('#cat-body .tut-row')].map((r) => {
+      const id = r.querySelector('.tr-id').textContent;
+      const lesson = T[id] || S.lessons[[...S.order].find((k) =>
+        (r.getAttribute('aria-label') || '').indexOf(S.lessons[k].title) === 0)];
+      return {
+        id: id,
+        name: r.querySelector('.tr-name').textContent,
+        shortTitle: lesson ? lesson.shortTitle : null,
+        fullTitle: lesson ? lesson.title : null,
+        label: r.getAttribute('aria-label') || '',
+        tip: r.getAttribute('title') || '',
+        clipped: r.querySelector('.tr-name').scrollWidth > r.querySelector('.tr-name').clientWidth + 0.5,
+      };
+    });
+  });
+
+  const fullTitles = await p.evaluate(() => {
+    const m = {};
+    Object.keys(window.JDXI_TUTORIALS).forEach((k) => { m[k] = window.JDXI_TUTORIALS[k].title; });
+    return m;
+  });
+
+  const progRows = await readRows();
+  ok(progRows.length === Object.keys(await p.evaluate(() => window.JDXI_TUTORIALS)).length,
+    'My Progress still lists every tutorial as a row');
+  ok(progRows.every((r) => r.shortTitle && r.name === r.shortTitle),
+    'every My Progress row shows the authored short title');
+  ok(progRows.some((r) => r.shortTitle !== r.fullTitle),
+    'and at least one of those is genuinely shorter than the full title');
+  ok(progRows.every((r) => r.label.indexOf(r.fullTitle) === 0),
+    'the accessible name still leads with the full title, so the row is identifiable');
+  ok(progRows.every((r) => r.tip === r.fullTitle),
+    'and the full title is still available on hover');
+  ok(progRows.every((r) => !r.clipped), 'no My Progress row ellipsises its name');
+
+  await p.evaluate(() => { window.location.hash = '#bookmarks'; });
+  await p.waitForTimeout(280);
+  const markRows = await readRows();
+  ok(markRows.length === everything.length, 'Bookmarked lists tutorials and Specialty lessons together');
+  ok(markRows.every((r) => r.shortTitle && r.name === r.shortTitle),
+    'Bookmarked rows show the short title too, Specialty included');
+  ok(markRows.every((r) => r.tip === r.fullTitle && r.label.indexOf(r.fullTitle) === 0),
+    'and keep the full title in the tooltip and the accessible name');
+  ok(markRows.every((r) => !r.clipped), 'no Bookmarked row ellipsises its name');
+
+  /* --- rich cards are NOT compact and keep the full title --- */
+  await p.evaluate(() => { window.location.hash = '#level/beginner'; });
+  await p.waitForTimeout(280);
+  const cardNames = await p.evaluate(() =>
+    [...document.querySelectorAll('#cat-body .tut-card')].map((c) => ({
+      id: c.querySelector('.tc-id').textContent,
+      name: c.querySelector('.tc-name').textContent,
+    })));
+  ok(cardNames.every((c) => c.name === (fullTitles[c.id] || c.name)) && cardNames.length > 0,
+    'a rich card on the level page still shows the full title');
+  await p.evaluate(() => { window.location.hash = '#specialty'; });
+  await p.waitForTimeout(280);
+  const spCardNames = await p.evaluate(() => {
+    const S = window.JDXI_SPECIALTY;
+    return [...document.querySelectorAll('#cat-body .tut-card .tc-name')]
+      .map((e, i) => [e.textContent, S.lessons[S.order[i]].title]);
+  });
+  ok(spCardNames.every(([shown, full]) => shown === full),
+    'a Specialty card shows the full title as well');
+
+  /* --- and so does the lesson heading it opens --- */
+  await goto('#tutorial/B06/step/1');
+  ok((await p.textContent('#lsn-title')) === (await p.evaluate(() => window.JDXI_TUTORIALS.B06.title)),
+    'the lesson heading is the full title, never the short one');
 
   /* Leave storage as we found it rather than as the last fixture left it. */
   await p.evaluate((k) => window.localStorage.removeItem(k), PKEY);

@@ -507,6 +507,24 @@
     });
   }
 
+  /*
+   * The name a compact row shows.
+   *
+   * Every canonical tutorial and Specialty lesson carries an authored
+   * `shortTitle` written for exactly this - "Sound knobs" beside "Change the
+   * sound with knobs" - and until now nothing read it. Rich cards and lesson
+   * headings keep the full title; a row thirty of which share a fixed stage
+   * takes the short one.
+   *
+   * The full title never leaves: it stays in the accessible name and in the
+   * hover tooltip, so the compact form is a shorter LABEL and not less
+   * information. The fallback is the full title, because a row with no name
+   * at all is worse than a long one.
+   */
+  function rowName(lesson) {
+    return lesson.shortTitle || lesson.title;
+  }
+
   /* A compact row, for unbounded lists: Bookmarked and Progress (up to 30). */
   function tutorialRow(id, currentId) {
     const t = tutorials()[id];
@@ -515,8 +533,9 @@
     const row = el('button', 'tut-row' + (done ? ' done' : '') + (id === currentId ? ' here' : ''));
     row.type = 'button';
     row.appendChild(el('span', 'tr-id', id));
-    row.appendChild(el('span', 'tr-name', t.title));
+    row.appendChild(el('span', 'tr-name', rowName(t)));
     row.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
+    row.title = t.title;
     row.setAttribute('aria-label', `${t.title}. ${id}.` + (done ? ' Completed.' : ''));
     row.addEventListener('click', () => go('#tutorial/' + id));
     return row;
@@ -679,8 +698,9 @@
     const row = el('button', 'tut-row specialty' + (done ? ' done' : ''));
     row.type = 'button';
     row.appendChild(el('span', 'tr-id', 'SP'));
-    row.appendChild(el('span', 'tr-name', l.title));
+    row.appendChild(el('span', 'tr-name', rowName(l)));
     row.appendChild(el('span', 'tc-tick' + (done ? ' done' : ''), done ? '✓' : ''));
+    row.title = l.title;
     row.setAttribute('aria-label', l.title + '. Specialty lesson.' + (done ? ' Completed.' : ''));
     row.addEventListener('click', () => go('#specialty/' + id));
     return row;
